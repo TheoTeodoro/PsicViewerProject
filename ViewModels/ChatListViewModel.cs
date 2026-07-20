@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
-using PsicViewer.Core.Interfaces;
 using MauiApp1.Services;
 using MauiApp1.Views;
 
@@ -17,8 +16,7 @@ namespace MauiApp1.ViewModels
 
 	public partial class ChatListViewModel : ObservableObject
 	{
-		private readonly IPacienteRepository _pacientes;
-		private readonly IPsicologoRepository _psicologos;
+		private readonly ContaApiService _conta;
 		private readonly SessaoUsuario _sessao;
 		private readonly IServiceProvider _serviceProvider;
 
@@ -28,14 +26,9 @@ namespace MauiApp1.ViewModels
 		[ObservableProperty]
 		private bool carregando;
 
-		public ChatListViewModel(
-			IPacienteRepository pacientes,
-			IPsicologoRepository psicologos,
-			SessaoUsuario sessao,
-			IServiceProvider serviceProvider)
+		public ChatListViewModel(ContaApiService conta, SessaoUsuario sessao, IServiceProvider serviceProvider)
 		{
-			_pacientes = pacientes;
-			_psicologos = psicologos;
+			_conta = conta;
 			_sessao = sessao;
 			_serviceProvider = serviceProvider;
 		}
@@ -53,13 +46,13 @@ namespace MauiApp1.ViewModels
 				// filtrar só pelos vinculados.
 				if (_sessao.Tipo == TipoUsuarioLogado.Paciente)
 				{
-					var psicologos = await _psicologos.ListarTodosAsync();
+					var psicologos = await _conta.ListarPsicologosAsync();
 					foreach (var p in psicologos)
 						Contatos.Add(new ContatoChat { Id = p.Id, Nome = p.Nome, Subtitulo = $"CRP {p.Crp}" });
 				}
 				else if (_sessao.Tipo == TipoUsuarioLogado.Psicologo)
 				{
-					var pacientes = await _pacientes.ListarTodosAsync();
+					var pacientes = await _conta.ListarPacientesAsync();
 					foreach (var p in pacientes)
 						Contatos.Add(new ContatoChat { Id = p.Id, Nome = p.Nome, Subtitulo = "Paciente" });
 				}

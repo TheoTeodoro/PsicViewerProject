@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Plugin.Maui.Audio;
-using PsicViewer.Core.Interfaces;
-using PsicViewer.Infrastructure.Repositories;
 using MauiApp1.Services;
 using MauiApp1.ViewModels;
 using MauiApp1.Views;
@@ -21,12 +19,13 @@ namespace MauiApp1
 					fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 				});
 
-			// Repositórios (em memória por enquanto)
-			builder.Services.AddSingleton<IPacienteRepository, PacienteRepositoryInMemory>();
-			builder.Services.AddSingleton<IPsicologoRepository, PsicologoRepositoryInMemory>();
-
 			// Sessão do usuário logado
 			builder.Services.AddSingleton<SessaoUsuario>();
+
+			// Conta (cadastro/login/perfil) — agora fala com a API, não
+			// mais com um repositório local. IPacienteRepository e
+			// IPsicologoRepository não são mais usados aqui no celular.
+			builder.Services.AddSingleton<ContaApiService>();
 
 			// Chat: conexão SignalR + upload de arquivo + gravador de áudio
 			builder.Services.AddSingleton<ChatConnectionService>();

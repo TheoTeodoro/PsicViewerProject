@@ -1,15 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
-using PsicViewer.Core.Entities;
-using PsicViewer.Core.Interfaces;
+using MauiApp1.Services;
 using MauiApp1.Views;
 
 namespace MauiApp1.ViewModels
 {
 	public partial class CadastroPacienteViewModel : ObservableObject
 	{
-		private readonly IPacienteRepository _pacientes;
+		private readonly ContaApiService _conta;
 		private readonly IServiceProvider _serviceProvider;
 
 		[ObservableProperty]
@@ -17,6 +16,15 @@ namespace MauiApp1.ViewModels
 
 		[ObservableProperty]
 		private string email = string.Empty;
+
+		[ObservableProperty]
+		private string telefone = string.Empty;
+
+		[ObservableProperty]
+		private DateTime dataNascimento = DateTime.Today.AddYears(-18);
+
+		[ObservableProperty]
+		private string generoSelecionado = string.Empty;
 
 		[ObservableProperty]
 		private string senha = string.Empty;
@@ -30,9 +38,11 @@ namespace MauiApp1.ViewModels
 		[ObservableProperty]
 		private bool carregando;
 
-		public CadastroPacienteViewModel(IPacienteRepository pacientes, IServiceProvider serviceProvider)
+		public string[] OpcoesGenero => GeneroHelper.Opcoes;
+
+		public CadastroPacienteViewModel(ContaApiService conta, IServiceProvider serviceProvider)
 		{
-			_pacientes = pacientes;
+			_conta = conta;
 			_serviceProvider = serviceProvider;
 		}
 
@@ -50,23 +60,21 @@ namespace MauiApp1.ViewModels
 			Carregando = true;
 			try
 			{
-				var existente = await _pacientes.ObterPorEmailAsync(Email);
-				if (existente is not null)
+				var (sucesso, _, erro) = await _conta.CadastrarPacienteAsync(
+					Nome, Email, Senha, Telefone, DataNascimento, GeneroHelper.ParaValorApi(GeneroSelecionado));
+
+				if (!sucesso)
 				{
-					MensagemErro = "Já existe uma conta com esse e-mail.";
+					MensagemErro = erro ?? "Não foi possível criar a conta.";
 					return;
 				}
-
-				// NOTA: senha em texto puro apenas nessa fase sem backend/hash.
-				var paciente = new Paciente(Nome, Email, Senha);
-				await _pacientes.SalvarAsync(paciente);
 
 				var contaCriadaPage = _serviceProvider.GetRequiredService<ContaCriadaPage>();
 				await Application.Current!.MainPage!.Navigation.PushAsync(contaCriadaPage);
 			}
-			catch (ArgumentException ex)
+			catch (Exception ex)
 			{
-				MensagemErro = ex.Message;
+				MensagemErro = "Não foi possível conectar ao servidor: " + ex.Message;
 			}
 			finally
 			{

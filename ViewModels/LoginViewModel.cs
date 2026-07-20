@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
-using PsicViewer.Core.Interfaces;
 using MauiApp1.Services;
 using MauiApp1.Views;
 
@@ -9,8 +8,7 @@ namespace MauiApp1.ViewModels
 {
 	public partial class LoginViewModel : ObservableObject
 	{
-		private readonly IPacienteRepository _pacientes;
-		private readonly IPsicologoRepository _psicologos;
+		private readonly ContaApiService _conta;
 		private readonly SessaoUsuario _sessao;
 		private readonly IServiceProvider _serviceProvider;
 
@@ -26,14 +24,9 @@ namespace MauiApp1.ViewModels
 		[ObservableProperty]
 		private bool carregando;
 
-		public LoginViewModel(
-			IPacienteRepository pacientes,
-			IPsicologoRepository psicologos,
-			SessaoUsuario sessao,
-			IServiceProvider serviceProvider)
+		public LoginViewModel(ContaApiService conta, SessaoUsuario sessao, IServiceProvider serviceProvider)
 		{
-			_pacientes = pacientes;
-			_psicologos = psicologos;
+			_conta = conta;
 			_sessao = sessao;
 			_serviceProvider = serviceProvider;
 		}
@@ -52,27 +45,29 @@ namespace MauiApp1.ViewModels
 			Carregando = true;
 			try
 			{
-				// NOTA: comparação de senha em texto puro é só para teste
-				// nessa fase sem backend. Trocar por hash (BCrypt) + IAuthService.
-				var paciente = await _pacientes.ObterPorEmailAsync(Email);
-				if (paciente is not null && paciente.SenhaHash == Senha)
+				var (sucesso, usuario, erro) = await _conta.LoginAsync(Email, Senha);
+				if (!sucesso || usuario is null)
 				{
-					_sessao.IniciarComoPaciente(paciente.Id, paciente.Nome, paciente.Email, paciente.FotoUrl);
+					MensagemErro = erro ?? "E-mail ou senha inválidos.";
+					return;
+				}
+
+				if (usuario.Tipo == "Paciente")
+				{
+					_sessao.IniciarComoPaciente(usuario.Id, usuario.Nome, usuario.Email, usuario.FotoUrl);
 					var home = _serviceProvider.GetRequiredService<HomePacientePage>();
 					Application.Current!.MainPage = new NavigationPage(home);
-					return;
 				}
-
-				var psicologo = await _psicologos.ObterPorEmailAsync(Email);
-				if (psicologo is not null && psicologo.SenhaHash == Senha)
+				else
 				{
-					_sessao.IniciarComoPsicologo(psicologo.Id, psicologo.Nome, psicologo.Email, psicologo.FotoUrl);
+					_sessao.IniciarComoPsicologo(usuario.Id, usuario.Nome, usuario.Email, usuario.FotoUrl);
 					var home = _serviceProvider.GetRequiredService<HomePsicologoPage>();
 					Application.Current!.MainPage = new NavigationPage(home);
-					return;
 				}
-
-				MensagemErro = "E-mail ou senha inválidos.";
+			}
+			catch (Exception ex)
+			{
+				MensagemErro = "Não foi possível conectar ao servidor: " + ex.Message;
 			}
 			finally
 			{

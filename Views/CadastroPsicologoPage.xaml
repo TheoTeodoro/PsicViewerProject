@@ -31,6 +31,24 @@
                 <Entry Text="{Binding Crp}" Placeholder="Ex: 06/123456" VerticalOptions="Center" />
             </Border>
 
+            <Label Text="Telefone" Style="{StaticResource RotuloCampo}" />
+            <Border Style="{StaticResource CampoTexto}">
+                <Entry Text="{Binding Telefone}" Placeholder="(00) 00000-0000" Keyboard="Telephone" VerticalOptions="Center" />
+            </Border>
+
+            <Label Text="Data de Nascimento" Style="{StaticResource RotuloCampo}" />
+            <Border Style="{StaticResource CampoTexto}">
+                <DatePicker Date="{Binding DataNascimento}" Format="dd/MM/yyyy" VerticalOptions="Center" />
+            </Border>
+
+            <Label Text="Gênero" Style="{StaticResource RotuloCampo}" />
+            <Border Style="{StaticResource CampoTexto}">
+                <Picker ItemsSource="{Binding OpcoesGenero}"
+                        SelectedItem="{Binding GeneroSelecionado}"
+                        Title="Selecione"
+                        VerticalOptions="Center" />
+            </Border>
+
             <Label Text="Senha" Style="{StaticResource RotuloCampo}" />
             <Border Style="{StaticResource CampoTexto}">
                 <Entry Text="{Binding Senha}" Placeholder="Crie uma senha" IsPassword="True" VerticalOptions="Center" />

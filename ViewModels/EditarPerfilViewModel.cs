@@ -1,14 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using PsicViewer.Core.Interfaces;
 using MauiApp1.Services;
 
 namespace MauiApp1.ViewModels
 {
 	public partial class EditarPerfilViewModel : ObservableObject
 	{
-		private readonly IPacienteRepository _pacientes;
-		private readonly IPsicologoRepository _psicologos;
+		private readonly ContaApiService _conta;
 		private readonly ArquivoUploadService _upload;
 		private readonly SessaoUsuario _sessao;
 
@@ -28,6 +26,9 @@ namespace MauiApp1.ViewModels
 		private DateTime dataNascimento = DateTime.Today.AddYears(-18);
 
 		[ObservableProperty]
+		private string generoSelecionado = string.Empty;
+
+		[ObservableProperty]
 		private string? fotoUrl;
 
 		[ObservableProperty]
@@ -39,22 +40,17 @@ namespace MauiApp1.ViewModels
 		[ObservableProperty]
 		private bool carregando;
 
-		/// <summary>Caminho relativo (ex: "/arquivos/x.jpg") -> URL completa
-		/// pra exibir, ou o placeholder local se ainda não tem foto.</summary>
 		public string FotoExibida => string.IsNullOrEmpty(FotoUrl)
 			? "avatar_placeholder.jpg"
 			: $"{ApiConfig.ServidorBaseUrl}{FotoUrl}";
 
+		public string[] OpcoesGenero => GeneroHelper.Opcoes;
+
 		partial void OnFotoUrlChanged(string? value) => OnPropertyChanged(nameof(FotoExibida));
 
-		public EditarPerfilViewModel(
-			IPacienteRepository pacientes,
-			IPsicologoRepository psicologos,
-			ArquivoUploadService upload,
-			SessaoUsuario sessao)
+		public EditarPerfilViewModel(ContaApiService conta, ArquivoUploadService upload, SessaoUsuario sessao)
 		{
-			_pacientes = pacientes;
-			_psicologos = psicologos;
+			_conta = conta;
 			_upload = upload;
 			_sessao = sessao;
 		}
@@ -67,29 +63,27 @@ namespace MauiApp1.ViewModels
 			{
 				EhPsicologo = _sessao.Tipo == TipoUsuarioLogado.Psicologo;
 
-				if (EhPsicologo)
-				{
-					var p = await _psicologos.ObterPorIdAsync(_sessao.UsuarioId);
-					if (p is null) { MensagemErro = "Não foi possível carregar seus dados."; return; }
+				var usuario = EhPsicologo
+					? await _conta.ObterPsicologoAsync(_sessao.UsuarioId)
+					: await _conta.ObterPacienteAsync(_sessao.UsuarioId);
 
-					Nome = p.Nome;
-					Email = p.Email;
-					Crp = p.Crp;
-					Telefone = p.Telefone ?? string.Empty;
-					DataNascimento = p.DataNascimento ?? DateTime.Today.AddYears(-18);
-					FotoUrl = p.FotoUrl;
-				}
-				else
+				if (usuario is null)
 				{
-					var p = await _pacientes.ObterPorIdAsync(_sessao.UsuarioId);
-					if (p is null) { MensagemErro = "Não foi possível carregar seus dados."; return; }
-
-					Nome = p.Nome;
-					Email = p.Email;
-					Telefone = p.Telefone ?? string.Empty;
-					DataNascimento = p.DataNascimento ?? DateTime.Today.AddYears(-18);
-					FotoUrl = p.FotoUrl;
+					MensagemErro = "Não foi possível carregar seus dados.";
+					return;
 				}
+
+				Nome = usuario.Nome;
+				Email = usuario.Email;
+				Crp = usuario.Crp ?? string.Empty;
+				Telefone = usuario.Telefone ?? string.Empty;
+				DataNascimento = usuario.DataNascimento ?? DateTime.Today.AddYears(-18);
+				GeneroSelecionado = GeneroHelper.ParaExibicao(usuario.Genero);
+				FotoUrl = usuario.FotoUrl;
+			}
+			catch (Exception ex)
+			{
+				MensagemErro = "Não foi possível conectar ao servidor: " + ex.Message;
 			}
 			finally
 			{
@@ -147,36 +141,23 @@ namespace MauiApp1.ViewModels
 			MensagemErro = string.Empty;
 			try
 			{
-				if (EhPsicologo)
-				{
-					var p = await _psicologos.ObterPorIdAsync(_sessao.UsuarioId);
-					if (p is null) { MensagemErro = "Usuário não encontrado."; return; }
+				var (sucesso, erro) = EhPsicologo
+					? await _conta.AtualizarPsicologoAsync(_sessao.UsuarioId, Nome, Email, Telefone, DataNascimento, GeneroHelper.ParaValorApi(GeneroSelecionado), FotoUrl, Crp)
+					: await _conta.AtualizarPacienteAsync(_sessao.UsuarioId, Nome, Email, Telefone, DataNascimento, GeneroHelper.ParaValorApi(GeneroSelecionado), FotoUrl);
 
-					p.AtualizarDados(Nome, Email, Telefone, DataNascimento, Crp);
-					p.AtualizarFoto(FotoUrl);
-					await _psicologos.AtualizarAsync(p);
-				}
-				else
+				if (!sucesso)
 				{
-					var p = await _pacientes.ObterPorIdAsync(_sessao.UsuarioId);
-					if (p is null) { MensagemErro = "Usuário não encontrado."; return; }
-
-					p.AtualizarDados(Nome, Email, Telefone, DataNascimento);
-					p.AtualizarFoto(FotoUrl);
-					await _pacientes.AtualizarAsync(p);
+					MensagemErro = erro ?? "Não foi possível salvar.";
+					return;
 				}
 
 				_sessao.AtualizarDadosBasicos(Nome, Email, FotoUrl);
 
 				await Application.Current!.MainPage!.Navigation.PopAsync();
 			}
-			catch (ArgumentException ex)
-			{
-				MensagemErro = ex.Message;
-			}
 			catch (Exception ex)
 			{
-				MensagemErro = "Erro inesperado: " + ex.Message;
+				MensagemErro = "Não foi possível conectar ao servidor: " + ex.Message;
 			}
 			finally
 			{
