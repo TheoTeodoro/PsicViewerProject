@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MauiApp1.ViewModels"
+             x:Class="MauiApp1.Views.PreContaPage"
+             x:DataType="vm:PreContaViewModel"
+             Title="Criar conta"
+             BackgroundColor="White">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32,40" Spacing="20">
+
+            <Image Source="ilustracao_preconta.png"
+                   HeightRequest="230"
+                   Aspect="AspectFit"
+                   HorizontalOptions="Center" />
+
+            <Label Text="Como você vai usar o PsicViewer?"
+                   Style="{StaticResource TituloTela}"
+                   HorizontalTextAlignment="Center"
+                   Margin="0,16,0,0" />
+
+            <Label Text="Escolha o tipo de conta para continuar o cadastro"
+                   TextColor="{StaticResource CinzaMedio}"
+                   HorizontalTextAlignment="Center"
+                   FontSize="14" />
+
+            <Button Text="Sou Paciente"
+                    Style="{StaticResource BotaoPrimario}"
+                    Command="{Binding SouPacienteCommand}"
+                    Margin="0,24,0,0" />
+
+            <Button Text="Sou Psicólogo(a)"
+                    Style="{StaticResource BotaoSecundario}"
+                    Command="{Binding SouPsicologoCommand}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

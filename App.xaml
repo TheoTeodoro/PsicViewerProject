@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Application
+    x:Class="MauiApp1.App"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:conv="clr-namespace:MauiApp1.Converters">
+    <Application.Resources>
+        <ResourceDictionary>
+
+            <conv:BoolParaAlinhamentoConverter x:Key="BoolParaAlinhamentoConverter" />
+            <conv:BoolParaCorConverter x:Key="BoolParaCorConverter" />
+            <conv:BoolParaTextoConverter x:Key="BoolParaTextoConverter" />
+            <conv:StringNaoVazioConverter x:Key="StringNaoVazioConverter" />
+            <conv:InversoBoolConverter x:Key="InversoBoolConverter" />
+
+            <!-- Paleta extraída do Figma -->
+            <Color x:Key="AzulPrimario">#004AAD</Color>
+            <Color x:Key="AzulEscuro">#1C274C</Color>
+            <Color x:Key="AzulNoite">#093164</Color>
+            <Color x:Key="CinzaMedio">#9B9C96</Color>
+            <Color x:Key="CinzaClaro">#E8E8E8</Color>
+
+            <!-- Botão principal em pílula, cor sólida azul -->
+            <Style x:Key="BotaoPrimario" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource AzulPrimario}" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="CornerRadius" Value="26" />
+                <Setter Property="HeightRequest" Value="52" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="16" />
+            </Style>
+
+            <!-- Botão secundário, contorno azul sem preenchimento -->
+            <Style x:Key="BotaoSecundario" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="TextColor" Value="{StaticResource AzulPrimario}" />
+                <Setter Property="BorderColor" Value="{StaticResource AzulPrimario}" />
+                <Setter Property="BorderWidth" Value="1.5" />
+                <Setter Property="CornerRadius" Value="26" />
+                <Setter Property="HeightRequest" Value="52" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="16" />
+            </Style>
+
+            <!-- Moldura em pílula usada em volta de todo Entry, com sombra suave -->
+            <Style x:Key="CampoTexto" TargetType="Border">
+                <Setter Property="StrokeShape" Value="RoundRectangle 26" />
+                <Setter Property="Stroke" Value="{StaticResource CinzaClaro}" />
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="HeightRequest" Value="52" />
+                <Setter Property="Padding" Value="20,0" />
+                <Setter Property="Shadow">
+                    <Setter.Value>
+                        <Shadow Brush="Black" Offset="0,2" Radius="10" Opacity="0.08" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="TituloTela" TargetType="Label">
+                <Setter Property="FontSize" Value="26" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="{StaticResource AzulEscuro}" />
+            </Style>
+
+            <Style x:Key="RotuloCampo" TargetType="Label">
+                <Setter Property="FontSize" Value="13" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="{StaticResource AzulEscuro}" />
+            </Style>
+
+            <Style x:Key="TextoErro" TargetType="Label">
+                <Setter Property="TextColor" Value="#D32F2F" />
+                <Setter Property="FontSize" Value="13" />
+            </Style>
+
+            <!-- Cartão pequeno usado nos números do Sumário Clínico (Home Psicólogo) -->
+            <Style x:Key="CartaoEstatistica" TargetType="Border">
+                <Setter Property="StrokeShape" Value="RoundRectangle 14" />
+                <Setter Property="Stroke" Value="{StaticResource CinzaClaro}" />
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="Padding" Value="8,12" />
+            </Style>
+
+            <!-- Cartão dos botões de "Acesso Rápido" nas duas Homes -->
+            <Style x:Key="CartaoAcessoRapido" TargetType="Border">
+                <Setter Property="StrokeShape" Value="RoundRectangle 16" />
+                <Setter Property="Stroke" Value="Transparent" />
+                <Setter Property="BackgroundColor" Value="#E4F0FF" />
+                <Setter Property="Padding" Value="14" />
+                <Setter Property="HeightRequest" Value="72" />
+            </Style>
+
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

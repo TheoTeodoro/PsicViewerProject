@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MauiApp1.ViewModels"
+             x:Class="MauiApp1.Views.ChatConversaPage"
+             x:DataType="vm:ChatConversaViewModel"
+             Title="{Binding NomeContato}"
+             BackgroundColor="White">
+
+    <Grid RowDefinitions="Auto,*,Auto,Auto,Auto">
+
+        <Label Grid.Row="0"
+               Text="{Binding MensagemErro}"
+               Style="{StaticResource TextoErro}"
+               IsVisible="{Binding MensagemErro, Converter={StaticResource StringNaoVazioConverter}}"
+               Padding="12,6"
+               BackgroundColor="#FDECEC" />
+
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Mensagens}" Margin="12">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="vm:MensagemExibicao">
+                    <Grid Padding="4">
+                        <SwipeView HorizontalOptions="{Binding EnviadaPorMim, Converter={StaticResource BoolParaAlinhamentoConverter}}">
+                            <SwipeView.RightItems>
+                                <SwipeItems>
+                                    <SwipeItem Text="Apagar"
+                                               BackgroundColor="#E24B4A"
+                                               Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ExcluirMensagemCommand}"
+                                               CommandParameter="{Binding .}" />
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+
+                            <Border MaximumWidthRequest="260"
+                                    Padding="12,8"
+                                    StrokeShape="RoundRectangle 16"
+                                    Stroke="Transparent"
+                                    BackgroundColor="{Binding EnviadaPorMim, Converter={StaticResource BoolParaCorConverter}}">
+                                <VerticalStackLayout Spacing="4">
+
+                                    <!-- Mensagem apagada -->
+                                    <Label Text="Mensagem apagada"
+                                           IsVisible="{Binding Excluida}"
+                                           FontAttributes="Italic"
+                                           FontSize="13"
+                                           TextColor="{Binding EnviadaPorMim, Converter={StaticResource BoolParaTextoConverter}}"
+                                           Opacity="0.7" />
+
+                                    <!-- Texto -->
+                                    <Label Text="{Binding Conteudo}"
+                                           IsVisible="{Binding EhTexto}"
+                                           TextColor="{Binding EnviadaPorMim, Converter={StaticResource BoolParaTextoConverter}}"
+                                           FontSize="14" />
+
+                                    <!-- Imagem (toca pra abrir em tela cheia) -->
+                                    <Image Source="{Binding UrlCompletaArquivo}"
+                                           IsVisible="{Binding EhImagem}"
+                                           HeightRequest="180"
+                                           Aspect="AspectFill">
+                                        <Image.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.VisualizarImagemCommand}"
+                                                                   CommandParameter="{Binding .}" />
+                                        </Image.GestureRecognizers>
+                                    </Image>
+                                    <Label Text="{Binding Conteudo}"
+                                           IsVisible="{Binding EhImagem}"
+                                           TextColor="{Binding EnviadaPorMim, Converter={StaticResource BoolParaTextoConverter}}"
+                                           FontSize="13" />
+
+                                    <!-- Áudio (toca pra ouvir/pausar) -->
+                                    <HorizontalStackLayout IsVisible="{Binding EhAudio}" Spacing="8">
+                                        <HorizontalStackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.TocarAudioCommand}"
+                                                                   CommandParameter="{Binding .}" />
+                                        </HorizontalStackLayout.GestureRecognizers>
+
+                                        <Path Data="M8 5v14l11-7z"
+                                              IsVisible="{Binding EstaTocando, Converter={StaticResource InversoBoolConverter}}"
+                                              Fill="{Binding EnviadaPorMim, Converter={StaticResource BoolParaTextoConverter}}"
+                                              WidthRequest="18" HeightRequest="18" Aspect="Uniform" />
+                                        <Path Data="M6 5h4v14H6zm8 0h4v14h-4z"
+                                              IsVisible="{Binding EstaTocando}"
+                                              Fill="{Binding EnviadaPorMim, Converter={StaticResource BoolParaTextoConverter}}"
+                                              WidthRequest="18" HeightRequest="18" Aspect="Uniform" />
+
+                                        <Label Text="{Binding TempoExibidoFormatado}"
+                                               TextColor="{Binding EnviadaPorMim, Converter={StaticResource BoolParaTextoConverter}}"
+                                               FontSize="13"
+                                               VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+
+                                    <!-- Documento (toca pra abrir) -->
+                                    <HorizontalStackLayout IsVisible="{Binding EhDocumento}" Spacing="8">
+                                        <HorizontalStackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AbrirDocumentoCommand}"
+                                                                   CommandParameter="{Binding .}" />
+                                        </HorizontalStackLayout.GestureRecognizers>
+                                        <Path Data="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"
+                                              Fill="{Binding EnviadaPorMim, Converter={StaticResource BoolParaTextoConverter}}"
+                                              WidthRequest="18" HeightRequest="18" Aspect="Uniform" />
+                                        <Label Text="{Binding NomeArquivoOriginal}"
+                                               TextColor="{Binding EnviadaPorMim, Converter={StaticResource BoolParaTextoConverter}}"
+                                               FontSize="13"
+                                               TextDecorations="Underline"
+                                               VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+
+                                    <Label Text="{Binding EnviadaEm, StringFormat='{0:HH:mm}'}"
+                                           FontSize="9"
+                                           Opacity="0.6"
+                                           TextColor="{Binding EnviadaPorMim, Converter={StaticResource BoolParaTextoConverter}}"
+                                           HorizontalOptions="End" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </SwipeView>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Faixa de gravação -->
+        <Grid Grid.Row="2"
+              IsVisible="{Binding GravandoAudio}"
+              ColumnDefinitions="Auto,*,Auto"
+              Padding="12,8"
+              BackgroundColor="#FFF3E0"
+              ColumnSpacing="10">
+            <Ellipse Grid.Column="0" Fill="#E24B4A" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" />
+            <Label Grid.Column="1" Text="{Binding TempoGravacaoFormatado, StringFormat='Gravando áudio... {0}'}" VerticalOptions="Center" FontSize="13" />
+            <Button Grid.Column="2" Text="Cancelar" Command="{Binding CancelarGravacaoCommand}"
+                    BackgroundColor="Transparent" TextColor="{StaticResource AzulPrimario}" FontSize="12" />
+        </Grid>
+
+        <!-- Menu de anexo (Documento, Câmera, Galeria) -->
+        <Grid Grid.Row="3"
+              IsVisible="{Binding MostrarMenuAnexo}"
+              ColumnDefinitions="*,*,*"
+              Padding="20,18"
+              BackgroundColor="#F7F8FA">
+
+            <VerticalStackLayout Grid.Column="0" Spacing="6" HorizontalOptions="Center">
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SelecionarDocumentoCommand}" />
+                </VerticalStackLayout.GestureRecognizers>
+                <Border StrokeShape="RoundRectangle 28"
+                        BackgroundColor="{StaticResource AzulPrimario}"
+                        WidthRequest="56" HeightRequest="56" Padding="14">
+                    <Image Source="icone_documento_branco.svg" />
+                </Border>
+                <Label Text="Documento" FontSize="11" TextColor="{StaticResource AzulEscuro}" HorizontalOptions="Center" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Column="1" Spacing="6" HorizontalOptions="Center">
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding TirarFotoCommand}" />
+                </VerticalStackLayout.GestureRecognizers>
+                <Border StrokeShape="RoundRectangle 28"
+                        BackgroundColor="{StaticResource AzulPrimario}"
+                        WidthRequest="56" HeightRequest="56" Padding="14">
+                    <Image Source="icone_camera_branco.svg" />
+                </Border>
+                <Label Text="Câmera" FontSize="11" TextColor="{StaticResource AzulEscuro}" HorizontalOptions="Center" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Column="2" Spacing="6" HorizontalOptions="Center">
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding EscolherGaleriaCommand}" />
+                </VerticalStackLayout.GestureRecognizers>
+                <Border StrokeShape="RoundRectangle 28"
+                        BackgroundColor="{StaticResource AzulPrimario}"
+                        WidthRequest="56" HeightRequest="56" Padding="14">
+                    <Image Source="icone_galeria_branco.svg" />
+                </Border>
+                <Label Text="Galeria" FontSize="11" TextColor="{StaticResource AzulEscuro}" HorizontalOptions="Center" />
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- Barra de entrada: clipe DENTRO do campo, mic/enviar fora -->
+        <Grid Grid.Row="4" ColumnDefinitions="*,Auto,Auto" Padding="12" ColumnSpacing="8">
+
+            <Border Grid.Column="0" Style="{StaticResource CampoTexto}" Padding="20,0,4,0">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Entry Grid.Column="0"
+                           Text="{Binding TextoNovaMensagem}"
+                           Placeholder="Digite uma mensagem..."
+                           VerticalOptions="Center" />
+                    <ImageButton Grid.Column="1"
+                                 Source="icone_clipe.svg"
+                                 Command="{Binding AnexarCommand}"
+                                 BackgroundColor="Transparent"
+                                 WidthRequest="34" HeightRequest="34"
+                                 Padding="6"
+                                 VerticalOptions="Center" />
+                </Grid>
+            </Border>
+
+            <ImageButton Grid.Column="1"
+                         Source="icone_microfone.svg"
+                         Command="{Binding IniciarGravacaoCommand}"
+                         IsVisible="{Binding GravandoAudio, Converter={StaticResource InversoBoolConverter}}"
+                         BackgroundColor="Transparent"
+                         WidthRequest="44" HeightRequest="44"
+                         Padding="8" />
+
+            <ImageButton Grid.Column="1"
+                         Source="icone_parar.svg"
+                         Command="{Binding PararEEnviarAudioCommand}"
+                         IsVisible="{Binding GravandoAudio}"
+                         BackgroundColor="#E24B4A"
+                         CornerRadius="22"
+                         WidthRequest="44" HeightRequest="44"
+                         Padding="10" />
+
+            <Border Grid.Column="2"
+                    IsVisible="{Binding GravandoAudio, Converter={StaticResource InversoBoolConverter}}"
+                    StrokeShape="RoundRectangle 26"
+                    BackgroundColor="{StaticResource AzulPrimario}"
+                    WidthRequest="48" HeightRequest="48"
+                    Padding="0">
+                <ImageButton Source="icone_enviar.svg"
+                             Command="{Binding EnviarCommand}"
+                             BackgroundColor="Transparent"
+                             Padding="13" />
+            </Border>
+        </Grid>
+
+    </Grid>
+</ContentPage>

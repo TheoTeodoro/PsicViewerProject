@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MauiApp1.ViewModels"
+             x:Class="MauiApp1.Views.ChatListPage"
+             x:DataType="vm:ChatListViewModel"
+             Title="Chat"
+             BackgroundColor="White">
+
+    <Grid RowDefinitions="Auto,*" Padding="20,16">
+
+        <Label Grid.Row="0" Text="Conversas" Style="{StaticResource TituloTela}" Margin="0,0,0,12" />
+
+        <RefreshView Grid.Row="1" Command="{Binding CarregarCommand}" IsRefreshing="{Binding Carregando}">
+            <CollectionView ItemsSource="{Binding Contatos}">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="20">
+                        <Label Text="Nenhum contato disponível ainda." TextColor="{StaticResource CinzaMedio}" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ContatoChat">
+                        <Border Style="{StaticResource CampoTexto}" Margin="0,6" HeightRequest="64">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AbrirConversaCommand}"
+                                                       CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout VerticalOptions="Center" Spacing="2">
+                                <Label Text="{Binding Nome}" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}" />
+                                <Label Text="{Binding Subtitulo}" FontSize="12" TextColor="{StaticResource CinzaMedio}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+    </Grid>
+</ContentPage>

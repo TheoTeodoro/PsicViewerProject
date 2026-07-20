@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiApp1.Views.VisualizarImagemPage"
+             BackgroundColor="Black"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid>
+        <Grid.GestureRecognizers>
+            <TapGestureRecognizer Tapped="OnFundoTocado" />
+        </Grid.GestureRecognizers>
+
+        <Image x:Name="ImagemExibida" Aspect="AspectFit" />
+
+        <ImageButton Source="icone_fechar.svg"
+                     Clicked="OnFecharClicked"
+                     BackgroundColor="Transparent"
+                     WidthRequest="44" HeightRequest="44"
+                     Padding="10"
+                     HorizontalOptions="End"
+                     VerticalOptions="Start"
+                     Margin="12,40,12,0" />
+    </Grid>
+</ContentPage>

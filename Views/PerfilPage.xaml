@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MauiApp1.ViewModels"
+             x:Class="MauiApp1.Views.PerfilPage"
+             x:DataType="vm:PerfilViewModel"
+             Title=""
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <ScrollView Grid.Row="0">
+            <Grid RowDefinitions="140,Auto">
+                <BoxView Grid.Row="0" Color="{StaticResource AzulPrimario}" />
+                <Label Grid.Row="0" Text="Meu Perfil" TextColor="White" FontSize="20" FontAttributes="Bold"
+                       HorizontalOptions="Center" VerticalOptions="Center" />
+
+                <Border Grid.Row="1"
+                        StrokeShape="RoundRectangle 24,24,0,0"
+                        Stroke="Transparent"
+                        BackgroundColor="White"
+                        Margin="0,-30,0,0"
+                        Padding="24,36,24,24">
+                    <VerticalStackLayout Spacing="16" HorizontalOptions="Center">
+
+                        <Border StrokeShape="RoundRectangle 45" WidthRequest="90" HeightRequest="90" Padding="0">
+                            <Image Source="{Binding FotoExibida}" Aspect="AspectFill" />
+                        </Border>
+
+                        <Label Text="{Binding Nome}" FontAttributes="Bold" FontSize="18" TextColor="{StaticResource AzulEscuro}" HorizontalOptions="Center" />
+                        <Label Text="{Binding Email}" FontSize="13" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" Margin="0,0,0,10" />
+
+                        <Border Style="{StaticResource CampoTexto}" WidthRequest="300">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding AbrirEditarPerfilCommand}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Label Grid.Column="0" Text="👤" FontSize="16" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="Informações Pessoais" TextColor="{StaticResource AzulPrimario}"
+                                       FontAttributes="Bold" VerticalOptions="Center" Margin="10,0,0,0" />
+                                <Label Grid.Column="2" Text="›" FontSize="20" TextColor="{StaticResource AzulPrimario}" VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+
+                        <Border Style="{StaticResource CampoTexto}" WidthRequest="300">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding AbrirSuporteCommand}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Label Grid.Column="0" Text="❓" FontSize="16" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="Suporte" TextColor="{StaticResource AzulPrimario}"
+                                       FontAttributes="Bold" VerticalOptions="Center" Margin="10,0,0,0" />
+                                <Label Grid.Column="2" Text="›" FontSize="20" TextColor="{StaticResource AzulPrimario}" VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+
+                        <Button Text="Sign Out"
+                                Style="{StaticResource BotaoPrimario}"
+                                Command="{Binding SairCommand}"
+                                WidthRequest="300"
+                                Margin="0,24,0,0" />
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+        </ScrollView>
+
+        <!-- Barra de navegação inferior -->
+        <Grid Grid.Row="1" RowDefinitions="1,Auto" BackgroundColor="White">
+            <BoxView Grid.Row="0" HeightRequest="1" Color="{StaticResource CinzaClaro}" />
+            <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*" Padding="0,10">
+                <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding IrParaHomeCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
+                    <Label Text="🏠" FontSize="18" HorizontalOptions="Center" />
+                    <Label Text="Home" FontSize="10" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="Center">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding AbrirChatCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
+                    <Label Text="💬" FontSize="18" HorizontalOptions="Center" />
+                    <Label Text="Chat" FontSize="10" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Column="2" Spacing="2" HorizontalOptions="Center">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding AbrirQuestionariosCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
+                    <Label Text="📋" FontSize="18" HorizontalOptions="Center" />
+                    <Label Text="Questionários" FontSize="9" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Column="3" Spacing="2" HorizontalOptions="Center">
+                    <Label Text="👤" FontSize="18" HorizontalOptions="Center" />
+                    <Label Text="Perfil" FontSize="10" TextColor="{StaticResource AzulPrimario}" FontAttributes="Bold" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Grid>
+        </Grid>
+
+    </Grid>
+</ContentPage>

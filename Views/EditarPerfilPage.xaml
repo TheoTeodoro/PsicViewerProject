@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MauiApp1.ViewModels"
+             x:Class="MauiApp1.Views.EditarPerfilPage"
+             x:DataType="vm:EditarPerfilViewModel"
+             Title=""
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="False">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20,16" Spacing="14">
+
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <ImageButton Grid.Column="0"
+                             Source="icone_voltar.svg"
+                             Clicked="OnVoltarClicked"
+                             BackgroundColor="Transparent"
+                             WidthRequest="36" HeightRequest="36" Padding="6" />
+                <Label Grid.Column="1"
+                       Text="Editar Perfil"
+                       FontAttributes="Bold" FontSize="18"
+                       TextColor="{StaticResource AzulEscuro}"
+                       HorizontalOptions="Center" VerticalOptions="Center" />
+                <Button Grid.Column="2"
+                        Text="Salvar"
+                        Command="{Binding SalvarCommand}"
+                        BackgroundColor="Transparent"
+                        TextColor="{StaticResource AzulPrimario}"
+                        FontAttributes="Bold" />
+            </Grid>
+
+            <Grid HorizontalOptions="Center" Margin="0,10" WidthRequest="120" HeightRequest="120">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding EscolherFotoCommand}" />
+                </Grid.GestureRecognizers>
+
+                <Border StrokeShape="RoundRectangle 60"
+                        WidthRequest="120" HeightRequest="120"
+                        Padding="0">
+                    <Image Source="{Binding FotoExibida}" Aspect="AspectFill" />
+                </Border>
+
+                <Border StrokeShape="RoundRectangle 18"
+                        BackgroundColor="{StaticResource AzulPrimario}"
+                        WidthRequest="36" HeightRequest="36"
+                        Padding="8"
+                        HorizontalOptions="End" VerticalOptions="End">
+                    <Image Source="icone_lapis.svg" />
+                </Border>
+            </Grid>
+
+            <Label Text="Nome" Style="{StaticResource RotuloCampo}" />
+            <Border Style="{StaticResource CampoTexto}">
+                <Entry Text="{Binding Nome}" VerticalOptions="Center" />
+            </Border>
+
+            <Label Text="CRP" Style="{StaticResource RotuloCampo}" IsVisible="{Binding EhPsicologo}" />
+            <Border Style="{StaticResource CampoTexto}" IsVisible="{Binding EhPsicologo}">
+                <Entry Text="{Binding Crp}" VerticalOptions="Center" />
+            </Border>
+
+            <Label Text="E-mail" Style="{StaticResource RotuloCampo}" />
+            <Border Style="{StaticResource CampoTexto}">
+                <Entry Text="{Binding Email}" Keyboard="Email" VerticalOptions="Center" />
+            </Border>
+
+            <Label Text="Data de Nascimento" Style="{StaticResource RotuloCampo}" />
+            <Border Style="{StaticResource CampoTexto}">
+                <DatePicker Date="{Binding DataNascimento}" Format="dd/MM/yyyy" VerticalOptions="Center" />
+            </Border>
+
+            <Label Text="Telefone" Style="{StaticResource RotuloCampo}" />
+            <Border Style="{StaticResource CampoTexto}">
+                <Entry Text="{Binding Telefone}" Keyboard="Telephone" Placeholder="(00) 00000-0000" VerticalOptions="Center" />
+            </Border>
+
+            <Label Text="{Binding MensagemErro}" Style="{StaticResource TextoErro}" />
+
+            <ActivityIndicator IsRunning="{Binding Carregando}" IsVisible="{Binding Carregando}" Color="{StaticResource AzulPrimario}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

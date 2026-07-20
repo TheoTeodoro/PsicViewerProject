@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MauiApp1.ViewModels"
+             x:Class="MauiApp1.Views.HomePacientePage"
+             x:DataType="vm:HomePacienteViewModel"
+             Title=""
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="24,20,24,12" Spacing="18">
+
+                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+                    <Label Grid.Column="0"
+                           Text="{Binding NomeUsuario, StringFormat='Olá, {0}'}"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource AzulEscuro}"
+                           VerticalOptions="Center" />
+                    <Border Grid.Column="1"
+                            StrokeShape="RoundRectangle 24"
+                            HeightRequest="48" WidthRequest="48"
+                            Padding="0">
+                        <Image Source="{Binding FotoExibida}" Aspect="AspectFill" />
+                    </Border>
+                    <Label Grid.Column="2"
+                           Text="Sair"
+                           TextColor="{StaticResource AzulPrimario}"
+                           FontSize="13"
+                           VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SairCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Grid>
+
+                <!-- Card de registro de humor do dia -->
+                <Border StrokeShape="RoundRectangle 18"
+                        BackgroundColor="{StaticResource AzulPrimario}"
+                        Padding="18">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Como você está se sentindo hoje?"
+                               TextColor="White"
+                               FontAttributes="Bold"
+                               FontSize="16" />
+                        <Label Text="Registre seu humor pra acompanhar sua evolução ao longo do tempo."
+                               TextColor="#DCE6FF"
+                               FontSize="12" />
+                        <Button Text="Registrar Humor"
+                                Command="{Binding RegistrarHumorCommand}"
+                                BackgroundColor="White"
+                                TextColor="{StaticResource AzulPrimario}"
+                                CornerRadius="20"
+                                HeightRequest="44"
+                                FontAttributes="Bold"
+                                Margin="0,6,0,0" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Acesso Rápido -->
+                <Label Text="Acesso Rápido" FontAttributes="Bold" FontSize="15" TextColor="{StaticResource AzulEscuro}" />
+
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                    <Border Grid.Column="0" Grid.Row="0" Style="{StaticResource CartaoAcessoRapido}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding AbrirHistoricoCommand}" />
+                        </Border.GestureRecognizers>
+                        <Label Text="📈  Meu Histórico" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
+                    </Border>
+
+                    <Border Grid.Column="1" Grid.Row="0" Style="{StaticResource CartaoAcessoRapido}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding AbrirQuestionariosCommand}" />
+                        </Border.GestureRecognizers>
+                        <Label Text="📝  Questionários" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
+                    </Border>
+
+                    <Border Grid.Column="0" Grid.Row="1" Style="{StaticResource CartaoAcessoRapido}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding AbrirChatCommand}" />
+                        </Border.GestureRecognizers>
+                        <Label Text="💬  Chat com Psicólogo" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
+                    </Border>
+
+                    <Border Grid.Column="1" Grid.Row="1" Style="{StaticResource CartaoAcessoRapido}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding AbrirPerfilCommand}" />
+                        </Border.GestureRecognizers>
+                        <Label Text="👤  Meu Perfil" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
+                    </Border>
+                </Grid>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Barra de navegação inferior (mesmo padrão da Home do Psicólogo) -->
+        <Grid Grid.Row="1" RowDefinitions="1,Auto" BackgroundColor="White">
+            <BoxView Grid.Row="0" HeightRequest="1" Color="{StaticResource CinzaClaro}" />
+
+            <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*" Padding="0,10">
+                <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
+                    <Label Text="🏠" FontSize="18" HorizontalOptions="Center" />
+                    <Label Text="Home" FontSize="10" TextColor="{StaticResource AzulPrimario}" FontAttributes="Bold" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="Center">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding AbrirChatCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
+                    <Label Text="💬" FontSize="18" HorizontalOptions="Center" />
+                    <Label Text="Chat" FontSize="10" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="2" Spacing="2" HorizontalOptions="Center">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding AbrirQuestionariosCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
+                    <Label Text="📋" FontSize="18" HorizontalOptions="Center" />
+                    <Label Text="Questionários" FontSize="9" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="3" Spacing="2" HorizontalOptions="Center">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding AbrirPerfilCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
+                    <Label Text="👤" FontSize="18" HorizontalOptions="Center" />
+                    <Label Text="Perfil" FontSize="10" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Grid>
+        </Grid>
+
+    </Grid>
+</ContentPage>
