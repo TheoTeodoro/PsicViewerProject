@@ -66,6 +66,12 @@ namespace MauiApp1.ViewModels
 			var page = _serviceProvider.GetRequiredService<ChatListPage>();
 			await Application.Current!.MainPage!.Navigation.PushAsync(page);
 		}
+		[RelayCommand]
+		private async Task AbrirBuscarPsicologoAsync()
+		{
+			var page = _serviceProvider.GetRequiredService<BuscarPsicologoPage>();
+			await Application.Current!.MainPage!.Navigation.PushAsync(page);
+		}
 
 		[RelayCommand]
 		private async Task AbrirPerfilAsync()

@@ -2,11 +2,11 @@ using MauiApp1.ViewModels;
 
 namespace MauiApp1.Views;
 
-public partial class ChatListPage : ContentPage
+public partial class PacientesPage : ContentPage
 {
-	private readonly ChatListViewModel _viewModel;
+	private readonly PacientesViewModel _viewModel;
 
-	public ChatListPage(ChatListViewModel viewModel)
+	public PacientesPage(PacientesViewModel viewModel)
 	{
 		InitializeComponent();
 		_viewModel = viewModel;

@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +17,7 @@ namespace MauiApp1.ViewModels
 
 	public partial class ChatListViewModel : ObservableObject
 	{
-		private readonly ContaApiService _conta;
+		private readonly VinculoApiService _vinculo;
 		private readonly SessaoUsuario _sessao;
 		private readonly IServiceProvider _serviceProvider;
 
@@ -26,9 +27,12 @@ namespace MauiApp1.ViewModels
 		[ObservableProperty]
 		private bool carregando;
 
-		public ChatListViewModel(ContaApiService conta, SessaoUsuario sessao, IServiceProvider serviceProvider)
+		public bool EhPaciente => _sessao.Tipo == TipoUsuarioLogado.Paciente;
+		public bool EhPsicologo => _sessao.Tipo == TipoUsuarioLogado.Psicologo;
+
+		public ChatListViewModel(VinculoApiService vinculo, SessaoUsuario sessao, IServiceProvider serviceProvider)
 		{
-			_conta = conta;
+			_vinculo = vinculo;
 			_sessao = sessao;
 			_serviceProvider = serviceProvider;
 		}
@@ -41,20 +45,19 @@ namespace MauiApp1.ViewModels
 			{
 				Contatos.Clear();
 
-				// NOTA: sem vínculo Paciente-Psicólogo (RF03) ainda, então
-				// mostra TODOS do tipo oposto. Quando o vínculo existir,
-				// filtrar só pelos vinculados.
+				// Agora só mostra quem tem vínculo ACEITO (RF03) — antes
+				// mostrava todo mundo do tipo oposto, sem filtro nenhum.
 				if (_sessao.Tipo == TipoUsuarioLogado.Paciente)
 				{
-					var psicologos = await _conta.ListarPsicologosAsync();
-					foreach (var p in psicologos)
-						Contatos.Add(new ContatoChat { Id = p.Id, Nome = p.Nome, Subtitulo = $"CRP {p.Crp}" });
+					var vinculos = await _vinculo.ListarPorPacienteAsync(_sessao.UsuarioId);
+					foreach (var v in vinculos.Where(v => v.Status == "Aceito"))
+						Contatos.Add(new ContatoChat { Id = v.ContatoId, Nome = v.ContatoNome, Subtitulo = $"CRP {v.ContatoCrp}" });
 				}
 				else if (_sessao.Tipo == TipoUsuarioLogado.Psicologo)
 				{
-					var pacientes = await _conta.ListarPacientesAsync();
-					foreach (var p in pacientes)
-						Contatos.Add(new ContatoChat { Id = p.Id, Nome = p.Nome, Subtitulo = "Paciente" });
+					var vinculos = await _vinculo.ListarPorPsicologoAsync(_sessao.UsuarioId);
+					foreach (var v in vinculos.Where(v => v.Status == "Aceito"))
+						Contatos.Add(new ContatoChat { Id = v.ContatoId, Nome = v.ContatoNome, Subtitulo = "Paciente" });
 				}
 			}
 			finally
@@ -73,6 +76,20 @@ namespace MauiApp1.ViewModels
 			{
 				await vm.DefinirContatoAsync(contato.Id, contato.Nome);
 			}
+			await Application.Current!.MainPage!.Navigation.PushAsync(page);
+		}
+
+		[RelayCommand]
+		private async Task AbrirBuscarPsicologoAsync()
+		{
+			var page = _serviceProvider.GetRequiredService<BuscarPsicologoPage>();
+			await Application.Current!.MainPage!.Navigation.PushAsync(page);
+		}
+
+		[RelayCommand]
+		private async Task AbrirPacientesAsync()
+		{
+			var page = _serviceProvider.GetRequiredService<PacientesPage>();
 			await Application.Current!.MainPage!.Navigation.PushAsync(page);
 		}
 	}

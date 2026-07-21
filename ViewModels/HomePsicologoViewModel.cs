@@ -14,7 +14,6 @@ namespace MauiApp1.ViewModels
 
 		[ObservableProperty]
 		private string nomeUsuario = string.Empty;
-
 		// NOTA: os 3 números abaixo são MOCK (fixos), só para visualizar o
 		// layout. Viram dados reais quando existirem:
 		// - PacientesAtivos  -> IPacienteRepository filtrando por PsicologoId
@@ -59,7 +58,10 @@ namespace MauiApp1.ViewModels
 
 		[RelayCommand]
 		private async Task AbrirPacientesAsync()
-			=> await Application.Current!.MainPage!.DisplayAlert("Em breve", "Tela de Pacientes ainda não implementada.", "OK");
+		{
+			var page = _serviceProvider.GetRequiredService<PacientesPage>();
+			await Application.Current!.MainPage!.Navigation.PushAsync(page);
+		}
 
 		[RelayCommand]
 		private async Task AbrirQuestionariosAsync()

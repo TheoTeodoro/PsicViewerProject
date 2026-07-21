@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MauiApp1.ViewModels"
+             x:Class="MauiApp1.Views.PacientesPage"
+             x:DataType="vm:PacientesViewModel"
+             Title="Meus Pacientes"
+             BackgroundColor="White">
+
+    <Grid>
+        <RefreshView Command="{Binding CarregarCommand}" IsRefreshing="{Binding Carregando}">
+            <ScrollView>
+                <VerticalStackLayout Padding="20,16,20,90" Spacing="10">
+
+                    <Label Text="{Binding MensagemErro}"
+                           Style="{StaticResource TextoErro}"
+                           IsVisible="{Binding MensagemErro, Converter={StaticResource StringNaoVazioConverter}}" />
+
+                    <Label Text="Solicitações Recebidas" FontAttributes="Bold" FontSize="15" TextColor="{StaticResource AzulEscuro}" />
+                    <CollectionView ItemsSource="{Binding SolicitacoesRecebidas}">
+                        <CollectionView.EmptyView>
+                            <Label Text="Nenhuma solicitação recebida." TextColor="{StaticResource CinzaMedio}" FontSize="13" Padding="0,8" />
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ItemVinculo">
+                                <Border Style="{StaticResource CampoTexto}" Margin="0,6" HeightRequest="80">
+                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8">
+                                        <Border Grid.Column="0" StrokeShape="RoundRectangle 20" WidthRequest="40" HeightRequest="40" Padding="0">
+                                            <Image Source="{Binding FotoExibida}" Aspect="AspectFill" />
+                                        </Border>
+                                        <Label Grid.Column="1" Text="{Binding Nome}" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
+                                        <Button Grid.Column="2" Text="Aceitar" FontSize="11" HeightRequest="36"
+                                                Style="{StaticResource BotaoPrimario}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AceitarCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        <Button Grid.Column="3" Text="Recusar" FontSize="11" HeightRequest="36"
+                                                BackgroundColor="Transparent" TextColor="#E24B4A" BorderColor="#E24B4A" BorderWidth="1" CornerRadius="18"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RecusarCommand}"
+                                                CommandParameter="{Binding .}" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <Label Text="Convites Enviados" FontAttributes="Bold" FontSize="15" TextColor="{StaticResource AzulEscuro}" Margin="0,14,0,0" />
+                    <CollectionView ItemsSource="{Binding ConvitesEnviados}">
+                        <CollectionView.EmptyView>
+                            <Label Text="Nenhum convite enviado ainda." TextColor="{StaticResource CinzaMedio}" FontSize="13" Padding="0,8" />
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ItemVinculo">
+                                <Border Style="{StaticResource CampoTexto}" Margin="0,6" HeightRequest="64">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <Border Grid.Column="0" StrokeShape="RoundRectangle 20" WidthRequest="40" HeightRequest="40" Padding="0">
+                                            <Image Source="{Binding FotoExibida}" Aspect="AspectFill" />
+                                        </Border>
+                                        <Label Grid.Column="1" Text="{Binding Nome}" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}"
+                                               VerticalOptions="Center" Margin="10,0,0,0" />
+                                        <Label Grid.Column="2" Text="Aguardando" FontSize="11" TextColor="{StaticResource CinzaMedio}" VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <Label Text="Meus Pacientes" FontAttributes="Bold" FontSize="15" TextColor="{StaticResource AzulEscuro}" Margin="0,14,0,0" />
+                    <CollectionView ItemsSource="{Binding Vinculados}">
+                        <CollectionView.EmptyView>
+                            <Label Text="Nenhum paciente vinculado ainda." TextColor="{StaticResource CinzaMedio}" FontSize="13" Padding="0,8" />
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ItemVinculo">
+                                <Border Style="{StaticResource CampoTexto}" Margin="0,6" HeightRequest="64">
+                                    <Grid ColumnDefinitions="Auto,*">
+                                        <Border Grid.Column="0" StrokeShape="RoundRectangle 20" WidthRequest="40" HeightRequest="40" Padding="0">
+                                            <Image Source="{Binding FotoExibida}" Aspect="AspectFill" />
+                                        </Border>
+                                        <Label Grid.Column="1" Text="{Binding Nome}" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}"
+                                               VerticalOptions="Center" Margin="10,0,0,0" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </RefreshView>
+
+        <!-- Botão flutuante "+" — busca novo paciente -->
+        <Border StrokeShape="RoundRectangle 30"
+                BackgroundColor="{StaticResource AzulPrimario}"
+                WidthRequest="60" HeightRequest="60"
+                Padding="0"
+                HorizontalOptions="End" VerticalOptions="End"
+                Margin="0,0,20,24">
+            <Border.Shadow>
+                <Shadow Brush="Black" Offset="0,4" Radius="10" Opacity="0.25" />
+            </Border.Shadow>
+            <ImageButton Source="icone_mais.svg"
+                         Command="{Binding AbrirBuscarPacienteCommand}"
+                         BackgroundColor="Transparent"
+                         Padding="16" />
+        </Border>
+    </Grid>
+</ContentPage>

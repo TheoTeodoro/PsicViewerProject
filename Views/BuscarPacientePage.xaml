@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MauiApp1.ViewModels"
+             x:Class="MauiApp1.Views.BuscarPacientePage"
+             x:DataType="vm:BuscarPacienteViewModel"
+             Title="Buscar Paciente"
+             BackgroundColor="White">
+
+    <Grid RowDefinitions="Auto,Auto,*" Padding="20,16">
+
+        <Label Grid.Row="0"
+               Text="{Binding MensagemErro}"
+               Style="{StaticResource TextoErro}"
+               IsVisible="{Binding MensagemErro, Converter={StaticResource StringNaoVazioConverter}}"
+               Margin="0,0,0,10" />
+
+        <Border Grid.Row="1" Style="{StaticResource CampoTexto}" Margin="0,0,0,10">
+            <Entry Text="{Binding TextoBusca}" Placeholder="Buscar por nome, telefone ou e-mail" VerticalOptions="Center" />
+        </Border>
+
+        <RefreshView Grid.Row="2" Command="{Binding CarregarCommand}" IsRefreshing="{Binding Carregando}">
+            <CollectionView ItemsSource="{Binding Pacientes}">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="20">
+                        <Label Text="Nenhum paciente encontrado." TextColor="{StaticResource CinzaMedio}" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ItemPacienteBusca">
+                        <Border Style="{StaticResource CampoTexto}" Margin="0,6" HeightRequest="68">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="2">
+                                    <Label Text="{Binding Nome}" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}" />
+                                    <Label Text="{Binding Email}" FontSize="12" TextColor="{StaticResource CinzaMedio}" />
+                                </VerticalStackLayout>
+
+                                <Button Grid.Column="1"
+                                        Text="{Binding TextoBotao}"
+                                        IsEnabled="{Binding PodeConvidar}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ConvidarCommand}"
+                                        CommandParameter="{Binding .}"
+                                        Style="{StaticResource BotaoPrimario}"
+                                        FontSize="12"
+                                        HeightRequest="38"
+                                        VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+    </Grid>
+</ContentPage>

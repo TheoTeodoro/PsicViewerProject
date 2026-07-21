@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MauiApp1.ViewModels"
+             x:Class="MauiApp1.Views.SolicitacaoVinculoPage"
+             x:DataType="vm:SolicitacaoVinculoViewModel"
+             Title="Convite de Vínculo"
+             BackgroundColor="White">
+
+    <VerticalStackLayout VerticalOptions="Center" Padding="32" Spacing="18">
+
+        <Border StrokeShape="RoundRectangle 55" WidthRequest="110" HeightRequest="110" HorizontalOptions="Center" Padding="0">
+            <Image Source="{Binding FotoExibida}" Aspect="AspectFill" />
+        </Border>
+
+        <Label Text="{Binding NomeSolicitante, StringFormat='{0} quer se vincular com você'}"
+               FontAttributes="Bold"
+               FontSize="18"
+               TextColor="{StaticResource AzulEscuro}"
+               HorizontalTextAlignment="Center" />
+
+        <Label Text="{Binding CrpSolicitante}"
+               FontSize="13"
+               TextColor="{StaticResource CinzaMedio}"
+               HorizontalTextAlignment="Center" />
+
+        <Label Text="Ao aceitar, você passa a ter esse psicólogo como seu psicólogo vinculado no PsicViewer."
+               FontSize="12"
+               TextColor="{StaticResource CinzaMedio}"
+               HorizontalTextAlignment="Center"
+               Margin="0,0,0,10" />
+
+        <Label Text="{Binding MensagemErro}" Style="{StaticResource TextoErro}" HorizontalTextAlignment="Center" />
+
+        <Button Text="Aceitar" Style="{StaticResource BotaoPrimario}" Command="{Binding AceitarCommand}" />
+        <Button Text="Recusar" Style="{StaticResource BotaoSecundario}" Command="{Binding RecusarCommand}" />
+
+        <ActivityIndicator IsRunning="{Binding Carregando}" IsVisible="{Binding Carregando}" Color="{StaticResource AzulPrimario}" />
+
+    </VerticalStackLayout>
+</ContentPage>

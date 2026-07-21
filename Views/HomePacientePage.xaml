@@ -84,6 +84,17 @@
                         </Border.GestureRecognizers>
                         <Label Text="💬  Chat com Psicólogo" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
                     </Border>
+                    
+                    <Border Style="{StaticResource CartaoAcessoRapido}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding AbrirBuscarPsicologoCommand}" />
+                        </Border.GestureRecognizers>
+
+                        <Label Text="🔎  Buscar Psicólogo"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource AzulEscuro}"
+                           VerticalOptions="Center" />
+                    </Border>
 
                     <Border Grid.Column="1" Grid.Row="1" Style="{StaticResource CartaoAcessoRapido}">
                         <Border.GestureRecognizers>
