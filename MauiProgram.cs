@@ -3,7 +3,6 @@ using Plugin.Maui.Audio;
 using MauiApp1.Services;
 using MauiApp1.ViewModels;
 using MauiApp1.Views;
-
 namespace MauiApp1
 {
 	public static class MauiProgram
@@ -18,19 +17,17 @@ namespace MauiApp1
 					fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 					fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 				});
-
 			// Sessão do usuário logado
 			builder.Services.AddSingleton<SessaoUsuario>();
-
 			// Conta (cadastro/login/perfil) — fala com a API via HTTP.
 			builder.Services.AddSingleton<ContaApiService>();
 			builder.Services.AddSingleton<VinculoApiService>();
-
+			builder.Services.AddSingleton<NotificacaoService>();
+			builder.Services.AddSingleton<QuestionarioApiService>();
 			// Chat: conexão SignalR + upload de arquivo + gravador de áudio
 			builder.Services.AddSingleton<ChatConnectionService>();
 			builder.Services.AddSingleton<ArquivoUploadService>();
 			builder.Services.AddSingleton(AudioManager.Current);
-
 			// Páginas
 			builder.Services.AddTransient<LoginPage>();
 			builder.Services.AddTransient<PreContaPage>();
@@ -47,7 +44,13 @@ namespace MauiApp1
 			builder.Services.AddTransient<PacientesPage>();
 			builder.Services.AddTransient<BuscarPacientePage>();
 			builder.Services.AddTransient<SolicitacaoVinculoPage>();
-
+			builder.Services.AddTransient<NotificacoesPage>();
+			builder.Services.AddTransient<QuestionariosPage>();
+			builder.Services.AddTransient<CriarQuestionarioPage>();
+			builder.Services.AddTransient<EditarQuestionarioPage>();
+			builder.Services.AddTransient<QuestionariosPacientePage>();
+			builder.Services.AddTransient<ResponderQuestionarioPage>();
+			builder.Services.AddTransient<DarFeedbackPage>();
 			// ViewModels
 			builder.Services.AddTransient<LoginViewModel>();
 			builder.Services.AddTransient<PreContaViewModel>();
@@ -63,7 +66,13 @@ namespace MauiApp1
 			builder.Services.AddTransient<PacientesViewModel>();
 			builder.Services.AddTransient<BuscarPacienteViewModel>();
 			builder.Services.AddTransient<SolicitacaoVinculoViewModel>();
-
+			builder.Services.AddTransient<NotificacoesViewModel>();
+			builder.Services.AddTransient<QuestionariosViewModel>();
+			builder.Services.AddTransient<CriarQuestionarioViewModel>();
+			builder.Services.AddTransient<EditarQuestionarioViewModel>();
+			builder.Services.AddTransient<QuestionariosPacienteViewModel>();
+			builder.Services.AddTransient<ResponderQuestionarioViewModel>();
+			builder.Services.AddTransient<DarFeedbackViewModel>();
 #if DEBUG
 			builder.Logging.AddDebug();
 #endif

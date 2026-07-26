@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MauiApp1.Services
 {
@@ -9,12 +10,6 @@ namespace MauiApp1.Services
 		Psicologo
 	}
 
-	/// <summary>
-	/// Guarda quem está logado durante a sessão do app (em memória).
-	/// Temporário: quando existir IAuthService com JWT (Infrastructure),
-	/// isso deve ser substituído por um token validado, não só um objeto
-	/// solto na RAM.
-	/// </summary>
 	public class SessaoUsuario
 	{
 		public Guid UsuarioId { get; private set; }
@@ -22,6 +17,12 @@ namespace MauiApp1.Services
 		public string Email { get; private set; } = string.Empty;
 		public string? FotoUrl { get; private set; }
 		public TipoUsuarioLogado Tipo { get; private set; } = TipoUsuarioLogado.Nenhum;
+
+		// Guarda quais notificações (identificadas por uma chave tipo
+		// "{vinculoId}-pedido" ou "{vinculoId}-aceito") já foram vistas —
+		// sem isso, o contador do sino e a tela de notificações mostrariam
+		// tudo como "não lida" pra sempre. Vive só na sessão (RAM).
+		private readonly HashSet<string> _notificacoesVistas = new();
 
 		public void IniciarComoPaciente(Guid id, string nome, string email, string? fotoUrl)
 		{
@@ -48,16 +49,18 @@ namespace MauiApp1.Services
 			Email = string.Empty;
 			FotoUrl = null;
 			Tipo = TipoUsuarioLogado.Nenhum;
+			_notificacoesVistas.Clear();
 		}
 
-		/// <summary>Atualiza nome/e-mail/foto em cache depois de uma edição
-		/// de perfil — sem isso, a Home continuaria mostrando os dados
-		/// antigos até o próximo login.</summary>
 		public void AtualizarDadosBasicos(string nome, string email, string? fotoUrl)
 		{
 			Nome = nome;
 			Email = email;
 			FotoUrl = fotoUrl;
 		}
+
+		public bool NotificacaoVista(string chave) => _notificacoesVistas.Contains(chave);
+
+		public void MarcarNotificacaoVista(string chave) => _notificacoesVistas.Add(chave);
 	}
 }

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MauiApp1.ViewModels"
+             xmlns:svc="clr-namespace:MauiApp1.Services"
+             x:Class="MauiApp1.Views.NotificacoesPage"
+             x:DataType="vm:NotificacoesViewModel"
+             Title="Notificações"
+             BackgroundColor="White">
+
+    <Grid RowDefinitions="Auto,Auto,*" Padding="20,16">
+
+        <Label Grid.Row="0" Text="🔔 Notificações" FontAttributes="Bold" FontSize="20" TextColor="{StaticResource AzulEscuro}" />
+        <Label Grid.Row="1" Text="{Binding Resumo}" FontSize="13" TextColor="{StaticResource CinzaMedio}" Margin="0,4,0,12" />
+
+        <RefreshView Grid.Row="2" Command="{Binding CarregarCommand}" IsRefreshing="{Binding Carregando}">
+            <CollectionView ItemsSource="{Binding Itens}">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="20">
+                        <Label Text="Nenhuma notificação por enquanto." TextColor="{StaticResource CinzaMedio}" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="svc:ItemNotificacao">
+                        <Grid Padding="0,4">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AbrirItemCommand}"
+                                                       CommandParameter="{Binding .}" />
+                            </Grid.GestureRecognizers>
+
+                            <Border StrokeShape="RoundRectangle 14" Stroke="{StaticResource CinzaClaro}" BackgroundColor="White" Padding="14,12">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                    <Label Grid.Column="0" Text="{Binding Icone}" FontSize="22" VerticalOptions="Center" />
+
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                        <Label Text="{Binding NomeRemetente}"
+                                               FontAttributes="{Binding NaoLida, Converter={StaticResource NaoLidaParaFonteConverter}}"
+                                               FontSize="14"
+                                               TextColor="{StaticResource AzulEscuro}" />
+                                        <Label Text="{Binding Descricao}"
+                                               FontAttributes="{Binding NaoLida, Converter={StaticResource NaoLidaParaFonteConverter}}"
+                                               FontSize="12"
+                                               TextColor="{StaticResource CinzaMedio}" />
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout Grid.Column="2" HorizontalOptions="End" Spacing="6">
+                                        <Label Text="{Binding HorarioExibido}" FontSize="11" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="End" />
+                                        <Ellipse Fill="{StaticResource AzulPrimario}" WidthRequest="8" HeightRequest="8" HorizontalOptions="End" IsVisible="{Binding NaoLida}" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+    </Grid>
+</ContentPage>

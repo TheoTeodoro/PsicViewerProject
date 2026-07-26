@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MauiApp1.ViewModels"
+             x:Class="MauiApp1.Views.QuestionariosPacientePage"
+             x:DataType="vm:QuestionariosPacienteViewModel"
+             Title=""
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <VerticalStackLayout Grid.Row="0" Padding="24,20,24,10" Spacing="10">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <ImageButton Grid.Column="0"
+                             Source="icone_voltar.svg"
+                             Clicked="OnVoltarClicked"
+                             BackgroundColor="Transparent"
+                             WidthRequest="36" HeightRequest="36"
+                             Padding="4" />
+                <Label Grid.Column="1" Text="Questionários" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" Margin="8,0,0,0" />
+                <Border Grid.Column="2" StrokeShape="RoundRectangle 22" WidthRequest="44" HeightRequest="44" Padding="0">
+                    <Image Source="{Binding FotoExibida}" Aspect="AspectFill" />
+                </Border>
+            </Grid>
+
+            <!-- Pendentes / Histórico -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="6" Margin="0,4,0,0">
+                <Border Grid.Column="0"
+                        StrokeShape="RoundRectangle 18"
+                        BackgroundColor="{Binding FiltroSelecionado, Converter={StaticResource FiltroParaCorConverter}, ConverterParameter=Pendentes}"
+                        Padding="0,10">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding FiltrarPendentesCommand}" />
+                    </Border.GestureRecognizers>
+                    <Label Text="Pendentes" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="13" TextColor="{StaticResource AzulEscuro}" />
+                </Border>
+
+                <Border Grid.Column="1"
+                        StrokeShape="RoundRectangle 18"
+                        BackgroundColor="{Binding FiltroSelecionado, Converter={StaticResource FiltroParaCorConverter}, ConverterParameter=Histórico}"
+                        Padding="0,10">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding FiltrarHistoricoCommand}" />
+                    </Border.GestureRecognizers>
+                    <Label Text="Histórico" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="13" TextColor="{StaticResource AzulEscuro}" />
+                </Border>
+            </Grid>
+
+            <Label Text="{Binding MensagemErro}"
+                   Style="{StaticResource TextoErro}"
+                   IsVisible="{Binding MensagemErro, Converter={StaticResource StringNaoVazioConverter}}" />
+        </VerticalStackLayout>
+
+        <!-- CollectionView é a área principal de rolagem, sem disputar
+             altura dentro de outro ScrollView (ver histórico de bugs
+             anteriores nessa mesma tela). -->
+        <RefreshView Grid.Row="1" Command="{Binding CarregarCommand}" IsRefreshing="{Binding Carregando}" Margin="24,0,24,0"
+                     IsVisible="{Binding FiltroSelecionado, Converter={StaticResource StringIgualConverter}, ConverterParameter=Pendentes}">
+            <CollectionView ItemsSource="{Binding Questionarios}">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" Padding="0,30" Spacing="6">
+                        <Label Text="Nenhum questionário pendente hoje." TextColor="{StaticResource CinzaMedio}" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ItemQuestionarioPendente">
+                        <Border Style="{StaticResource CampoTexto}" Margin="0,6" Padding="16,12">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ResponderCommand}"
+                                                       CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="2">
+                                    <Label Text="{Binding Titulo}" FontAttributes="Bold" FontSize="14" TextColor="{StaticResource AzulEscuro}" />
+                                    <Label Text="{Binding ProgressoExibido}" FontSize="11" TextColor="{StaticResource CinzaMedio}" />
+                                </VerticalStackLayout>
+                                <Label Grid.Column="1" Text="›" FontSize="20" TextColor="{StaticResource CinzaMedio}" VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+        <!-- Histórico: agrupado por dia, só leitura -->
+        <RefreshView Grid.Row="1" Command="{Binding CarregarCommand}" IsRefreshing="{Binding Carregando}" Margin="24,0,24,0"
+                     IsVisible="{Binding FiltroSelecionado, Converter={StaticResource StringIgualConverter}, ConverterParameter=Histórico}">
+            <CollectionView ItemsSource="{Binding GruposHistorico}" IsGrouped="True">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" Padding="0,30" Spacing="6">
+                        <Label Text="Nenhuma resposta no histórico ainda." TextColor="{StaticResource CinzaMedio}" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.GroupHeaderTemplate>
+                    <DataTemplate x:DataType="vm:GrupoHistorico">
+                        <Label Text="{Binding NomeGrupo}" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource AzulPrimario}" Margin="0,14,0,4" />
+                    </DataTemplate>
+                </CollectionView.GroupHeaderTemplate>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ItemHistorico">
+                        <Border Style="{StaticResource CampoTexto}" Margin="0,4" Padding="16,12">
+                            <VerticalStackLayout Spacing="4">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Grid.Column="0" Text="{Binding QuestionarioTitulo}" FontSize="11" TextColor="{StaticResource CinzaMedio}" />
+                                    <Label Grid.Column="1" Text="{Binding HorarioExibido}" FontSize="11" TextColor="{StaticResource CinzaMedio}" />
+                                </Grid>
+                                <Label Text="{Binding PerguntaTexto}" FontAttributes="Bold" FontSize="13" TextColor="{StaticResource AzulEscuro}" />
+                                <Label Text="{Binding RespostaResumo}" FontSize="13" TextColor="{StaticResource AzulEscuro}" Opacity="0.8" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+        <!-- Barra de navegação inferior -->
+        <Grid Grid.Row="2" RowDefinitions="1,Auto" BackgroundColor="White">
+            <BoxView Grid.Row="0" HeightRequest="1" Color="{StaticResource CinzaClaro}" />
+
+            <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*" Padding="0,10">
+                <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding IrParaHomeCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
+                    <Label Text="🏠" FontSize="18" HorizontalOptions="Center" />
+                    <Label Text="Home" FontSize="10" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="Center">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding AbrirChatCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
+                    <Label Text="💬" FontSize="18" HorizontalOptions="Center" />
+                    <Label Text="Chat" FontSize="10" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="2" Spacing="2" HorizontalOptions="Center">
+                    <Label Text="📋" FontSize="18" HorizontalOptions="Center" />
+                    <Label Text="Questionários" FontSize="9" TextColor="{StaticResource AzulPrimario}" FontAttributes="Bold" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="3" Spacing="2" HorizontalOptions="Center">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding AbrirPerfilCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
+                    <Label Text="👤" FontSize="18" HorizontalOptions="Center" />
+                    <Label Text="Perfil" FontSize="10" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Grid>
+        </Grid>
+
+    </Grid>
+</ContentPage>

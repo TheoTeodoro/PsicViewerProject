@@ -45,6 +45,33 @@
                                            TextColor="{Binding EnviadaPorMim, Converter={StaticResource BoolParaTextoConverter}}"
                                            Opacity="0.7" />
 
+                                    <!-- Citação de feedback: pergunta + resposta originais,
+                                         congeladas no momento do feedback (tipo citar
+                                         mensagem no WhatsApp) -->
+                                    <Grid IsVisible="{Binding EhFeedback}" Margin="0,0,0,2">
+                                        <BoxView Color="{Binding EnviadaPorMim, Converter={StaticResource BoolParaTextoConverter}}"
+                                                 Opacity="0.12" CornerRadius="8" />
+                                        <Grid ColumnDefinitions="3,*" Padding="8,6">
+                                            <BoxView Grid.Column="0"
+                                                     Color="{Binding EnviadaPorMim, Converter={StaticResource BoolParaTextoConverter}}"
+                                                     Opacity="0.6" />
+                                            <VerticalStackLayout Grid.Column="1" Spacing="2" Margin="6,0,0,0">
+                                                <Label Text="Feedback do psicólogo"
+                                                       FontAttributes="Bold" FontSize="10"
+                                                       TextColor="{Binding EnviadaPorMim, Converter={StaticResource BoolParaTextoConverter}}"
+                                                       Opacity="0.85" />
+                                                <Label Text="{Binding CitacaoTextoPergunta}"
+                                                       FontSize="11" FontAttributes="Italic"
+                                                       TextColor="{Binding EnviadaPorMim, Converter={StaticResource BoolParaTextoConverter}}"
+                                                       Opacity="0.75" LineBreakMode="TailTruncation" MaxLines="2" />
+                                                <Label Text="{Binding CitacaoTextoResposta}"
+                                                       FontSize="11"
+                                                       TextColor="{Binding EnviadaPorMim, Converter={StaticResource BoolParaTextoConverter}}"
+                                                       Opacity="0.9" LineBreakMode="TailTruncation" MaxLines="2" />
+                                            </VerticalStackLayout>
+                                        </Grid>
+                                    </Grid>
+
                                     <!-- Texto -->
                                     <Label Text="{Binding Conteudo}"
                                            IsVisible="{Binding EhTexto}"
@@ -81,6 +108,12 @@
                                               IsVisible="{Binding EstaTocando}"
                                               Fill="{Binding EnviadaPorMim, Converter={StaticResource BoolParaTextoConverter}}"
                                               WidthRequest="18" HeightRequest="18" Aspect="Uniform" />
+
+                                        <!-- Barrinha de progresso -->
+                                        <ProgressBar Progress="{Binding ProgressoAudio}"
+                                                     ProgressColor="{Binding EnviadaPorMim, Converter={StaticResource BoolParaTextoConverter}}"
+                                                     WidthRequest="60" HeightRequest="6"
+                                                     VerticalOptions="Center" />
 
                                         <Label Text="{Binding TempoExibidoFormatado}"
                                                TextColor="{Binding EnviadaPorMim, Converter={StaticResource BoolParaTextoConverter}}"

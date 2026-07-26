@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Linq;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using MauiApp1.Services;
@@ -11,40 +12,98 @@ namespace MauiApp1.ViewModels
 		private readonly SessaoUsuario _sessao;
 		private readonly IServiceProvider _serviceProvider;
 		private readonly ChatConnectionService _chat;
+		private readonly VinculoApiService _vinculo;
+		private readonly NotificacaoService _notificacoes;
+		private readonly QuestionarioApiService _questionarios;
 
 		[ObservableProperty]
 		private string nomeUsuario = string.Empty;
-		// NOTA: os 3 números abaixo são MOCK (fixos), só para visualizar o
-		// layout. Viram dados reais quando existirem:
-		// - PacientesAtivos  -> IPacienteRepository filtrando por PsicologoId
-		// - QuestionariosAtivos / RespostasPendentes -> IQuestionarioRepository,
-		//   que ainda não existe (depende da entidade Questionario no Core)
-		[ObservableProperty]
-		private int pacientesAtivos = 15;
 
 		[ObservableProperty]
-		private int questionariosAtivos = 4;
+		private int pacientesAtivos;
 
 		[ObservableProperty]
-		private int respostasPendentes = 7;
+		private int questionariosAtivos;
+
+		[ObservableProperty]
+		private int respostasPendentes;
+
+		[ObservableProperty]
+		private bool temNotificacao;
+
+		[ObservableProperty]
+		private int notificacoesNaoLidas;
 
 		public string FotoExibida => string.IsNullOrEmpty(_sessao.FotoUrl)
 			? "avatar_placeholder.jpg"
 			: $"{ApiConfig.ServidorBaseUrl}{_sessao.FotoUrl}";
 
-		public HomePsicologoViewModel(SessaoUsuario sessao, IServiceProvider serviceProvider, ChatConnectionService chat)
+		public HomePsicologoViewModel(SessaoUsuario sessao, IServiceProvider serviceProvider, ChatConnectionService chat, VinculoApiService vinculo, NotificacaoService notificacoes, QuestionarioApiService questionarios)
 		{
 			_sessao = sessao;
 			_serviceProvider = serviceProvider;
 			_chat = chat;
+			_vinculo = vinculo;
+			_notificacoes = notificacoes;
+			_questionarios = questionarios;
 			NomeUsuario = string.IsNullOrWhiteSpace(_sessao.Nome)
 				? "Psicólogo(a)"
-				: _sessao.Nome.Split(' ')[0]; // só o primeiro nome, como no Figma ("Olá, Theo")
+				: _sessao.Nome.Split(' ')[0];
 		}
 
-		/// <summary>Chamado no OnAppearing da Home — pega a foto atualizada
-		/// caso a pessoa tenha acabado de trocar no Perfil.</summary>
 		public void AtualizarFoto() => OnPropertyChanged(nameof(FotoExibida));
+
+		/// <summary>Chamado no OnAppearing — busca os números reais do
+		/// Sumário Clínico. RespostasPendentes agora é de verdade: conta
+		/// quantas perguntas ativas ainda não foram respondidas HOJE,
+		/// somando todos os pacientes vinculados (antes ficava fixo em 7,
+		/// nunca calculado).</summary>
+		public async Task CarregarSumarioAsync()
+		{
+			try
+			{
+				var vinculos = await _vinculo.ListarPorPsicologoAsync(_sessao.UsuarioId);
+				PacientesAtivos = vinculos.Count(v => v.Status == "Aceito");
+
+				QuestionariosAtivos = await _questionarios.ObterQuestionariosEmUsoAsync(_sessao.UsuarioId);
+				RespostasPendentes = await _questionarios.ObterPerguntasPendentesHojeAsync(_sessao.UsuarioId);
+			}
+			catch
+			{
+				// Sumário não deve travar a Home se a API estiver fora.
+			}
+		}
+
+		public async Task VerificarNotificacoesAsync()
+		{
+			try
+			{
+				var todas = await _notificacoes.ObterNotificacoesAsync();
+				NotificacoesNaoLidas = todas.Count(i => i.NaoLida);
+				TemNotificacao = todas.Any(i => i.Tipo == TipoNotificacao.SolicitacaoVinculo && i.NaoLida);
+
+				var vinculos = await _vinculo.ListarPorPsicologoAsync(_sessao.UsuarioId);
+				var aceitosNovos = vinculos.Where(v =>
+					v.Status == "Aceito" && v.Origem == "Psicologo" && !v.AceitoVisualizado);
+				foreach (var v in aceitosNovos)
+				{
+					await _vinculo.MarcarAceitoVisualizadoAsync(v.Id);
+					await Application.Current!.MainPage!.DisplayAlert(
+						"Vínculo aceito! 🎉", $"{v.ContatoNome} aceitou seu convite de vínculo.", "OK");
+				}
+			}
+			catch
+			{
+				// Notificação não deve travar a Home se a API estiver fora.
+			}
+		}
+
+		[RelayCommand]
+		private async Task AbrirNotificacaoAsync()
+		{
+			var page = _serviceProvider.GetRequiredService<NotificacoesPage>();
+			await Application.Current!.MainPage!.Navigation.PushAsync(page);
+		}
 
 		[RelayCommand]
 		private async Task SairAsync()
@@ -65,7 +124,10 @@ namespace MauiApp1.ViewModels
 
 		[RelayCommand]
 		private async Task AbrirQuestionariosAsync()
-			=> await Application.Current!.MainPage!.DisplayAlert("Em breve", "Tela de Questionários ainda não implementada.", "OK");
+		{
+			var page = _serviceProvider.GetRequiredService<QuestionariosPage>();
+			await Application.Current!.MainPage!.Navigation.PushAsync(page);
+		}
 
 		[RelayCommand]
 		private async Task AbrirRelatoriosAsync()

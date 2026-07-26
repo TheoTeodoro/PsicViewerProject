@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MauiApp1.ViewModels"
+             x:Class="MauiApp1.Views.QuestionariosPage"
+             x:DataType="vm:QuestionariosViewModel"
+             Title=""
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <VerticalStackLayout Grid.Row="0" Padding="24,20,24,10" Spacing="10">
+
+            <Grid ColumnDefinitions="*,Auto">
+                <Label Grid.Column="0" Text="Questionários" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
+                <Border Grid.Column="1" StrokeShape="RoundRectangle 22" WidthRequest="44" HeightRequest="44" Padding="0">
+                    <Image Source="{Binding FotoExibida}" Aspect="AspectFill" />
+                </Border>
+            </Grid>
+
+            <Grid ColumnDefinitions="*,Auto" Margin="0,6,0,0">
+                <Label Grid.Column="0" Text="Meus Questionários" FontAttributes="Bold" FontSize="17" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
+                <Button Grid.Column="1"
+                        Text="Adicionar"
+                        Command="{Binding AbrirCriarCommand}"
+                        Style="{StaticResource BotaoSecundario}"
+                        FontSize="12"
+                        HeightRequest="36" />
+            </Grid>
+
+            <Border Style="{StaticResource CampoTexto}">
+                <Entry Text="{Binding TextoBusca}" Placeholder="Digite aqui..." VerticalOptions="Center" />
+            </Border>
+
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="6">
+                <Border Grid.Column="0"
+                        StrokeShape="RoundRectangle 18"
+                        BackgroundColor="{Binding FiltroSelecionado, Converter={StaticResource FiltroParaCorConverter}, ConverterParameter=Todos}"
+                        Padding="0,10">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding FiltrarTodosCommand}" />
+                    </Border.GestureRecognizers>
+                    <Label Text="Todos" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="12" TextColor="{StaticResource AzulEscuro}" />
+                </Border>
+
+                <Border Grid.Column="1"
+                        StrokeShape="RoundRectangle 18"
+                        BackgroundColor="{Binding FiltroSelecionado, Converter={StaticResource FiltroParaCorConverter}, ConverterParameter=Ativos}"
+                        Padding="0,10">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding FiltrarAtivosCommand}" />
+                    </Border.GestureRecognizers>
+                    <Label Text="●  Ativos" HorizontalTextAlignment="Center" FontSize="12" TextColor="#1F9D55" />
+                </Border>
+
+                <Border Grid.Column="2"
+                        StrokeShape="RoundRectangle 18"
+                        BackgroundColor="{Binding FiltroSelecionado, Converter={StaticResource FiltroParaCorConverter}, ConverterParameter=Inativos}"
+                        Padding="0,10">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding FiltrarInativosCommand}" />
+                    </Border.GestureRecognizers>
+                    <Label Text="●  Inativos" HorizontalTextAlignment="Center" FontSize="12" TextColor="#D9534F" />
+                </Border>
+            </Grid>
+
+        </VerticalStackLayout>
+
+        <!-- CollectionView com sua própria área de rolagem — não mais
+             dentro do mesmo ScrollView do cabeçalho. Um CollectionView
+             AGRUPADO (IsGrouped) sem altura própria, aninhado dentro de
+             outro contêiner de rolagem, é uma combinação instável no
+             Android (já vimos o mesmo padrão travar em outras 2 telas). -->
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Grupos}" IsGrouped="True" Margin="24,4,24,0">
+            <CollectionView.EmptyView>
+                <VerticalStackLayout HorizontalOptions="Center" Padding="0,30" Spacing="6">
+                    <Label Text="Nenhum questionário ainda." TextColor="{StaticResource CinzaMedio}" HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.GroupHeaderTemplate>
+                <DataTemplate x:DataType="vm:GrupoQuestionarios">
+                    <Label Text="{Binding NomeGrupo}" FontSize="12" TextColor="{StaticResource CinzaMedio}" Margin="0,14,0,4" />
+                </DataTemplate>
+            </CollectionView.GroupHeaderTemplate>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="vm:ItemQuestionario">
+                    <Border Style="{StaticResource CampoTexto}" Margin="0,4" HeightRequest="72">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AbrirQuestionarioCommand}"
+                                                   CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
+
+                            <Border Grid.Column="0"
+                                    StrokeShape="RoundRectangle 13"
+                                    BackgroundColor="#E53935"
+                                    WidthRequest="26" HeightRequest="26" Padding="0"
+                                    VerticalOptions="Center">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoverQuestionarioCommand}"
+                                                           CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                                <Label Text="✕" TextColor="White" FontAttributes="Bold" FontSize="13"
+                                       HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                            </Border>
+
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                <Label Text="{Binding DataExibida}" FontSize="11" TextColor="{StaticResource CinzaMedio}" />
+                                <Label Text="{Binding Titulo}" FontAttributes="Bold" FontSize="14" TextColor="{StaticResource AzulEscuro}" />
+                                <Label Text="{Binding TextoPerguntas}" FontSize="11" TextColor="{StaticResource CinzaMedio}" />
+                            </VerticalStackLayout>
+
+                            <Border Grid.Column="2"
+                                    StrokeShape="RoundRectangle 12"
+                                    BackgroundColor="{Binding CorFundoStatus}"
+                                    Padding="10,4"
+                                    VerticalOptions="Center">
+                                <Label Text="{Binding Status}" FontSize="11" FontAttributes="Bold" TextColor="{Binding CorTextoStatus}" />
+                            </Border>
+
+                            <Label Grid.Column="3" Text="›" FontSize="20" TextColor="{StaticResource CinzaMedio}" VerticalOptions="Center" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Barra de navegação inferior -->
+        <Grid Grid.Row="2" RowDefinitions="1,Auto" BackgroundColor="White">
+            <BoxView Grid.Row="0" HeightRequest="1" Color="{StaticResource CinzaClaro}" />
+
+            <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*" Padding="0,10">
+                <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding IrParaHomeCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
+                    <Label Text="🏠" FontSize="18" HorizontalOptions="Center" />
+                    <Label Text="Home" FontSize="10" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="Center">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding AbrirChatCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
+                    <Label Text="💬" FontSize="18" HorizontalOptions="Center" />
+                    <Label Text="Chat" FontSize="10" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="2" Spacing="2" HorizontalOptions="Center">
+                    <Label Text="📋" FontSize="18" HorizontalOptions="Center" />
+                    <Label Text="Questionários" FontSize="9" TextColor="{StaticResource AzulPrimario}" FontAttributes="Bold" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="3" Spacing="2" HorizontalOptions="Center">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding AbrirPerfilCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
+                    <Label Text="👤" FontSize="18" HorizontalOptions="Center" />
+                    <Label Text="Perfil" FontSize="10" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Grid>
+        </Grid>
+
+    </Grid>
+</ContentPage>

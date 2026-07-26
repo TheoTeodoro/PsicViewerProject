@@ -47,6 +47,16 @@ namespace MauiApp1.Services
 			return resposta.IsSuccessStatusCode;
 		}
 
+		public async Task MarcarPedidoVisualizadoAsync(Guid vinculoId)
+		{
+			await _http.PostAsync($"{ApiConfig.ServidorBaseUrl}/api/vinculo/{vinculoId}/marcar-pedido-visualizado", null);
+		}
+
+		public async Task MarcarAceitoVisualizadoAsync(Guid vinculoId)
+		{
+			await _http.PostAsync($"{ApiConfig.ServidorBaseUrl}/api/vinculo/{vinculoId}/marcar-aceito-visualizado", null);
+		}
+
 		public async Task<List<VinculoDto>> ListarPorPacienteAsync(Guid pacienteId)
 		{
 			var resultado = await _http.GetFromJsonAsync<List<VinculoDto>>(

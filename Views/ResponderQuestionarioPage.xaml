@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MauiApp1.ViewModels"
+             x:Class="MauiApp1.Views.ResponderQuestionarioPage"
+             x:DataType="vm:ResponderQuestionarioViewModel"
+             Title=""
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid RowDefinitions="Auto,*" Padding="20,16,20,20">
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*">
+            <ImageButton Grid.Column="0"
+                         Source="icone_voltar.svg"
+                         Command="{Binding VoltarCommand}"
+                         BackgroundColor="Transparent"
+                         WidthRequest="36" HeightRequest="36"
+                         HorizontalOptions="Start" />
+            <Label Grid.Column="1" Text="{Binding TituloQuestionario}" FontAttributes="Bold" FontSize="16"
+                   TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" Margin="8,0,0,0" />
+        </Grid>
+
+        <!-- Lista com TODAS as perguntas juntas — cada uma se envia sozinha. -->
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Perguntas}" Margin="0,16,0,0">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="vm:RespostaPerguntaItem">
+                    <Border StrokeShape="RoundRectangle 18" Stroke="{StaticResource CinzaClaro}" BackgroundColor="{Binding CorFundoCard}" Padding="18" Margin="0,8">
+                        <Grid>
+
+                            <!-- Lápis: só aparece quando a pergunta já foi
+                                 enviada — único jeito de voltar a editar. -->
+                            <Border StrokeShape="RoundRectangle 15"
+                                    BackgroundColor="{StaticResource AzulPrimario}"
+                                    WidthRequest="30" HeightRequest="30"
+                                    Padding="7"
+                                    IsVisible="{Binding Trancada}"
+                                    HorizontalOptions="End" VerticalOptions="Start"
+                                    ZIndex="1">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding EditarCommand}" />
+                                </Border.GestureRecognizers>
+                                <Image Source="icone_lapis.svg" />
+                            </Border>
+
+                            <VerticalStackLayout Spacing="14">
+
+                                <Label Text="{Binding TextoPergunta}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}" />
+
+                                <!-- Área que trava quando a pergunta já foi
+                                     enviada: escala, texto, múltipla escolha
+                                     e o campo/gravador de observação. -->
+                                <VerticalStackLayout Spacing="14" IsEnabled="{Binding PodeEditar}">
+
+                                    <!-- Escala: 5 rostos; selecionado fica opaco
+                                         e ~40% maior (Scale 1.4) -->
+                                    <Grid ColumnDefinitions="*,*,*,*,*" IsVisible="{Binding EhEscala}" Margin="0,0,0,10">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="4" HorizontalOptions="Center"
+                                                              Opacity="{Binding EscalaSelecionada, Converter={StaticResource ValorIgualParaOpacidadeConverter}, ConverterParameter=1}"
+                                                              Scale="{Binding EscalaSelecionada, Converter={StaticResource ValorIgualParaEscalaConverter}, ConverterParameter=1}">
+                                            <VerticalStackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding SelecionarEscalaCommand}" CommandParameter="1" />
+                                            </VerticalStackLayout.GestureRecognizers>
+                                            <Image Source="escala_muito_mal.svg" WidthRequest="40" HeightRequest="40" HorizontalOptions="Center" />
+                                            <Label Text="Muito mal" FontSize="9" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
+                                        </VerticalStackLayout>
+
+                                        <VerticalStackLayout Grid.Column="1" Spacing="4" HorizontalOptions="Center"
+                                                              Opacity="{Binding EscalaSelecionada, Converter={StaticResource ValorIgualParaOpacidadeConverter}, ConverterParameter=2}"
+                                                              Scale="{Binding EscalaSelecionada, Converter={StaticResource ValorIgualParaEscalaConverter}, ConverterParameter=2}">
+                                            <VerticalStackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding SelecionarEscalaCommand}" CommandParameter="2" />
+                                            </VerticalStackLayout.GestureRecognizers>
+                                            <Image Source="escala_mal.svg" WidthRequest="40" HeightRequest="40" HorizontalOptions="Center" />
+                                            <Label Text="Mal" FontSize="9" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
+                                        </VerticalStackLayout>
+
+                                        <VerticalStackLayout Grid.Column="2" Spacing="4" HorizontalOptions="Center"
+                                                              Opacity="{Binding EscalaSelecionada, Converter={StaticResource ValorIgualParaOpacidadeConverter}, ConverterParameter=3}"
+                                                              Scale="{Binding EscalaSelecionada, Converter={StaticResource ValorIgualParaEscalaConverter}, ConverterParameter=3}">
+                                            <VerticalStackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding SelecionarEscalaCommand}" CommandParameter="3" />
+                                            </VerticalStackLayout.GestureRecognizers>
+                                            <Image Source="escala_regular.svg" WidthRequest="40" HeightRequest="40" HorizontalOptions="Center" />
+                                            <Label Text="Regular" FontSize="9" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
+                                        </VerticalStackLayout>
+
+                                        <VerticalStackLayout Grid.Column="3" Spacing="4" HorizontalOptions="Center"
+                                                              Opacity="{Binding EscalaSelecionada, Converter={StaticResource ValorIgualParaOpacidadeConverter}, ConverterParameter=4}"
+                                                              Scale="{Binding EscalaSelecionada, Converter={StaticResource ValorIgualParaEscalaConverter}, ConverterParameter=4}">
+                                            <VerticalStackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding SelecionarEscalaCommand}" CommandParameter="4" />
+                                            </VerticalStackLayout.GestureRecognizers>
+                                            <Image Source="escala_bem.svg" WidthRequest="40" HeightRequest="40" HorizontalOptions="Center" />
+                                            <Label Text="Bem" FontSize="9" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
+                                        </VerticalStackLayout>
+
+                                        <VerticalStackLayout Grid.Column="4" Spacing="4" HorizontalOptions="Center"
+                                                              Opacity="{Binding EscalaSelecionada, Converter={StaticResource ValorIgualParaOpacidadeConverter}, ConverterParameter=5}"
+                                                              Scale="{Binding EscalaSelecionada, Converter={StaticResource ValorIgualParaEscalaConverter}, ConverterParameter=5}">
+                                            <VerticalStackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding SelecionarEscalaCommand}" CommandParameter="5" />
+                                            </VerticalStackLayout.GestureRecognizers>
+                                            <Image Source="escala_muito_bem.svg" WidthRequest="40" HeightRequest="40" HorizontalOptions="Center" />
+                                            <Label Text="Muito bem" FontSize="9" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+
+                                    <!-- Texto -->
+                                    <Border Style="{StaticResource CampoTexto}" HeightRequest="100" IsVisible="{Binding EhTexto}">
+                                        <Editor Text="{Binding RespostaTextoAtual}" Placeholder="Digite sua resposta aqui..." AutoSize="TextChanges" />
+                                    </Border>
+
+                                    <!-- Múltipla Escolha -->
+                                    <VerticalStackLayout Spacing="8" IsVisible="{Binding EhMultiplaEscolha}">
+                                        <CollectionView ItemsSource="{Binding Opcoes}">
+                                            <CollectionView.ItemTemplate>
+                                                <DataTemplate x:DataType="x:String">
+                                                    <Border StrokeShape="RoundRectangle 14" Margin="0,4" Padding="16,10" Stroke="{StaticResource CinzaClaro}" BackgroundColor="White">
+                                                        <Border.Opacity>
+                                                            <MultiBinding Converter="{StaticResource DoisValoresIguaisParaOpacidadeConverter}">
+                                                                <Binding Path="." />
+                                                                <Binding Path="BindingContext.OpcaoSelecionada" Source="{RelativeSource AncestorType={x:Type CollectionView}}" />
+                                                            </MultiBinding>
+                                                        </Border.Opacity>
+                                                        <Border.GestureRecognizers>
+                                                            <TapGestureRecognizer Command="{Binding BindingContext.SelecionarOpcaoCommand, Source={RelativeSource AncestorType={x:Type CollectionView}}}"
+                                                                                   CommandParameter="{Binding .}" />
+                                                        </Border.GestureRecognizers>
+                                                        <Label Text="{Binding .}" FontSize="14" TextColor="{StaticResource AzulEscuro}" />
+                                                    </Border>
+                                                </DataTemplate>
+                                            </CollectionView.ItemTemplate>
+                                        </CollectionView>
+                                    </VerticalStackLayout>
+
+                                    <!-- Observações: texto + gravar, opcional -->
+                                    <VerticalStackLayout Spacing="8" IsVisible="{Binding MostrarObservacoes}" Margin="0,6,0,0">
+                                        <Label Text="Observações (opcional)" FontSize="12" TextColor="{StaticResource CinzaMedio}" />
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                            <Border Grid.Column="0" Style="{StaticResource CampoTexto}" HeightRequest="60">
+                                                <Editor Text="{Binding ObservacaoTexto}" Placeholder="Quer complementar com um texto?" AutoSize="TextChanges" />
+                                            </Border>
+                                            <Border Grid.Column="1"
+                                                    StrokeShape="RoundRectangle 20"
+                                                    BackgroundColor="{StaticResource AzulPrimario}"
+                                                    WidthRequest="44" HeightRequest="44"
+                                                    Padding="0"
+                                                    VerticalOptions="Center">
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding AlternarGravacaoCommand}" />
+                                                </Border.GestureRecognizers>
+                                                <Image Source="{Binding IconeAudio}" WidthRequest="18" HeightRequest="18" Opacity="1" />
+                                            </Border>
+                                        </Grid>
+                                    </VerticalStackLayout>
+
+                                </VerticalStackLayout>
+
+                                <!-- Fora da área travada de propósito: precisa
+                                     continuar tocável mesmo depois de enviada. -->
+                                <HorizontalStackLayout Spacing="12" IsVisible="{Binding TemAudio}">
+                                    <Label Text="🎙️" FontSize="14" VerticalOptions="Center" />
+                                    <Label Text="{Binding TextoBotaoTocar}" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource AzulPrimario}" VerticalOptions="Center">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding TocarAudioObservacaoCommand}" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+
+                                    <!-- Barrinha de progresso -->
+                                    <ProgressBar Progress="{Binding ProgressoAudio}"
+                                                 ProgressColor="{StaticResource AzulPrimario}"
+                                                 WidthRequest="70" HeightRequest="6"
+                                                 VerticalOptions="Center" />
+
+                                    <Label Text="Remover" FontSize="11" TextColor="#D9534F" VerticalOptions="Center" IsVisible="{Binding PodeEditar}">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding RemoverAudioCommand}" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                </HorizontalStackLayout>
+
+                                <Label Text="{Binding MensagemErroItem}" Style="{StaticResource TextoErro}"
+                                       IsVisible="{Binding MensagemErroItem, Converter={StaticResource StringNaoVazioConverter}}" FontSize="11" />
+
+                                <!-- Enviar essa pergunta específica -->
+                                <Button Text="Enviar resposta"
+                                        Command="{Binding EnviarRespostaCommand}"
+                                        Style="{StaticResource BotaoPrimario}"
+                                        HeightRequest="40" FontSize="13"
+                                        IsVisible="{Binding PodeEditar}"
+                                        Margin="0,4,0,0" />
+
+                                <ActivityIndicator IsRunning="{Binding Enviando}" IsVisible="{Binding Enviando}" Color="{StaticResource AzulPrimario}" />
+
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+</ContentPage>

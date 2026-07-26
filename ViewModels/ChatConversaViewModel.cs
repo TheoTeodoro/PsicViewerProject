@@ -23,6 +23,13 @@ namespace MauiApp1.ViewModels
 		public DateTime EnviadaEm { get; set; }
 		public bool EnviadaPorMim { get; set; }
 
+		// Preenchidos só quando essa mensagem é um feedback do psicólogo a
+		// uma resposta de questionário.
+		public Guid? RespostaId { get; set; }
+		public string? CitacaoTextoPergunta { get; set; }
+		public string? CitacaoTextoResposta { get; set; }
+		public bool EhFeedback => RespostaId.HasValue;
+
 		[ObservableProperty]
 		private bool excluida;
 
@@ -41,6 +48,12 @@ namespace MauiApp1.ViewModels
 			.FromSeconds(EstaTocando ? SegundosRestantes : (DuracaoSegundos ?? 0))
 			.ToString(@"m\:ss");
 
+		/// <summary>Fração de 0 a 1 de quanto já tocou — usado pra
+		/// posicionar o pontinho na barrinha de progresso do áudio.</summary>
+		public double ProgressoAudio => (!EstaTocando || DuracaoSegundos is null or 0)
+			? 0
+			: 1.0 - (SegundosRestantes / (double)DuracaoSegundos.Value);
+
 		public bool EhTexto => TipoConteudo == TipoConteudoMensagem.Texto && !Excluida;
 		public bool EhImagem => TipoConteudo == TipoConteudoMensagem.Imagem && !Excluida;
 		public bool EhAudio => TipoConteudo == TipoConteudoMensagem.Audio && !Excluida;
@@ -54,8 +67,17 @@ namespace MauiApp1.ViewModels
 			OnPropertyChanged(nameof(EhDocumento));
 		}
 
-		partial void OnEstaTocandoChanged(bool value) => OnPropertyChanged(nameof(TempoExibidoFormatado));
-		partial void OnSegundosRestantesChanged(int value) => OnPropertyChanged(nameof(TempoExibidoFormatado));
+		partial void OnEstaTocandoChanged(bool value)
+		{
+			OnPropertyChanged(nameof(TempoExibidoFormatado));
+			OnPropertyChanged(nameof(ProgressoAudio));
+		}
+
+		partial void OnSegundosRestantesChanged(int value)
+		{
+			OnPropertyChanged(nameof(TempoExibidoFormatado));
+			OnPropertyChanged(nameof(ProgressoAudio));
+		}
 	}
 
 	public partial class ChatConversaViewModel : ObservableObject, IDisposable
@@ -145,9 +167,16 @@ namespace MauiApp1.ViewModels
 						SegundosRestantes = m.DuracaoSegundos ?? 0,
 						Excluida = m.Excluida,
 						EnviadaEm = m.EnviadaEm,
-						EnviadaPorMim = m.RemetenteId == _sessao.UsuarioId
+						EnviadaPorMim = m.RemetenteId == _sessao.UsuarioId,
+						RespostaId = m.RespostaId,
+						CitacaoTextoPergunta = m.CitacaoTextoPergunta,
+						CitacaoTextoResposta = m.CitacaoTextoResposta
 					});
 				}
+
+				// Abrir a conversa marca como lidas as mensagens desse
+				// contato — é isso que faz a notificação sumir da lista.
+				await _chat.MarcarComoLidasAsync(_contatoId, _sessao.UsuarioId);
 			}
 			catch (Exception ex)
 			{
@@ -510,7 +539,10 @@ namespace MauiApp1.ViewModels
 					SegundosRestantes = e.DuracaoSegundos ?? 0,
 					Excluida = e.Excluida,
 					EnviadaEm = e.EnviadaEm,
-					EnviadaPorMim = false
+					EnviadaPorMim = false,
+					RespostaId = e.RespostaId,
+					CitacaoTextoPergunta = e.CitacaoTextoPergunta,
+					CitacaoTextoResposta = e.CitacaoTextoResposta
 				});
 			});
 		}

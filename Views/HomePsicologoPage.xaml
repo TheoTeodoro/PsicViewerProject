@@ -13,14 +13,32 @@
         <ScrollView Grid.Row="0">
             <VerticalStackLayout Padding="24,20,24,12" Spacing="18">
 
+                <!-- Sino de notificação -->
+                <Grid HorizontalOptions="Start" WidthRequest="30" HeightRequest="30" Margin="0,0,0,2">
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding AbrirNotificacaoCommand}" />
+                    </Grid.GestureRecognizers>
+                    <Image Source="icone_notificacao.svg" WidthRequest="24" HeightRequest="24" HorizontalOptions="Start" />
+                    <Border IsVisible="{Binding NotificacoesNaoLidas, Converter={StaticResource ContadorParaVisivelConverter}}"
+                            StrokeShape="RoundRectangle 8"
+                            Stroke="Transparent"
+                            BackgroundColor="#E24B4A"
+                            Padding="4,1"
+                            HorizontalOptions="Start" VerticalOptions="Start"
+                            Margin="14,-4,0,0">
+                        <Label Text="{Binding NotificacoesNaoLidas}" TextColor="White" FontSize="9" FontAttributes="Bold" />
+                    </Border>
+                </Grid>
+
                 <!-- Cabeçalho -->
                 <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
                     <Label Grid.Column="0"
                            Text="{Binding NomeUsuario, StringFormat='Olá, {0}'}"
-                           FontSize="24"
+                           FontSize="19"
                            FontAttributes="Bold"
                            TextColor="{StaticResource AzulEscuro}"
-                           VerticalOptions="Center" />
+                           VerticalOptions="Center"
+                           Margin="0,6,0,0" />
                     <Border Grid.Column="1"
                             StrokeShape="RoundRectangle 24"
                             HeightRequest="48" WidthRequest="48"

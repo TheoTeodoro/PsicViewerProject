@@ -12,6 +12,19 @@
             <conv:BoolParaTextoConverter x:Key="BoolParaTextoConverter" />
             <conv:StringNaoVazioConverter x:Key="StringNaoVazioConverter" />
             <conv:InversoBoolConverter x:Key="InversoBoolConverter" />
+            <conv:NaoLidaParaFonteConverter x:Key="NaoLidaParaFonteConverter" />
+            <conv:ContadorParaVisivelConverter x:Key="ContadorParaVisivelConverter" />
+            <conv:FiltroParaCorConverter x:Key="FiltroParaCorConverter" />
+            <conv:TipoPerguntaCorFundoConverter x:Key="TipoPerguntaCorFundoConverter" />
+            <conv:TipoPerguntaCorTextoConverter x:Key="TipoPerguntaCorTextoConverter" />
+            <conv:StringParaTimeSpanConverter x:Key="StringParaTimeSpanConverter" />
+            <conv:ValorIgualParaOpacidadeConverter x:Key="ValorIgualParaOpacidadeConverter" />
+            <conv:ValorIgualParaEscalaConverter x:Key="ValorIgualParaEscalaConverter" />
+            <conv:DoisValoresIguaisParaOpacidadeConverter x:Key="DoisValoresIguaisParaOpacidadeConverter" />
+            <conv:ProgressoParaPosicaoConverter x:Key="ProgressoParaPosicaoConverter" />
+            <conv:DiaAtivoFundoConverter x:Key="DiaAtivoFundoConverter" />
+            <conv:DiaAtivoTextoConverter x:Key="DiaAtivoTextoConverter" />
+            <conv:StringIgualConverter x:Key="StringIgualConverter" />
 
             <!-- Paleta extraída do Figma -->
             <Color x:Key="AzulPrimario">#004AAD</Color>

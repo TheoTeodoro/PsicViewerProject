@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MauiApp1.ViewModels"
+             x:Class="MauiApp1.Views.CriarQuestionarioPage"
+             x:DataType="vm:CriarQuestionarioViewModel"
+             Title=""
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="False">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20,16,20,32" Spacing="16">
+
+            <ImageButton Source="icone_voltar.svg"
+                         Clicked="OnVoltarClicked"
+                         BackgroundColor="Transparent"
+                         WidthRequest="36" HeightRequest="36"
+                         HorizontalOptions="Start" />
+
+            <Label Text="Novo Questionário" FontAttributes="Bold" FontSize="20" TextColor="{StaticResource AzulPrimario}" HorizontalOptions="Center" />
+
+            <!-- Título -->
+            <Border StrokeShape="RoundRectangle 16" Stroke="{StaticResource CinzaClaro}" BackgroundColor="#FAFBFC" Padding="16">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Título do Questionário" FontAttributes="Bold" FontSize="13" TextColor="{StaticResource AzulEscuro}" />
+                    <Border Style="{StaticResource CampoTexto}">
+                        <Entry Text="{Binding Titulo}" Placeholder="Digite o título aqui" VerticalOptions="Center" />
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="Perguntas" FontAttributes="Bold" FontSize="17" TextColor="{StaticResource AzulPrimario}" HorizontalOptions="Center" Margin="0,4,0,0" />
+
+            <!-- Montar pergunta -->
+            <Border StrokeShape="RoundRectangle 16" Stroke="{StaticResource CinzaClaro}" BackgroundColor="#FAFBFC" Padding="16">
+                <VerticalStackLayout Spacing="10">
+
+                    <Label Text="Tipo de Pergunta" FontAttributes="Bold" FontSize="13" TextColor="{StaticResource AzulEscuro}" />
+
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="6">
+                        <Border Grid.Column="0" StrokeShape="RoundRectangle 16" Padding="0,8"
+                                BackgroundColor="{Binding TipoPerguntaSelecionado, Converter={StaticResource TipoPerguntaCorFundoConverter}, ConverterParameter=Escala}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SelecionarTipoEscalaCommand}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="Escala" HorizontalTextAlignment="Center" FontSize="12" FontAttributes="Bold"
+                                   TextColor="{Binding TipoPerguntaSelecionado, Converter={StaticResource TipoPerguntaCorTextoConverter}, ConverterParameter=Escala}" />
+                        </Border>
+
+                        <Border Grid.Column="1" StrokeShape="RoundRectangle 16" Padding="0,8"
+                                BackgroundColor="{Binding TipoPerguntaSelecionado, Converter={StaticResource TipoPerguntaCorFundoConverter}, ConverterParameter=Texto}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SelecionarTipoTextoCommand}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="Texto" HorizontalTextAlignment="Center" FontSize="12" FontAttributes="Bold"
+                                   TextColor="{Binding TipoPerguntaSelecionado, Converter={StaticResource TipoPerguntaCorTextoConverter}, ConverterParameter=Texto}" />
+                        </Border>
+
+                        <Border Grid.Column="2" StrokeShape="RoundRectangle 16" Padding="0,8"
+                                BackgroundColor="{Binding TipoPerguntaSelecionado, Converter={StaticResource TipoPerguntaCorFundoConverter}, ConverterParameter=MultiplaEscolha}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SelecionarTipoMultiplaEscolhaCommand}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="Múltipla Escolha" HorizontalTextAlignment="Center" FontSize="11" FontAttributes="Bold"
+                                   TextColor="{Binding TipoPerguntaSelecionado, Converter={StaticResource TipoPerguntaCorTextoConverter}, ConverterParameter=MultiplaEscolha}" />
+                        </Border>
+                    </Grid>
+
+                    <Label Text="Pergunta" FontSize="13" TextColor="{StaticResource CinzaMedio}" Margin="0,6,0,0" />
+                    <Border Style="{StaticResource CampoTexto}" HeightRequest="70">
+                        <Editor Text="{Binding TextoPerguntaAtual}" Placeholder="Digite sua pergunta aqui..." AutoSize="TextChanges" />
+                    </Border>
+
+                    <Label Text="Horário da notificação" FontSize="13" TextColor="{StaticResource CinzaMedio}" Margin="0,6,0,0" />
+                    <Border Style="{StaticResource CampoTexto}">
+                        <TimePicker Time="{Binding HorarioPerguntaAtual, Converter={StaticResource StringParaTimeSpanConverter}}" Format="HH:mm" VerticalOptions="Center" />
+                    </Border>
+
+                    <Label Text="Opções (separadas por vírgula)" FontSize="12" TextColor="{StaticResource CinzaMedio}"
+                           IsVisible="{Binding MostrarCampoOpcoes}" Margin="0,4,0,0" />
+                    <Border Style="{StaticResource CampoTexto}" IsVisible="{Binding MostrarCampoOpcoes}">
+                        <Entry Text="{Binding OpcoesPerguntaAtual}" Placeholder="Ex: Sim, Não, Talvez" VerticalOptions="Center" />
+                    </Border>
+
+                    <Button Text="+ Adicionar Pergunta"
+                            Command="{Binding AdicionarPerguntaCommand}"
+                            Style="{StaticResource BotaoPrimario}"
+                            Margin="0,6,0,0" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Perguntas já adicionadas -->
+            <CollectionView ItemsSource="{Binding Perguntas}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ItemPerguntaForm">
+                        <Border StrokeShape="RoundRectangle 16" Stroke="{StaticResource CinzaClaro}" BackgroundColor="White" Margin="0,6" Padding="14">
+                            <VerticalStackLayout Spacing="8">
+                                <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="8">
+                                    <Border Grid.Column="0" StrokeShape="RoundRectangle 10" BackgroundColor="#E4F0FF" Padding="8,3">
+                                        <Label Text="{Binding TipoExibido}" FontSize="10" TextColor="{StaticResource AzulPrimario}" FontAttributes="Bold" />
+                                    </Border>
+                                    <Label Grid.Column="1" Text="{Binding Horario}" FontSize="11" TextColor="{StaticResource CinzaMedio}" VerticalOptions="Center" Margin="6,0" />
+                                    <Label Grid.Column="3" Text="✕" FontSize="16" TextColor="#D9534F" VerticalOptions="Center">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoverPerguntaCommand}"
+                                                                   CommandParameter="{Binding .}" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                </Grid>
+                                <Label Text="{Binding Texto}" FontSize="14" TextColor="{StaticResource AzulEscuro}" LineBreakMode="WordWrap" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Label Text="Vincular pacientes" FontAttributes="Bold" FontSize="17" TextColor="{StaticResource AzulPrimario}" HorizontalOptions="Center" Margin="0,4,0,0" />
+
+            <Border StrokeShape="RoundRectangle 16" Stroke="{StaticResource CinzaClaro}" BackgroundColor="#FAFBFC" Padding="16">
+                <VerticalStackLayout Spacing="10">
+                    <Border Style="{StaticResource CampoTexto}">
+                        <Entry Text="{Binding TextoBuscaPaciente}" Placeholder="Buscar paciente..." VerticalOptions="Center" />
+                    </Border>
+
+                    <CollectionView ItemsSource="{Binding Pacientes}">
+                        <CollectionView.EmptyView>
+                            <Label Text="Nenhum paciente vinculado a você ainda." FontSize="12" TextColor="{StaticResource CinzaMedio}" Padding="0,8" />
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ItemPacienteSelecao">
+                                <VerticalStackLayout Padding="0,8" Spacing="10">
+
+                                    <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="10">
+                                        <CheckBox Grid.Column="0"
+                                                  IsChecked="{Binding Selecionado}"
+                                                  Color="{StaticResource AzulPrimario}"
+                                                  VerticalOptions="Center" />
+
+                                        <Border Grid.Column="1" StrokeShape="RoundRectangle 16" WidthRequest="32" HeightRequest="32" Padding="0" VerticalOptions="Center">
+                                            <Image Source="{Binding FotoExibida}" Aspect="AspectFill" />
+                                        </Border>
+
+                                        <Label Grid.Column="2" Text="{Binding Nome}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
+                                    </Grid>
+
+                                    <!-- Dias da semana em que as perguntas são enviadas pra esse
+                                         paciente — todos marcados por padrão; toca pra desmarcar. -->
+                                    <HorizontalStackLayout Spacing="5" HorizontalOptions="Center">
+                                        <Border StrokeShape="RoundRectangle 14" WidthRequest="28" HeightRequest="28" Padding="0"
+                                                BackgroundColor="{Binding Dom, Converter={StaticResource DiaAtivoFundoConverter}}">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding AlternarDiaCommand}" CommandParameter="Dom" />
+                                            </Border.GestureRecognizers>
+                                            <Label Text="Dom" FontSize="9" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                                   TextColor="{Binding Dom, Converter={StaticResource DiaAtivoTextoConverter}}" />
+                                        </Border>
+                                        <Border StrokeShape="RoundRectangle 14" WidthRequest="28" HeightRequest="28" Padding="0"
+                                                BackgroundColor="{Binding Seg, Converter={StaticResource DiaAtivoFundoConverter}}">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding AlternarDiaCommand}" CommandParameter="Seg" />
+                                            </Border.GestureRecognizers>
+                                            <Label Text="Seg" FontSize="9" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                                   TextColor="{Binding Seg, Converter={StaticResource DiaAtivoTextoConverter}}" />
+                                        </Border>
+                                        <Border StrokeShape="RoundRectangle 14" WidthRequest="28" HeightRequest="28" Padding="0"
+                                                BackgroundColor="{Binding Ter, Converter={StaticResource DiaAtivoFundoConverter}}">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding AlternarDiaCommand}" CommandParameter="Ter" />
+                                            </Border.GestureRecognizers>
+                                            <Label Text="Ter" FontSize="9" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                                   TextColor="{Binding Ter, Converter={StaticResource DiaAtivoTextoConverter}}" />
+                                        </Border>
+                                        <Border StrokeShape="RoundRectangle 14" WidthRequest="28" HeightRequest="28" Padding="0"
+                                                BackgroundColor="{Binding Qua, Converter={StaticResource DiaAtivoFundoConverter}}">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding AlternarDiaCommand}" CommandParameter="Qua" />
+                                            </Border.GestureRecognizers>
+                                            <Label Text="Qua" FontSize="9" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                                   TextColor="{Binding Qua, Converter={StaticResource DiaAtivoTextoConverter}}" />
+                                        </Border>
+                                        <Border StrokeShape="RoundRectangle 14" WidthRequest="28" HeightRequest="28" Padding="0"
+                                                BackgroundColor="{Binding Qui, Converter={StaticResource DiaAtivoFundoConverter}}">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding AlternarDiaCommand}" CommandParameter="Qui" />
+                                            </Border.GestureRecognizers>
+                                            <Label Text="Qui" FontSize="9" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                                   TextColor="{Binding Qui, Converter={StaticResource DiaAtivoTextoConverter}}" />
+                                        </Border>
+                                        <Border StrokeShape="RoundRectangle 14" WidthRequest="28" HeightRequest="28" Padding="0"
+                                                BackgroundColor="{Binding Sex, Converter={StaticResource DiaAtivoFundoConverter}}">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding AlternarDiaCommand}" CommandParameter="Sex" />
+                                            </Border.GestureRecognizers>
+                                            <Label Text="Sex" FontSize="9" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                                   TextColor="{Binding Sex, Converter={StaticResource DiaAtivoTextoConverter}}" />
+                                        </Border>
+                                        <Border StrokeShape="RoundRectangle 14" WidthRequest="28" HeightRequest="28" Padding="0"
+                                                BackgroundColor="{Binding Sab, Converter={StaticResource DiaAtivoFundoConverter}}">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding AlternarDiaCommand}" CommandParameter="Sab" />
+                                            </Border.GestureRecognizers>
+                                            <Label Text="Sáb" FontSize="9" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                                   TextColor="{Binding Sab, Converter={StaticResource DiaAtivoTextoConverter}}" />
+                                        </Border>
+                                    </HorizontalStackLayout>
+                                    <BoxView HeightRequest="1" Color="#ECEBF3" Margin="0,4,0,0" />
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="{Binding MensagemErro}" Style="{StaticResource TextoErro}" HorizontalTextAlignment="Center" />
+
+            <Button Text="Salvar"
+                    Command="{Binding SalvarCommand}"
+                    Style="{StaticResource BotaoPrimario}"
+                    Margin="0,6,0,0" />
+
+            <ActivityIndicator IsRunning="{Binding Carregando}" IsVisible="{Binding Carregando}" Color="{StaticResource AzulPrimario}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

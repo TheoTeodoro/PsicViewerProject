@@ -55,11 +55,19 @@
                             </Grid>
                         </Border>
 
-                        <Button Text="Sign Out"
-                                Style="{StaticResource BotaoPrimario}"
-                                Command="{Binding SairCommand}"
-                                WidthRequest="300"
-                                Margin="0,24,0,0" />
+                        <Border StrokeShape="RoundRectangle 24"
+                                BackgroundColor="{StaticResource AzulPrimario}"
+                                WidthRequest="300" HeightRequest="52"
+                                Padding="0"
+                                Margin="0,24,0,0">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SairCommand}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" HorizontalOptions="Center">
+                                <Image Grid.Column="0" Source="icone_sair.svg" WidthRequest="20" HeightRequest="20" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="Sair da Conta" TextColor="White" FontAttributes="Bold" FontSize="15" VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
                     </VerticalStackLayout>
                 </Border>
             </Grid>

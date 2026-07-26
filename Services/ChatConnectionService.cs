@@ -19,6 +19,15 @@ namespace MauiApp1.Services
 		public int? DuracaoSegundos { get; set; }
 		public bool Excluida { get; set; }
 		public DateTime EnviadaEm { get; set; }
+
+		// Preenchidos só quando essa mensagem é um FEEDBACK do psicólogo a
+		// uma resposta de questionário — RespostaId aponta pra resposta
+		// original, e os dois textos de citação são o "congelamento" da
+		// pergunta e da resposta no momento do feedback (tipo citar
+		// mensagem no WhatsApp).
+		public Guid? RespostaId { get; set; }
+		public string? CitacaoTextoPergunta { get; set; }
+		public string? CitacaoTextoResposta { get; set; }
 	}
 
 	public class MensagemExcluidaEventArgs : EventArgs
@@ -81,10 +90,35 @@ namespace MauiApp1.Services
 			return Guid.Parse(resultado.GetProperty("id").GetString()!);
 		}
 
+		/// <summary>Envia um feedback do psicólogo a uma resposta de
+		/// questionário específica — vai pro chat normal com o paciente,
+		/// citando a pergunta/resposta originais.</summary>
+		public async Task<Guid> EnviarFeedbackAsync(Guid remetenteId, Guid destinatarioId, Guid respostaId,
+			TipoConteudoMensagem tipo, string conteudo, string? caminhoArquivo = null, string? nomeArquivoOriginal = null,
+			int? duracaoSegundos = null)
+		{
+			if (!Conectado || _connection is null)
+				throw new InvalidOperationException("Sem conexão com o servidor de chat.");
+
+			var resultado = await _connection.InvokeAsync<JsonElement>("EnviarFeedback",
+				remetenteId.ToString(), destinatarioId.ToString(), respostaId.ToString(),
+				tipo.ToString(), conteudo, caminhoArquivo, nomeArquivoOriginal, duracaoSegundos);
+
+			return Guid.Parse(resultado.GetProperty("id").GetString()!);
+		}
+
 		public async Task ExcluirMensagemAsync(Guid mensagemId, Guid usuarioId)
 		{
 			if (!Conectado || _connection is null) return;
 			await _connection.InvokeAsync("ExcluirMensagem", mensagemId.ToString(), usuarioId.ToString());
+		}
+
+		/// <summary>Chamado ao abrir a conversa — marca as mensagens desse
+		/// remetente como lidas, tirando elas da lista de notificações.</summary>
+		public async Task MarcarComoLidasAsync(Guid remetenteId, Guid destinatarioId)
+		{
+			if (!Conectado || _connection is null) return;
+			await _connection.InvokeAsync("MarcarComoLidas", remetenteId.ToString(), destinatarioId.ToString());
 		}
 
 		public async Task DesconectarAsync()
@@ -128,7 +162,10 @@ namespace MauiApp1.Services
 				NomeArquivoOriginal = item.TryGetProperty("nomeArquivoOriginal", out var no) && no.ValueKind != JsonValueKind.Null ? no.GetString() : null,
 				DuracaoSegundos = item.TryGetProperty("duracaoSegundos", out var ds) && ds.ValueKind == JsonValueKind.Number ? ds.GetInt32() : null,
 				Excluida = item.TryGetProperty("excluida", out var ex) && ex.ValueKind == JsonValueKind.True,
-				EnviadaEm = DateTime.Parse(item.GetProperty("enviadaEm").GetString()!).ToLocalTime()
+				EnviadaEm = DateTime.Parse(item.GetProperty("enviadaEm").GetString()!).ToLocalTime(),
+				RespostaId = item.TryGetProperty("respostaId", out var ri) && ri.ValueKind == JsonValueKind.String ? Guid.Parse(ri.GetString()!) : null,
+				CitacaoTextoPergunta = item.TryGetProperty("citacaoTextoPergunta", out var ctp) && ctp.ValueKind == JsonValueKind.String ? ctp.GetString() : null,
+				CitacaoTextoResposta = item.TryGetProperty("citacaoTextoResposta", out var ctr) && ctr.ValueKind == JsonValueKind.String ? ctr.GetString() : null
 			};
 		}
 	}

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MauiApp1.ViewModels"
+             x:Class="MauiApp1.Views.DarFeedbackPage"
+             x:DataType="vm:DarFeedbackViewModel"
+             Title=""
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="False">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20,16,20,32" Spacing="16">
+
+            <ImageButton Source="icone_voltar.svg"
+                         Command="{Binding VoltarCommand}"
+                         BackgroundColor="Transparent"
+                         WidthRequest="36" HeightRequest="36"
+                         HorizontalOptions="Start" />
+
+            <Label Text="Dar Feedback" FontAttributes="Bold" FontSize="20" TextColor="{StaticResource AzulPrimario}" HorizontalOptions="Center" />
+
+            <!-- Contexto: pergunta + o que o paciente respondeu -->
+            <Border StrokeShape="RoundRectangle 16" Stroke="{StaticResource CinzaClaro}" BackgroundColor="#FAFBFC" Padding="16">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="{Binding PacienteNome}" FontAttributes="Bold" FontSize="14" TextColor="{StaticResource AzulEscuro}" />
+                    <Label Text="{Binding QuestionarioTitulo}" FontSize="12" TextColor="{StaticResource CinzaMedio}" />
+
+                    <BoxView HeightRequest="1" Color="{StaticResource CinzaClaro}" Margin="0,4" />
+
+                    <Label Text="Pergunta" FontAttributes="Bold" FontSize="12" TextColor="{StaticResource CinzaMedio}" />
+                    <Label Text="{Binding PerguntaTexto}" FontSize="14" TextColor="{StaticResource AzulEscuro}" />
+
+                    <Label Text="Resposta do paciente" FontAttributes="Bold" FontSize="12" TextColor="{StaticResource CinzaMedio}" Margin="0,6,0,0" />
+                    <Label Text="{Binding RespostaExibida}" FontSize="14" TextColor="{StaticResource AzulEscuro}" />
+
+                    <!-- Áudio de observação que o PACIENTE gravou junto
+                         com a resposta (diferente do áudio de feedback
+                         do psicólogo, que é mais abaixo) -->
+                    <HorizontalStackLayout IsVisible="{Binding TemAudioResposta}" Spacing="10" Margin="0,6,0,0">
+                        <HorizontalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding TocarAudioRespostaCommand}" />
+                        </HorizontalStackLayout.GestureRecognizers>
+
+                        <Border StrokeShape="RoundRectangle 18" BackgroundColor="{StaticResource AzulPrimario}"
+                                WidthRequest="36" HeightRequest="36" Padding="8">
+                            <Grid>
+                                <Path Data="M8 5v14l11-7z"
+                                      IsVisible="{Binding TocandoAudioResposta, Converter={StaticResource InversoBoolConverter}}"
+                                      Fill="White" WidthRequest="18" HeightRequest="18" Aspect="Uniform" />
+                                <Path Data="M6 5h4v14H6zm8 0h4v14h-4z"
+                                      IsVisible="{Binding TocandoAudioResposta}"
+                                      Fill="White" WidthRequest="18" HeightRequest="18" Aspect="Uniform" />
+                            </Grid>
+                        </Border>
+
+                        <Label Text="Áudio da observação" FontSize="13" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
+
+                        <ProgressBar Progress="{Binding ProgressoAudioResposta}"
+                                     ProgressColor="{StaticResource AzulPrimario}"
+                                     WidthRequest="70" HeightRequest="6"
+                                     VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="Seu feedback" FontAttributes="Bold" FontSize="17" TextColor="{StaticResource AzulPrimario}" HorizontalOptions="Center" />
+
+            <!-- Texto — sempre visível e editável, independente do áudio.
+                 Vai junto como legenda se um áudio for enviado. -->
+            <Border Style="{StaticResource CampoTexto}" HeightRequest="110">
+                <Editor Text="{Binding TextoFeedback}" Placeholder="Digite o feedback aqui (opcional se for mandar áudio)..." AutoSize="TextChanges" />
+            </Border>
+
+            <Label Text="{Binding MensagemErro}" Style="{StaticResource TextoErro}" HorizontalTextAlignment="Center" />
+
+            <!-- Estado 1: nada gravado ainda -->
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10"
+                  IsVisible="{Binding GravandoAudio, Converter={StaticResource InversoBoolConverter}}">
+                <ImageButton Grid.Column="0"
+                             Source="icone_microfone.svg"
+                             Command="{Binding IniciarGravacaoCommand}"
+                             IsVisible="{Binding AudioGravado, Converter={StaticResource InversoBoolConverter}}"
+                             BackgroundColor="{StaticResource CinzaClaro}"
+                             CornerRadius="24"
+                             WidthRequest="48" HeightRequest="48"
+                             Padding="12" />
+
+                <Button Grid.Column="1"
+                        Text="Enviar Feedback"
+                        Command="{Binding EnviarTextoCommand}"
+                        Style="{StaticResource BotaoPrimario}"
+                        IsVisible="{Binding AudioGravado, Converter={StaticResource InversoBoolConverter}}" />
+            </Grid>
+
+            <!-- Estado 2: gravando — só um botão de PARAR, nada de enviar aqui -->
+            <Grid IsVisible="{Binding GravandoAudio}"
+                  ColumnDefinitions="Auto,*,Auto"
+                  Padding="12,8"
+                  BackgroundColor="#FFF3E0"
+                  ColumnSpacing="10">
+                <Ellipse Grid.Column="0" Fill="#E24B4A" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" />
+                <Label Grid.Column="1" Text="{Binding TempoGravacaoFormatado, StringFormat='Gravando áudio... {0}'}" VerticalOptions="Center" FontSize="13" />
+
+                <Border Grid.Column="2"
+                        StrokeShape="RoundRectangle 18"
+                        BackgroundColor="#E24B4A"
+                        WidthRequest="36" HeightRequest="36" Padding="0">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding PararGravacaoCommand}" />
+                    </Border.GestureRecognizers>
+                    <Label Text="■" TextColor="White" FontSize="14" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                </Border>
+            </Grid>
+
+            <!-- Estado 3: áudio gravado, esperando decisão — ouvir prévia,
+                 remover (grava de novo), ou enviar de vez -->
+            <Border IsVisible="{Binding AudioGravado}"
+                    StrokeShape="RoundRectangle 16"
+                    Stroke="{StaticResource CinzaClaro}"
+                    BackgroundColor="#FAFBFC"
+                    Padding="14">
+                <VerticalStackLayout Spacing="12">
+
+                    <HorizontalStackLayout Spacing="10">
+                        <HorizontalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding TocarPreviaCommand}" />
+                        </HorizontalStackLayout.GestureRecognizers>
+
+                        <Border StrokeShape="RoundRectangle 18" BackgroundColor="{StaticResource AzulPrimario}"
+                                WidthRequest="36" HeightRequest="36" Padding="8">
+                            <Grid>
+                                <Path Data="M8 5v14l11-7z"
+                                      IsVisible="{Binding TocandoPrevia, Converter={StaticResource InversoBoolConverter}}"
+                                      Fill="White" WidthRequest="18" HeightRequest="18" Aspect="Uniform" />
+                                <Path Data="M6 5h4v14H6zm8 0h4v14h-4z"
+                                      IsVisible="{Binding TocandoPrevia}"
+                                      Fill="White" WidthRequest="18" HeightRequest="18" Aspect="Uniform" />
+                            </Grid>
+                        </Border>
+
+                        <Label Text="Áudio gravado" FontAttributes="Bold" FontSize="13" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
+
+                        <Label Text="{Binding TempoPreviaFormatado}" FontSize="13" TextColor="{StaticResource CinzaMedio}" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                        <Border Grid.Column="0"
+                                StrokeShape="RoundRectangle 16"
+                                Stroke="#D9534F"
+                                BackgroundColor="White"
+                                Padding="14,0">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding RemoverAudioGravadoCommand}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="Remover" TextColor="#D9534F" FontAttributes="Bold" FontSize="13"
+                                   HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                        </Border>
+
+                        <Button Grid.Column="1"
+                                Text="Enviar Áudio"
+                                Command="{Binding EnviarAudioCommand}"
+                                Style="{StaticResource BotaoPrimario}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <ActivityIndicator IsRunning="{Binding Carregando}" IsVisible="{Binding Carregando}" Color="{StaticResource AzulPrimario}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

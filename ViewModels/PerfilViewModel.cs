@@ -58,7 +58,18 @@ namespace MauiApp1.ViewModels
 
 		[RelayCommand]
 		private async Task AbrirQuestionariosAsync()
-			=> await Application.Current!.MainPage!.DisplayAlert("Em breve", "Tela de Questionários ainda não implementada.", "OK");
+		{
+			if (_sessao.Tipo == TipoUsuarioLogado.Psicologo)
+			{
+				var page = _serviceProvider.GetRequiredService<QuestionariosPage>();
+				await Application.Current!.MainPage!.Navigation.PushAsync(page);
+			}
+			else
+			{
+				var page = _serviceProvider.GetRequiredService<QuestionariosPacientePage>();
+				await Application.Current!.MainPage!.Navigation.PushAsync(page);
+			}
+		}
 
 		[RelayCommand]
 		private async Task AbrirEditarPerfilAsync()
@@ -74,6 +85,13 @@ namespace MauiApp1.ViewModels
 		[RelayCommand]
 		private async Task SairAsync()
 		{
+			var confirmou = await Application.Current!.MainPage!.DisplayAlert(
+				"Deseja encerrar sua experiência?",
+				"Você precisará entrar de novo com seu e-mail e senha na próxima vez.",
+				"Sair", "Cancelar");
+
+			if (!confirmou) return;
+
 			await _chat.DesconectarAsync();
 			_sessao.EncerrarSessao();
 
