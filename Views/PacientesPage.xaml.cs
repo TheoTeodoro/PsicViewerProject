@@ -1,21 +1,21 @@
 using MauiApp1.ViewModels;
-
 namespace MauiApp1.Views;
-
 public partial class PacientesPage : ContentPage
 {
 	private readonly PacientesViewModel _viewModel;
-
 	public PacientesPage(PacientesViewModel viewModel)
 	{
 		InitializeComponent();
 		_viewModel = viewModel;
 		BindingContext = viewModel;
 	}
-
 	protected override void OnAppearing()
 	{
 		base.OnAppearing();
 		_viewModel.CarregarCommand.Execute(null);
+	}
+	private async void OnVoltarClicked(object sender, EventArgs e)
+	{
+		await Navigation.PopAsync();
 	}
 }

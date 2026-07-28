@@ -4,7 +4,7 @@
              xmlns:vm="clr-namespace:MauiApp1.ViewModels"
              x:Class="MauiApp1.Views.ChatListPage"
              x:DataType="vm:ChatListViewModel"
-             Title="Chat"
+             Title=""
              BackgroundColor="White">
 
     <Grid RowDefinitions="Auto,*" Padding="20,16">

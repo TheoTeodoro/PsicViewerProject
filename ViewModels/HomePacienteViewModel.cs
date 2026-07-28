@@ -85,9 +85,20 @@ namespace MauiApp1.ViewModels
 		[RelayCommand]
 		private async Task RegistrarHumorAsync()
 			=> await Application.Current!.MainPage!.DisplayAlert("Em breve", "Registro de humor ainda não implementado.", "OK");
+
+		/// <summary>Abre a tela de Questionários já na aba "Histórico" —
+		/// reaproveita o que já existe lá (respostas de dias anteriores,
+		/// agrupadas por dia, só leitura) em vez de duplicar em outro
+		/// lugar. Antes só mostrava "Em breve".</summary>
 		[RelayCommand]
 		private async Task AbrirHistoricoAsync()
-			=> await Application.Current!.MainPage!.DisplayAlert("Em breve", "Histórico ainda não implementado.", "OK");
+		{
+			var page = _serviceProvider.GetRequiredService<QuestionariosPacientePage>();
+			if (page.BindingContext is QuestionariosPacienteViewModel vm)
+				await vm.FiltrarHistoricoCommand.ExecuteAsync(null);
+
+			await Application.Current!.MainPage!.Navigation.PushAsync(page);
+		}
 		[RelayCommand]
 		private async Task AbrirQuestionariosAsync()
 		{

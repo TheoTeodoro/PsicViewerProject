@@ -46,6 +46,30 @@ namespace MauiApp1.ViewModels
 		}
 	}
 
+	/// <summary>Um questionário respondido num dia específico — é isso
+	/// que aparece na lista de Histórico do PACIENTE (agrupado por
+	/// questionário+dia, não pergunta por pergunta) e é clicável: toca
+	/// pra ver as perguntas e respostas daquele dia específico.</summary>
+	public class ItemHistoricoQuestionario
+	{
+		public Guid QuestionarioId { get; set; }
+		public string QuestionarioTitulo { get; set; } = string.Empty;
+		public DateTime UltimaRespostaEm { get; set; }
+		public string DataParaApi { get; set; } = string.Empty; // "yyyy-MM-dd"
+
+		public string HorarioExibido => UltimaRespostaEm.ToString("HH:mm");
+	}
+
+	/// <summary>Um grupo de questionários respondidos no mesmo dia.</summary>
+	public class GrupoHistoricoQuestionario : List<ItemHistoricoQuestionario>
+	{
+		public string NomeGrupo { get; }
+		public GrupoHistoricoQuestionario(string nomeGrupo, List<ItemHistoricoQuestionario> itens) : base(itens)
+		{
+			NomeGrupo = nomeGrupo;
+		}
+	}
+
 	public partial class QuestionariosPacienteViewModel : ObservableObject
 	{
 		private readonly QuestionarioApiService _questionarios;
@@ -53,7 +77,7 @@ namespace MauiApp1.ViewModels
 		private readonly IServiceProvider _serviceProvider;
 
 		public ObservableCollection<ItemQuestionarioPendente> Questionarios { get; } = new();
-		public ObservableCollection<GrupoHistorico> GruposHistorico { get; } = new();
+		public ObservableCollection<GrupoHistoricoQuestionario> GruposHistorico { get; } = new();
 
 		[ObservableProperty]
 		private bool carregando;
@@ -62,7 +86,24 @@ namespace MauiApp1.ViewModels
 		private string mensagemErro = string.Empty;
 
 		[ObservableProperty]
-		private string filtroSelecionado = "Pendentes";
+		private string filtroSelecionado = "EmUso";
+
+		public Color CorFundoEmUso => FiltroSelecionado == "EmUso" ? Color.FromArgb("#004AAD") : Colors.White;
+		public Color CorFundoHistorico => FiltroSelecionado == "Histórico" ? Color.FromArgb("#004AAD") : Colors.White;
+		public Color CorTextoEmUso => FiltroSelecionado == "EmUso"
+			? Colors.White
+			: (Application.Current?.Resources.TryGetValue("AzulEscuro", out var corEmUso) == true ? (Color)corEmUso : Colors.Black);
+		public Color CorTextoHistorico => FiltroSelecionado == "Histórico"
+			? Colors.White
+			: (Application.Current?.Resources.TryGetValue("AzulEscuro", out var corHistorico) == true ? (Color)corHistorico : Colors.Black);
+
+		partial void OnFiltroSelecionadoChanged(string value)
+		{
+			OnPropertyChanged(nameof(CorFundoEmUso));
+			OnPropertyChanged(nameof(CorFundoHistorico));
+			OnPropertyChanged(nameof(CorTextoEmUso));
+			OnPropertyChanged(nameof(CorTextoHistorico));
+		}
 
 		private bool _historicoJaCarregado;
 
@@ -118,47 +159,38 @@ namespace MauiApp1.ViewModels
 			var historico = await _questionarios.ListarHistoricoAsync(_sessao.UsuarioId);
 			_historicoJaCarregado = true;
 
-			var itens = historico.Select(h => new ItemHistorico
-			{
-				RespostaId = h.RespostaId,
-				QuestionarioTitulo = h.QuestionarioTitulo,
-				PerguntaTexto = h.PerguntaTexto,
-				RespondidoEm = h.RespondidoEm,
-				RespostaResumo = FormatarResposta(h)
-			}).ToList();
+			// Agrupa por questionário+dia — uma "submissão" — em vez de
+			// uma linha por pergunta respondida. Cada submissão é um item
+			// clicável na lista; o detalhe (pergunta a pergunta) só é
+			// buscado quando o paciente toca nela.
+			var submissoes = historico
+				.GroupBy(h => (h.QuestionarioId, h.Data))
+				.Select(g => new ItemHistoricoQuestionario
+				{
+					QuestionarioId = g.Key.QuestionarioId,
+					QuestionarioTitulo = g.First().QuestionarioTitulo,
+					UltimaRespostaEm = g.Max(h => h.RespondidoEm),
+					DataParaApi = g.Key.Data
+				})
+				.ToList();
 
-			var agrupados = itens
-				.GroupBy(i => i.RespondidoEm.Date)
+			var agrupados = submissoes
+				.GroupBy(i => i.UltimaRespostaEm.Date)
 				.OrderByDescending(g => g.Key)
-				.Select(g => new GrupoHistorico(
+				.Select(g => new GrupoHistoricoQuestionario(
 					CapitalizarPrimeiraLetra(g.Key.ToString("dddd, dd 'de' MMMM", new CultureInfo("pt-BR"))),
-					g.OrderByDescending(i => i.RespondidoEm).ToList()));
+					g.OrderByDescending(i => i.UltimaRespostaEm).ToList()));
 
 			GruposHistorico.Clear();
 			foreach (var grupo in agrupados)
 				GruposHistorico.Add(grupo);
 		}
 
-		private static string FormatarResposta(ItemHistoricoDto h)
-		{
-			var partes = new List<string>();
-
-			if (!string.IsNullOrWhiteSpace(h.RespostaTexto))
-				partes.Add(h.RespostaTexto);
-			else if (h.ValorEscala is int valor)
-				partes.Add($"Nível {valor}");
-
-			if (!string.IsNullOrWhiteSpace(h.Observacao))
-				partes.Add($"Observação: {h.Observacao}");
-
-			return partes.Count == 0 ? "(sem conteúdo)" : string.Join(" — ", partes);
-		}
-
 		private static string CapitalizarPrimeiraLetra(string texto)
 			=> string.IsNullOrEmpty(texto) ? texto : char.ToUpper(texto[0], new CultureInfo("pt-BR")) + texto[1..];
 
 		[RelayCommand]
-		private void FiltrarPendentes() => FiltroSelecionado = "Pendentes";
+		private void FiltrarEmUso() => FiltroSelecionado = "EmUso";
 
 		[RelayCommand]
 		private async Task FiltrarHistoricoAsync()
@@ -175,6 +207,20 @@ namespace MauiApp1.ViewModels
 			var page = _serviceProvider.GetRequiredService<ResponderQuestionarioPage>();
 			if (page.BindingContext is ResponderQuestionarioViewModel vm)
 				await vm.CarregarAsync(item.Id);
+			await Application.Current!.MainPage!.Navigation.PushAsync(page);
+		}
+
+		/// <summary>Abre o detalhe de um questionário respondido naquele
+		/// dia — só leitura, não dá pra editar nem responder de novo.</summary>
+		[RelayCommand]
+		private async Task AbrirSubmissaoHistoricoAsync(ItemHistoricoQuestionario item)
+		{
+			if (item is null) return;
+
+			var page = _serviceProvider.GetRequiredService<DetalheHistoricoQuestionarioPage>();
+			if (page.BindingContext is DetalheHistoricoQuestionarioViewModel vm)
+				await vm.CarregarAsync(item.QuestionarioId, _sessao.UsuarioId, item.DataParaApi, item.QuestionarioTitulo);
+
 			await Application.Current!.MainPage!.Navigation.PushAsync(page);
 		}
 

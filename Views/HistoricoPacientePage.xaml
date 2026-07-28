@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MauiApp1.ViewModels"
+             x:Class="MauiApp1.Views.HistoricoPacientePage"
+             x:DataType="vm:HistoricoPacienteViewModel"
+             Title=""
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid RowDefinitions="Auto,*" Padding="20,16">
+
+        <VerticalStackLayout Grid.Row="0" Spacing="4">
+            <ImageButton Source="icone_voltar.svg"
+                         Command="{Binding VoltarCommand}"
+                         BackgroundColor="Transparent"
+                         WidthRequest="36" HeightRequest="36"
+                         HorizontalOptions="Start" />
+
+            <Label Text="{Binding PacienteNome, StringFormat='Histórico de Questionários de {0}'}"
+                   FontAttributes="Bold" FontSize="17" TextColor="{StaticResource AzulEscuro}"
+                   Margin="0,8,0,12" />
+
+            <Label Text="{Binding MensagemErro}" Style="{StaticResource TextoErro}"
+                   IsVisible="{Binding MensagemErro, Converter={StaticResource StringNaoVazioConverter}}" />
+        </VerticalStackLayout>
+
+        <RefreshView Grid.Row="1" IsRefreshing="{Binding Carregando}">
+            <CollectionView ItemsSource="{Binding Grupos}" IsGrouped="True">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" Padding="0,30" Spacing="6">
+                        <Label Text="Esse paciente ainda não respondeu nenhum questionário seu." TextColor="{StaticResource CinzaMedio}" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.GroupHeaderTemplate>
+                    <DataTemplate x:DataType="vm:GrupoHistoricoQuestionario">
+                        <Label Text="{Binding NomeGrupo}" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource AzulPrimario}" Margin="0,14,0,4" />
+                    </DataTemplate>
+                </CollectionView.GroupHeaderTemplate>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ItemHistoricoQuestionario">
+                        <Border Style="{StaticResource CampoTexto}" Margin="0,4" Padding="16,14">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AbrirSubmissaoCommand}"
+                                                       CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="*,Auto,Auto">
+                                <Label Grid.Column="0" Text="{Binding QuestionarioTitulo}" FontAttributes="Bold" FontSize="14" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="{Binding HorarioExibido}" FontSize="11" TextColor="{StaticResource CinzaMedio}" VerticalOptions="Center" Margin="0,0,8,0" />
+                                <Label Grid.Column="2" Text="›" FontSize="20" TextColor="{StaticResource CinzaMedio}" VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+    </Grid>
+</ContentPage>

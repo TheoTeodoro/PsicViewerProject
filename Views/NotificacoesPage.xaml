@@ -5,15 +5,34 @@
              xmlns:svc="clr-namespace:MauiApp1.Services"
              x:Class="MauiApp1.Views.NotificacoesPage"
              x:DataType="vm:NotificacoesViewModel"
-             Title="Notificações"
-             BackgroundColor="White">
+             Title=""
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="False">
 
-    <Grid RowDefinitions="Auto,Auto,*" Padding="20,16">
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="20,16">
 
-        <Label Grid.Row="0" Text="🔔 Notificações" FontAttributes="Bold" FontSize="20" TextColor="{StaticResource AzulEscuro}" />
-        <Label Grid.Row="1" Text="{Binding Resumo}" FontSize="13" TextColor="{StaticResource CinzaMedio}" Margin="0,4,0,12" />
+        <ImageButton Grid.Row="0"
+                     Source="icone_voltar.svg"
+                     Clicked="OnVoltarClicked"
+                     BackgroundColor="Transparent"
+                     WidthRequest="36" HeightRequest="36"
+                     HorizontalOptions="Start"
+                     Padding="4"
+                     Margin="0,0,0,8" />
 
-        <RefreshView Grid.Row="2" Command="{Binding CarregarCommand}" IsRefreshing="{Binding Carregando}">
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+            <Label Grid.Column="0" Text="🔔 Notificações" FontAttributes="Bold" FontSize="20" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
+            <Label Grid.Column="1" Text="Limpar notificações"
+                   FontSize="12" TextColor="{StaticResource AzulPrimario}"
+                   VerticalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding LimparNotificacoesCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+        </Grid>
+        <Label Grid.Row="2" Text="{Binding Resumo}" FontSize="13" TextColor="{StaticResource CinzaMedio}" Margin="0,4,0,12" />
+
+        <RefreshView Grid.Row="3" Command="{Binding CarregarCommand}" IsRefreshing="{Binding Carregando}">
             <CollectionView ItemsSource="{Binding Itens}">
                 <CollectionView.EmptyView>
                     <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="20">
@@ -54,6 +73,5 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
         </RefreshView>
-
     </Grid>
 </ContentPage>

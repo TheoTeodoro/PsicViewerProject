@@ -10,6 +10,10 @@ namespace MauiApp1.ViewModels
 	public class ItemVinculo
 	{
 		public Guid VinculoId { get; set; }
+
+		/// <summary>Id do PACIENTE em si (diferente do VinculoId, que é o
+		/// Id do vínculo) — precisa disso pra abrir os dados dele.</summary>
+		public Guid PacienteId { get; set; }
 		public string Nome { get; set; } = string.Empty;
 		public string? FotoUrl { get; set; }
 
@@ -60,7 +64,7 @@ namespace MauiApp1.ViewModels
 
 				foreach (var v in lista)
 				{
-					var item = new ItemVinculo { VinculoId = v.Id, Nome = v.ContatoNome, FotoUrl = v.ContatoFotoUrl };
+					var item = new ItemVinculo { VinculoId = v.Id, PacienteId = v.ContatoId, Nome = v.ContatoNome, FotoUrl = v.ContatoFotoUrl };
 
 					if (v.Status == "Aceito")
 					{
@@ -110,6 +114,35 @@ namespace MauiApp1.ViewModels
 				await CarregarAsync();
 			else
 				MensagemErro = "Não foi possível recusar a solicitação.";
+		}
+
+		/// <summary>Abre os dados públicos do paciente — só faz sentido pra
+		/// quem já está de fato vinculado (não pra solicitações pendentes).</summary>
+		[RelayCommand]
+		private async Task AbrirPacienteAsync(ItemVinculo item)
+		{
+			if (item is null) return;
+
+			var page = _serviceProvider.GetRequiredService<DadosPacientePage>();
+			if (page.BindingContext is DadosPacienteViewModel vm)
+				await vm.CarregarAsync(item.PacienteId);
+
+			await Application.Current!.MainPage!.Navigation.PushAsync(page);
+		}
+
+		/// <summary>Histórico de questionários respondidos por esse paciente
+		/// — só os que ESTE psicólogo mesmo vinculou a ele (o servidor
+		/// garante isso, não depende do app).</summary>
+		[RelayCommand]
+		private async Task AbrirHistoricoAsync(ItemVinculo item)
+		{
+			if (item is null) return;
+
+			var page = _serviceProvider.GetRequiredService<HistoricoPacientePage>();
+			if (page.BindingContext is HistoricoPacienteViewModel vm)
+				await vm.CarregarAsync(item.PacienteId, item.Nome);
+
+			await Application.Current!.MainPage!.Navigation.PushAsync(page);
 		}
 
 		[RelayCommand]

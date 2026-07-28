@@ -38,12 +38,42 @@ namespace MauiApp1.ViewModels
 				foreach (var item in itens)
 					Itens.Add(item);
 				await _notificacoes.MarcarTodasComoVistasAsync(itens);
+
+				 
+				_notificacoes.MarcarListaComoVisualizadaAgora();
 			}
 			finally
 			{
 				Carregando = false;
 			}
 		}
+
+		 
+		[RelayCommand]
+		private async Task LimparNotificacoesAsync()
+		{
+			if (Itens.Count == 0) return;
+
+			var confirmar = await Application.Current!.MainPage!.DisplayAlert(
+				"Limpar notificações",
+				"Tem certeza que quer limpar todas as notificações?",
+				"Limpar", "Cancelar");
+
+			if (!confirmar) return;
+
+			Carregando = true;
+			try
+			{
+				await _notificacoes.LimparTodasAsync(Itens);
+				Itens.Clear();
+				Resumo = "Nenhuma notificação pendente";
+			}
+			finally
+			{
+				Carregando = false;
+			}
+		}
+
 		[RelayCommand]
 		private async Task AbrirItemAsync(ItemNotificacao item)
 		{
@@ -66,18 +96,14 @@ namespace MauiApp1.ViewModels
 
 			if (item.Tipo == TipoNotificacao.RespostaQuestionario)
 			{
-				// item.VinculoId reaproveita o campo pra guardar o Id da
-				// resposta (ver NotificacaoService) — é o que a tela de
-				// Dar Feedback precisa pra carregar o contexto.
+				 
 				var page = _serviceProvider.GetRequiredService<DarFeedbackPage>();
 				if (page.BindingContext is DarFeedbackViewModel vm)
 					await vm.CarregarAsync(item.VinculoId);
 				await Application.Current!.MainPage!.Navigation.PushAsync(page);
 				return;
 			}
-
-			// VinculoAceito, Mensagem, Audio, Imagem, Documento, Feedback ->
-			// todos abrem a conversa com quem gerou a notificação.
+ 
 			var chatPage = _serviceProvider.GetRequiredService<ChatConversaPage>();
 			if (chatPage.BindingContext is ChatConversaViewModel vmChat)
 				await vmChat.DefinirContatoAsync(item.ContatoId, item.ContatoNome);

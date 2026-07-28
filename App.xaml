@@ -25,7 +25,7 @@
             <conv:DiaAtivoFundoConverter x:Key="DiaAtivoFundoConverter" />
             <conv:DiaAtivoTextoConverter x:Key="DiaAtivoTextoConverter" />
             <conv:StringIgualConverter x:Key="StringIgualConverter" />
-
+        
             <!-- Paleta extraída do Figma -->
             <Color x:Key="AzulPrimario">#004AAD</Color>
             <Color x:Key="AzulEscuro">#1C274C</Color>

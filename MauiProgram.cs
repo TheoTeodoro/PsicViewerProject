@@ -24,6 +24,7 @@ namespace MauiApp1
 			builder.Services.AddSingleton<VinculoApiService>();
 			builder.Services.AddSingleton<NotificacaoService>();
 			builder.Services.AddSingleton<QuestionarioApiService>();
+			builder.Services.AddSingleton<PacientePerfilPublicoService>();
 			// Chat: conexão SignalR + upload de arquivo + gravador de áudio
 			builder.Services.AddSingleton<ChatConnectionService>();
 			builder.Services.AddSingleton<ArquivoUploadService>();
@@ -51,6 +52,10 @@ namespace MauiApp1
 			builder.Services.AddTransient<QuestionariosPacientePage>();
 			builder.Services.AddTransient<ResponderQuestionarioPage>();
 			builder.Services.AddTransient<DarFeedbackPage>();
+			builder.Services.AddTransient<DadosPacientePage>();
+			builder.Services.AddTransient<HistoricoPacientePage>();
+			builder.Services.AddTransient<DetalheHistoricoQuestionarioPage>();
+			builder.Services.AddTransient<RelatoriosPage>();
 			// ViewModels
 			builder.Services.AddTransient<LoginViewModel>();
 			builder.Services.AddTransient<PreContaViewModel>();
@@ -73,6 +78,10 @@ namespace MauiApp1
 			builder.Services.AddTransient<QuestionariosPacienteViewModel>();
 			builder.Services.AddTransient<ResponderQuestionarioViewModel>();
 			builder.Services.AddTransient<DarFeedbackViewModel>();
+			builder.Services.AddTransient<DadosPacienteViewModel>();
+			builder.Services.AddTransient<HistoricoPacienteViewModel>();
+			builder.Services.AddTransient<DetalheHistoricoQuestionarioViewModel>();
+			builder.Services.AddTransient<RelatoriosViewModel>();
 #if DEBUG
 			builder.Logging.AddDebug();
 #endif

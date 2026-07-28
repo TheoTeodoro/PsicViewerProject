@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MauiApp1.ViewModels"
+             x:Class="MauiApp1.Views.RelatoriosPage"
+             x:DataType="vm:RelatoriosViewModel"
+             Title=""
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="False">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20,16,20,32" Spacing="14">
+
+            <ImageButton Source="icone_voltar.svg"
+                         Command="{Binding VoltarCommand}"
+                         BackgroundColor="Transparent"
+                         WidthRequest="36" HeightRequest="36"
+                         HorizontalOptions="Start" />
+
+            <Label Text="Relatório de Humor" FontAttributes="Bold" FontSize="20" TextColor="{StaticResource AzulPrimario}" HorizontalOptions="Center" />
+
+            <Label Text="{Binding MensagemErro}" Style="{StaticResource TextoErro}" HorizontalTextAlignment="Center"
+                   IsVisible="{Binding MensagemErro, Converter={StaticResource StringNaoVazioConverter}}" />
+
+            <!-- Paciente -->
+            <Border Style="{StaticResource CampoTexto}">
+                <Picker Title="Selecione um paciente"
+                        ItemsSource="{Binding Pacientes}"
+                        SelectedItem="{Binding PacienteSelecionado}"
+                        VerticalOptions="Center" />
+            </Border>
+
+            <!-- Questionário -->
+            <Border Style="{StaticResource CampoTexto}">
+                <Picker Title="Selecione um questionário"
+                        ItemsSource="{Binding Questionarios}"
+                        SelectedItem="{Binding QuestionarioSelecionado}"
+                        VerticalOptions="Center" />
+            </Border>
+
+            <Label Text="Esse questionário não tem nenhuma pergunta de Escala pra analisar."
+                   FontSize="12" TextColor="{StaticResource CinzaMedio}" HorizontalTextAlignment="Center"
+                   IsVisible="{Binding TemPerguntaEscala, Converter={StaticResource InversoBoolConverter}}" />
+
+            <!-- Perguntas de Escala — cada uma marcada vira uma linha colorida -->
+            <VerticalStackLayout Spacing="4" IsVisible="{Binding TemPerguntaEscala}">
+                <Label Text="Perguntas a analisar (Escala)" FontSize="12" TextColor="{StaticResource CinzaMedio}" />
+                <CollectionView ItemsSource="{Binding PerguntasEscala}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ItemPerguntaSelecionavel">
+                            <Grid Padding="0,4" ColumnDefinitions="Auto,Auto,*" ColumnSpacing="8">
+                                <CheckBox Grid.Column="0" IsChecked="{Binding Selecionada}" Color="{StaticResource AzulPrimario}" VerticalOptions="Center" />
+                                <Border Grid.Column="1" StrokeShape="RoundRectangle 7" BackgroundColor="{Binding Cor}"
+                                        WidthRequest="14" HeightRequest="14" Padding="0" VerticalOptions="Center" />
+                                <Label Grid.Column="2" Text="{Binding Texto}" FontSize="13" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+
+            <!-- Perguntas de destaque (Múltipla Escolha, opcional, várias) -->
+            <VerticalStackLayout Spacing="4" IsVisible="{Binding TemPerguntaEscala}">
+                <Label Text="Destacar respostas de (opcional)" FontSize="12" TextColor="{StaticResource CinzaMedio}" />
+                <CollectionView ItemsSource="{Binding PerguntasDestaque}">
+                    <CollectionView.EmptyView>
+                        <Label Text="Esse questionário não tem pergunta de Múltipla Escolha." FontSize="11" TextColor="{StaticResource CinzaMedio}" Padding="0,4" />
+                    </CollectionView.EmptyView>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ItemPerguntaSelecionavel">
+                            <Grid Padding="0,4" ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                                <CheckBox Grid.Column="0" IsChecked="{Binding Selecionada}" Color="{StaticResource AzulPrimario}" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="{Binding Texto}" FontSize="13" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+
+            <!-- Período -->
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="6">
+                <Border Grid.Column="0" StrokeShape="RoundRectangle 18" Padding="0,10"
+                        BackgroundColor="{Binding PeriodoSelecionado, Converter={StaticResource StringIgualConverter}, ConverterParameter=Semanal}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SetPeriodoCommand}" CommandParameter="Semanal" />
+                    </Border.GestureRecognizers>
+                    <Label Text="Semanal" HorizontalTextAlignment="Center" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}" />
+                </Border>
+
+                <Border Grid.Column="1" StrokeShape="RoundRectangle 18" Padding="0,10"
+                        BackgroundColor="{Binding PeriodoSelecionado, Converter={StaticResource StringIgualConverter}, ConverterParameter=Mensal}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SetPeriodoCommand}" CommandParameter="Mensal" />
+                    </Border.GestureRecognizers>
+                    <Label Text="Mensal" HorizontalTextAlignment="Center" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}" />
+                </Border>
+
+                <Border Grid.Column="2" StrokeShape="RoundRectangle 18" Padding="0,10"
+                        BackgroundColor="{Binding PeriodoSelecionado, Converter={StaticResource StringIgualConverter}, ConverterParameter=Personalizado}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SetPeriodoCommand}" CommandParameter="Personalizado" />
+                    </Border.GestureRecognizers>
+                    <Label Text="Personalizado" HorizontalTextAlignment="Center" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}" />
+                </Border>
+            </Grid>
+
+            <!-- Datas personalizadas -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10" IsVisible="{Binding MostrarDatasPersonalizadas}">
+                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                    <Label Text="De" FontSize="12" TextColor="{StaticResource CinzaMedio}" />
+                    <Border Style="{StaticResource CampoTexto}">
+                        <DatePicker Date="{Binding DataInicioPersonalizada}" Format="dd/MM/yyyy" VerticalOptions="Center" />
+                    </Border>
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Column="1" Spacing="4">
+                    <Label Text="Até" FontSize="12" TextColor="{StaticResource CinzaMedio}" />
+                    <Border Style="{StaticResource CampoTexto}">
+                        <DatePicker Date="{Binding DataFimPersonalizada}" Format="dd/MM/yyyy" VerticalOptions="Center" />
+                    </Border>
+                </VerticalStackLayout>
+            </Grid>
+
+            <!-- Sempre visível, qualquer período — marca as perguntas que
+                 quiser e só recarrega quando apertar aqui (evita a corrida
+                 de recarregar sozinho a cada caixinha marcada). -->
+            <Button Text="Gerar Gráfico"
+                    Command="{Binding CarregarGraficoCommand}"
+                    Style="{StaticResource BotaoPrimario}" />
+
+            <!-- Gráfico (tocável) + balão de fala -->
+            <Grid>
+                <Border StrokeShape="RoundRectangle 16" Stroke="{StaticResource CinzaClaro}" BackgroundColor="#FAFBFC" Padding="10" HeightRequest="320">
+                    <GraphicsView x:Name="GraphicsViewGrafico"
+                                  Drawable="{Binding Grafico}"
+                                  IsVisible="{Binding TemDados}"
+                                  EndInteraction="OnGraficoTocado" />
+                </Border>
+
+                <!-- Balão de fala — toca num ponto do gráfico pra ver a
+                     observação daquele dia (e ouvir o áudio, se tiver) -->
+                <Border IsVisible="{Binding MostrarBalao}"
+                        TranslationX="{Binding BalaoX}"
+                        TranslationY="{Binding BalaoY}"
+                        HorizontalOptions="Start" VerticalOptions="Start"
+                        WidthRequest="190"
+                        StrokeShape="RoundRectangle 12"
+                        Stroke="{StaticResource CinzaClaro}"
+                        BackgroundColor="White"
+                        Padding="10">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Offset="0,3" Radius="10" Opacity="0.22" />
+                    </Border.Shadow>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding FecharBalaoCommand}" NumberOfTapsRequired="2" />
+                    </Border.GestureRecognizers>
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="{Binding TextoBalao}" FontSize="12" TextColor="{StaticResource AzulEscuro}"
+                               LineBreakMode="TailTruncation" MaxLines="4" />
+
+                        <HorizontalStackLayout IsVisible="{Binding TemAudioBalao}" Spacing="8">
+                            <HorizontalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding TocarAudioBalaoCommand}" />
+                            </HorizontalStackLayout.GestureRecognizers>
+
+                            <Border StrokeShape="RoundRectangle 14" BackgroundColor="{StaticResource AzulPrimario}"
+                                    WidthRequest="28" HeightRequest="28" Padding="7">
+                                <Grid>
+                                    <Path Data="M8 5v14l11-7z"
+                                          IsVisible="{Binding TocandoAudioBalao, Converter={StaticResource InversoBoolConverter}}"
+                                          Fill="White" WidthRequest="14" HeightRequest="14" Aspect="Uniform" />
+                                    <Path Data="M6 5h4v14H6zm8 0h4v14h-4z"
+                                          IsVisible="{Binding TocandoAudioBalao}"
+                                          Fill="White" WidthRequest="14" HeightRequest="14" Aspect="Uniform" />
+                                </Grid>
+                            </Border>
+
+                            <ProgressBar Progress="{Binding ProgressoAudioBalao}"
+                                         ProgressColor="{StaticResource AzulPrimario}"
+                                         WidthRequest="60" HeightRequest="6"
+                                         VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+
+                        <Label Text="toque de novo pra fechar" FontSize="9" TextColor="{StaticResource CinzaMedio}" FontAttributes="Italic" />
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+
+            <!-- Legenda dos marcadores de destaque -->
+            <HorizontalStackLayout Spacing="16" HorizontalOptions="Center" IsVisible="{Binding TemDestaqueAtivo}">
+                <HorizontalStackLayout Spacing="5">
+                    <Ellipse Fill="#1F9D55" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" />
+                    <Label Text="Sim" FontSize="11" TextColor="{StaticResource CinzaMedio}" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+                <HorizontalStackLayout Spacing="5">
+                    <Ellipse Fill="#D9534F" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" />
+                    <Label Text="Não" FontSize="11" TextColor="{StaticResource CinzaMedio}" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+                <HorizontalStackLayout Spacing="5">
+                    <Ellipse Fill="#B0B0B0" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" />
+                    <Label Text="Não respondeu" FontSize="11" TextColor="{StaticResource CinzaMedio}" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </HorizontalStackLayout>
+
+            <Label Text="Toque num ponto da linha pra ver a observação daquele dia."
+                   FontSize="11" TextColor="{StaticResource CinzaMedio}" HorizontalTextAlignment="Center"
+                   IsVisible="{Binding TemDados}" />
+
+            <VerticalStackLayout IsVisible="{Binding TemDados, Converter={StaticResource InversoBoolConverter}}"
+                                  HorizontalOptions="Center" Padding="0,20" Spacing="6">
+                <Label Text="Sem dados suficientes ainda" FontAttributes="Bold" FontSize="14" TextColor="{StaticResource CinzaMedio}" HorizontalTextAlignment="Center" />
+                <Label Text="Marque pelo menos uma pergunta de Escala com respostas registradas nesse período." FontSize="12" TextColor="{StaticResource CinzaMedio}" HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+
+            <ActivityIndicator IsRunning="{Binding Carregando}" IsVisible="{Binding Carregando}" Color="{StaticResource AzulPrimario}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MauiApp1.ViewModels"
+             x:Class="MauiApp1.Views.DetalheHistoricoQuestionarioPage"
+             x:DataType="vm:DetalheHistoricoQuestionarioViewModel"
+             Title=""
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="False">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20,16,20,32" Spacing="16">
+
+            <ImageButton Source="icone_voltar.svg"
+                         Command="{Binding VoltarCommand}"
+                         BackgroundColor="Transparent"
+                         WidthRequest="36" HeightRequest="36"
+                         HorizontalOptions="Start" />
+
+            <VerticalStackLayout Spacing="2">
+                <Label Text="{Binding QuestionarioTitulo}" FontAttributes="Bold" FontSize="19" TextColor="{StaticResource AzulPrimario}" HorizontalTextAlignment="Center" />
+                <Label Text="{Binding DataExibida}" FontSize="12" TextColor="{StaticResource CinzaMedio}" HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+
+            <Label Text="{Binding MensagemErro}" Style="{StaticResource TextoErro}" HorizontalTextAlignment="Center"
+                   IsVisible="{Binding MensagemErro, Converter={StaticResource StringNaoVazioConverter}}" />
+
+            <CollectionView ItemsSource="{Binding Perguntas}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ItemPerguntaHistorico">
+                        <Border StrokeShape="RoundRectangle 16" Stroke="{StaticResource CinzaClaro}"
+                                BackgroundColor="{Binding CorFundoCard}"
+                                Margin="0,6" Padding="16">
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="{Binding Texto}" FontAttributes="Bold" FontSize="14" TextColor="{StaticResource AzulEscuro}" LineBreakMode="WordWrap" />
+
+                                <Grid IsVisible="{Binding EhEscala}" ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                    <Image Grid.Column="0" Source="{Binding IconeEscala}" WidthRequest="36" HeightRequest="36" VerticalOptions="Start" />
+                                    <Label Grid.Column="1" Text="{Binding RespostaExibida}" FontSize="14" TextColor="{StaticResource AzulEscuro}"
+                                           VerticalOptions="Center" Opacity="0.85" LineBreakMode="WordWrap" />
+                                </Grid>
+
+                                <Label Text="{Binding RespostaExibida}"
+                                       IsVisible="{Binding EhEscala, Converter={StaticResource InversoBoolConverter}}"
+                                       FontSize="14"
+                                       FontAttributes="{Binding EstiloResposta}"
+                                       TextColor="{StaticResource AzulEscuro}"
+                                       Opacity="0.85"
+                                       LineBreakMode="WordWrap" />
+
+                                <HorizontalStackLayout IsVisible="{Binding TemAudio}" Spacing="10" Margin="0,4,0,0">
+                                    <HorizontalStackLayout.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.TocarAudioCommand}"
+                                                               CommandParameter="{Binding .}" />
+                                    </HorizontalStackLayout.GestureRecognizers>
+
+                                    <Border StrokeShape="RoundRectangle 16" BackgroundColor="{StaticResource AzulPrimario}"
+                                            WidthRequest="32" HeightRequest="32" Padding="7">
+                                        <Grid>
+                                            <Path Data="M8 5v14l11-7z"
+                                                  IsVisible="{Binding TocandoAudio, Converter={StaticResource InversoBoolConverter}}"
+                                                  Fill="White" WidthRequest="16" HeightRequest="16" Aspect="Uniform" />
+                                            <Path Data="M6 5h4v14H6zm8 0h4v14h-4z"
+                                                  IsVisible="{Binding TocandoAudio}"
+                                                  Fill="White" WidthRequest="16" HeightRequest="16" Aspect="Uniform" />
+                                        </Grid>
+                                    </Border>
+
+                                    <Label Text="Áudio de observação" FontSize="12" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
+
+                                    <ProgressBar Progress="{Binding ProgressoAudio}"
+                                                 ProgressColor="{StaticResource AzulPrimario}"
+                                                 WidthRequest="60" HeightRequest="6"
+                                                 VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <ActivityIndicator IsRunning="{Binding Carregando}" IsVisible="{Binding Carregando}" Color="{StaticResource AzulPrimario}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -28,22 +28,22 @@
             <Grid ColumnDefinitions="*,*" ColumnSpacing="6" Margin="0,4,0,0">
                 <Border Grid.Column="0"
                         StrokeShape="RoundRectangle 18"
-                        BackgroundColor="{Binding FiltroSelecionado, Converter={StaticResource FiltroParaCorConverter}, ConverterParameter=Pendentes}"
+                        BackgroundColor="{Binding CorFundoEmUso}"
                         Padding="0,10">
                     <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding FiltrarPendentesCommand}" />
+                        <TapGestureRecognizer Command="{Binding FiltrarEmUsoCommand}" />
                     </Border.GestureRecognizers>
-                    <Label Text="Pendentes" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="13" TextColor="{StaticResource AzulEscuro}" />
+                    <Label Text="Em uso" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="13" TextColor="{Binding CorTextoEmUso}" />
                 </Border>
 
                 <Border Grid.Column="1"
                         StrokeShape="RoundRectangle 18"
-                        BackgroundColor="{Binding FiltroSelecionado, Converter={StaticResource FiltroParaCorConverter}, ConverterParameter=Histórico}"
+                        BackgroundColor="{Binding CorFundoHistorico}"
                         Padding="0,10">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding FiltrarHistoricoCommand}" />
                     </Border.GestureRecognizers>
-                    <Label Text="Histórico" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="13" TextColor="{StaticResource AzulEscuro}" />
+                    <Label Text="Histórico" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="13" TextColor="{Binding CorTextoHistorico}" />
                 </Border>
             </Grid>
 
@@ -56,11 +56,11 @@
              altura dentro de outro ScrollView (ver histórico de bugs
              anteriores nessa mesma tela). -->
         <RefreshView Grid.Row="1" Command="{Binding CarregarCommand}" IsRefreshing="{Binding Carregando}" Margin="24,0,24,0"
-                     IsVisible="{Binding FiltroSelecionado, Converter={StaticResource StringIgualConverter}, ConverterParameter=Pendentes}">
+                     IsVisible="{Binding FiltroSelecionado, Converter={StaticResource StringIgualConverter}, ConverterParameter=EmUso}">
             <CollectionView ItemsSource="{Binding Questionarios}">
                 <CollectionView.EmptyView>
                     <VerticalStackLayout HorizontalOptions="Center" Padding="0,30" Spacing="6">
-                        <Label Text="Nenhum questionário pendente hoje." TextColor="{StaticResource CinzaMedio}" HorizontalTextAlignment="Center" />
+                        <Label Text="Nenhum questionário em uso hoje." TextColor="{StaticResource CinzaMedio}" HorizontalTextAlignment="Center" />
                     </VerticalStackLayout>
                 </CollectionView.EmptyView>
                 <CollectionView.ItemTemplate>
@@ -83,7 +83,8 @@
             </CollectionView>
         </RefreshView>
 
-        <!-- Histórico: agrupado por dia, só leitura -->
+        <!-- Histórico: um card por questionário respondido no dia,
+             clicável — abre o detalhe (pergunta a pergunta), só leitura -->
         <RefreshView Grid.Row="1" Command="{Binding CarregarCommand}" IsRefreshing="{Binding Carregando}" Margin="24,0,24,0"
                      IsVisible="{Binding FiltroSelecionado, Converter={StaticResource StringIgualConverter}, ConverterParameter=Histórico}">
             <CollectionView ItemsSource="{Binding GruposHistorico}" IsGrouped="True">
@@ -94,22 +95,23 @@
                 </CollectionView.EmptyView>
 
                 <CollectionView.GroupHeaderTemplate>
-                    <DataTemplate x:DataType="vm:GrupoHistorico">
+                    <DataTemplate x:DataType="vm:GrupoHistoricoQuestionario">
                         <Label Text="{Binding NomeGrupo}" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource AzulPrimario}" Margin="0,14,0,4" />
                     </DataTemplate>
                 </CollectionView.GroupHeaderTemplate>
 
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="vm:ItemHistorico">
-                        <Border Style="{StaticResource CampoTexto}" Margin="0,4" Padding="16,12">
-                            <VerticalStackLayout Spacing="4">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <Label Grid.Column="0" Text="{Binding QuestionarioTitulo}" FontSize="11" TextColor="{StaticResource CinzaMedio}" />
-                                    <Label Grid.Column="1" Text="{Binding HorarioExibido}" FontSize="11" TextColor="{StaticResource CinzaMedio}" />
-                                </Grid>
-                                <Label Text="{Binding PerguntaTexto}" FontAttributes="Bold" FontSize="13" TextColor="{StaticResource AzulEscuro}" />
-                                <Label Text="{Binding RespostaResumo}" FontSize="13" TextColor="{StaticResource AzulEscuro}" Opacity="0.8" />
-                            </VerticalStackLayout>
+                    <DataTemplate x:DataType="vm:ItemHistoricoQuestionario">
+                        <Border Style="{StaticResource CampoTexto}" Margin="0,4" Padding="16,14">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AbrirSubmissaoHistoricoCommand}"
+                                                       CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="*,Auto,Auto">
+                                <Label Grid.Column="0" Text="{Binding QuestionarioTitulo}" FontAttributes="Bold" FontSize="14" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="{Binding HorarioExibido}" FontSize="11" TextColor="{StaticResource CinzaMedio}" VerticalOptions="Center" Margin="0,0,8,0" />
+                                <Label Grid.Column="2" Text="›" FontSize="20" TextColor="{StaticResource CinzaMedio}" VerticalOptions="Center" />
+                            </Grid>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
@@ -125,7 +127,7 @@
                     <VerticalStackLayout.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding IrParaHomeCommand}" />
                     </VerticalStackLayout.GestureRecognizers>
-                    <Label Text="🏠" FontSize="18" HorizontalOptions="Center" />
+                    <Image Source="icone_atalho_home_cinza.svg" WidthRequest="22" HeightRequest="22" HorizontalOptions="Center" />
                     <Label Text="Home" FontSize="10" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
                 </VerticalStackLayout>
 
@@ -133,12 +135,12 @@
                     <VerticalStackLayout.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding AbrirChatCommand}" />
                     </VerticalStackLayout.GestureRecognizers>
-                    <Label Text="💬" FontSize="18" HorizontalOptions="Center" />
+                    <Image Source="icone_atalho_chat_cinza.svg" WidthRequest="22" HeightRequest="22" HorizontalOptions="Center" />
                     <Label Text="Chat" FontSize="10" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Grid.Column="2" Spacing="2" HorizontalOptions="Center">
-                    <Label Text="📋" FontSize="18" HorizontalOptions="Center" />
+                    <Image Source="icone_atalho_questionarios_azul.svg" WidthRequest="22" HeightRequest="22" HorizontalOptions="Center" />
                     <Label Text="Questionários" FontSize="9" TextColor="{StaticResource AzulPrimario}" FontAttributes="Bold" HorizontalOptions="Center" />
                 </VerticalStackLayout>
 
@@ -146,7 +148,7 @@
                     <VerticalStackLayout.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding AbrirPerfilCommand}" />
                     </VerticalStackLayout.GestureRecognizers>
-                    <Label Text="👤" FontSize="18" HorizontalOptions="Center" />
+                    <Image Source="icone_atalho_perfil_cinza.svg" WidthRequest="22" HeightRequest="22" HorizontalOptions="Center" />
                     <Label Text="Perfil" FontSize="10" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
                 </VerticalStackLayout>
             </Grid>

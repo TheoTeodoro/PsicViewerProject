@@ -14,4 +14,8 @@ public partial class QuestionariosPage : ContentPage
 		base.OnAppearing();
 		_viewModel.CarregarCommand.Execute(null);
 	}
+	private async void OnVoltarClicked(object sender, EventArgs e)
+	{
+		await Navigation.PopAsync();
+	}
 }

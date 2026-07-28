@@ -34,6 +34,15 @@ namespace MauiApp1.ViewModels
 		[ObservableProperty]
 		private int notificacoesNaoLidas;
 
+		// Começa recolhido — só o título "Sumário Clínico" aparece, os
+		// números ficam escondidos até o psicólogo tocar pra expandir.
+		[ObservableProperty]
+		private bool sumarioExpandido;
+
+		public string SetaSumario => SumarioExpandido ? "▲" : "▼";
+
+		partial void OnSumarioExpandidoChanged(bool value) => OnPropertyChanged(nameof(SetaSumario));
+
 		public string FotoExibida => string.IsNullOrEmpty(_sessao.FotoUrl)
 			? "avatar_placeholder.jpg"
 			: $"{ApiConfig.ServidorBaseUrl}{_sessao.FotoUrl}";
@@ -53,11 +62,13 @@ namespace MauiApp1.ViewModels
 
 		public void AtualizarFoto() => OnPropertyChanged(nameof(FotoExibida));
 
+		[RelayCommand]
+		private void AlternarSumario() => SumarioExpandido = !SumarioExpandido;
+
 		/// <summary>Chamado no OnAppearing — busca os números reais do
-		/// Sumário Clínico. RespostasPendentes agora é de verdade: conta
-		/// quantas perguntas ativas ainda não foram respondidas HOJE,
-		/// somando todos os pacientes vinculados (antes ficava fixo em 7,
-		/// nunca calculado).</summary>
+		/// Sumário Clínico. RespostasPendentes conta quantas perguntas
+		/// ativas ainda não foram respondidas HOJE, somando todos os
+		/// pacientes vinculados.</summary>
 		public async Task CarregarSumarioAsync()
 		{
 			try
@@ -131,7 +142,10 @@ namespace MauiApp1.ViewModels
 
 		[RelayCommand]
 		private async Task AbrirRelatoriosAsync()
-			=> await Application.Current!.MainPage!.DisplayAlert("Em breve", "Tela de Relatórios ainda não implementada.", "OK");
+		{
+			var page = _serviceProvider.GetRequiredService<RelatoriosPage>();
+			await Application.Current!.MainPage!.Navigation.PushAsync(page);
+		}
 
 		[RelayCommand]
 		private async Task AbrirChatAsync()

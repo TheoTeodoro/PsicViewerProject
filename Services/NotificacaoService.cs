@@ -63,15 +63,23 @@ namespace MauiApp1.Services
 	{
 		private readonly VinculoApiService _vinculo;
 		private readonly QuestionarioApiService _questionarios;
+		private readonly ChatConnectionService _chat;
 		private readonly SessaoUsuario _sessao;
 		private readonly HttpClient _http = new();
 
-		public NotificacaoService(VinculoApiService vinculo, QuestionarioApiService questionarios, SessaoUsuario sessao)
+		
+		private DateTime _ultimaVisualizacao = DateTime.MinValue;
+
+		public NotificacaoService(VinculoApiService vinculo, QuestionarioApiService questionarios, ChatConnectionService chat, SessaoUsuario sessao)
 		{
 			_vinculo = vinculo;
 			_questionarios = questionarios;
+			_chat = chat;
 			_sessao = sessao;
 		}
+
+		
+		public void MarcarListaComoVisualizadaAgora() => _ultimaVisualizacao = DateTime.Now;
 
 		public async Task<List<ItemNotificacao>> ObterNotificacoesAsync()
 		{
@@ -92,13 +100,34 @@ namespace MauiApp1.Services
 
 			itens.AddRange(await ObterNotificacoesDeMensagensAsync());
 
+			
+			foreach (var item in itens)
+				item.NaoLida = item.Quando > _ultimaVisualizacao;
+
 			return itens.OrderByDescending(i => i.Quando).ToList();
 		}
 
-		/// <summary>Cada resposta de paciente a um questionário desse
-		/// psicólogo vira uma notificação — inclusive quando o paciente
-		/// EDITA uma resposta já enviada (o servidor zera Visualizada
-		/// nesse caso).</summary>
+		public async Task LimparTodasAsync(IEnumerable<ItemNotificacao> itens)
+		{
+			var remetentesParaMarcar = new HashSet<Guid>();
+
+			foreach (var item in itens)
+			{
+				if (item.Tipo == TipoNotificacao.SolicitacaoVinculo)
+					await _vinculo.MarcarPedidoVisualizadoAsync(item.VinculoId);
+				else if (item.Tipo == TipoNotificacao.VinculoAceito)
+					await _vinculo.MarcarAceitoVisualizadoAsync(item.VinculoId);
+				else if (item.Tipo is TipoNotificacao.Mensagem or TipoNotificacao.Audio or TipoNotificacao.Imagem or TipoNotificacao.Documento or TipoNotificacao.Feedback)
+					remetentesParaMarcar.Add(item.ContatoId);
+			}
+
+			foreach (var remetenteId in remetentesParaMarcar)
+				await _chat.MarcarComoLidasAsync(remetenteId, _sessao.UsuarioId);
+
+			MarcarListaComoVisualizadaAgora();
+		}
+
+	
 		private async Task<List<ItemNotificacao>> ObterNotificacoesDeRespostasAsync()
 		{
 			var lista = new List<ItemNotificacao>();
@@ -125,7 +154,7 @@ namespace MauiApp1.Services
 							: $"Respondeu: \"{perguntaTexto}\"",
 						Quando = respondidoEm,
 						NaoLida = true,
-						VinculoId = respostaId, // reaproveita o campo pra guardar o Id da resposta
+						VinculoId = respostaId, 
 						ContatoId = pacienteId,
 						ContatoNome = pacienteNome
 					});
@@ -133,7 +162,6 @@ namespace MauiApp1.Services
 			}
 			catch
 			{
-				// API fora do ar não deve travar as outras notificações.
 			}
 
 			return lista;
@@ -186,16 +214,12 @@ namespace MauiApp1.Services
 			}
 			catch
 			{
-				// API fora do ar — não deve travar as outras notificações.
 				return lista;
 			}
 
 			if (resultado is null) return lista;
 
-			// Cada item é processado isoladamente: se UM item vier com
-			// formato inesperado, só ELE é ignorado — antes, um erro aqui
-			// derrubava a lista inteira em silêncio (era o bug de "só
-			// aparece 1 notificação, e só se for foto/arquivo").
+			
 			foreach (var item in resultado)
 			{
 				try
@@ -206,7 +230,6 @@ namespace MauiApp1.Services
 				}
 				catch
 				{
-					// Ignora só esse item, segue processando os outros.
 				}
 			}
 
@@ -230,10 +253,6 @@ namespace MauiApp1.Services
 
 			var enviadaEm = ParseDataServidor(item.GetProperty("enviadaEm").GetString());
 
-			// Mensagem de feedback do psicólogo a uma resposta de
-			// questionário: vira uma notificação diferente ("Fulano deu um
-			// feedback à sua resposta"), independente do tipo de conteúdo
-			// (texto ou áudio) — o próprio chat mostra o conteúdo depois.
 			var ehFeedback = item.TryGetProperty("ehFeedback", out var fb) && fb.ValueKind == JsonValueKind.True;
 			if (ehFeedback)
 			{
@@ -271,12 +290,6 @@ namespace MauiApp1.Services
 			};
 		}
 
-		/// <summary>Data que vem do servidor no formato "O" (round-trip).
-		/// Datas lidas de volta do MySQL às vezes perdem a marcação de
-		/// "Kind=Utc" (uma pegadinha conhecida do EF Core com MySQL) —
-		/// isso força a interpretação como UTC antes de converter pro
-		/// horário local, em vez de deixar ambíguo (o que já causou
-		/// mensagem sumindo por erro silencioso antes dessa correção).</summary>
 		private static DateTime ParseDataServidor(string? valor)
 		{
 			if (string.IsNullOrWhiteSpace(valor))
@@ -304,17 +317,7 @@ namespace MauiApp1.Services
 			return semExtensao.Substring(0, Math.Min(disponivel, semExtensao.Length)) + "..." + extensao;
 		}
 
-		/// <summary>Marca como vistas — agora grava no servidor (pros itens
-		/// de vínculo), não só na sessão do celular. Mensagens não precisam
-		/// de marcação aqui: elas somem sozinhas da lista quando a conversa
-		/// é aberta (ChatConversaViewModel chama MarcarComoLidasAsync).
-		///
-		/// RespostaQuestionario NÃO é marcada aqui de propósito — antes,
-		/// só de abrir essa tela já marcava TODAS as respostas pendentes
-		/// como vistas, fazendo a notificação sumir da lista pra sempre
-		/// mesmo sem feedback nenhum ter sido dado. Agora ela persiste até
-		/// o psicólogo de fato mandar um feedback pra ela (servidor
-		/// filtra por TemFeedback, não por Visualizada).</summary>
+	
 		public async Task MarcarTodasComoVistasAsync(IEnumerable<ItemNotificacao> itens)
 		{
 			foreach (var item in itens)

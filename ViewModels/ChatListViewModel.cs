@@ -89,5 +89,30 @@ namespace MauiApp1.ViewModels
 			var page = _serviceProvider.GetRequiredService<PacientesPage>();
 			await Application.Current!.MainPage!.Navigation.PushAsync(page);
 		}
+		[RelayCommand]
+		private async Task IrParaHomeAsync()
+		{
+			await Application.Current!.MainPage!.Navigation.PopToRootAsync();
+		}
+		[RelayCommand]
+		private async Task AbrirQuestionariosAsync()
+		{
+			if (_sessao.Tipo == TipoUsuarioLogado.Paciente)
+			{
+				var page = _serviceProvider.GetRequiredService<QuestionariosPacientePage>();
+				await Application.Current!.MainPage!.Navigation.PushAsync(page);
+			}
+			else
+			{
+				var page = _serviceProvider.GetRequiredService<QuestionariosPage>();
+				await Application.Current!.MainPage!.Navigation.PushAsync(page);
+			}
+		}
+		[RelayCommand]
+		private async Task AbrirPerfilAsync()
+		{
+			var page = _serviceProvider.GetRequiredService<PerfilPage>();
+			await Application.Current!.MainPage!.Navigation.PushAsync(page);
+		}
 	}
 }

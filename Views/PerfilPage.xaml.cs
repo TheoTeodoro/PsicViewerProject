@@ -18,4 +18,8 @@ public partial class PerfilPage : ContentPage
 		base.OnAppearing();
 		_viewModel.AtualizarDaSessao();
 	}
+	private async void OnVoltarClicked(object sender, EventArgs e)
+	{
+		await Navigation.PopAsync();
+	}
 }

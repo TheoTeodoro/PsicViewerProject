@@ -11,27 +11,11 @@
     <ScrollView>
         <VerticalStackLayout Padding="20,16,20,32" Spacing="20">
 
-            <Grid ColumnDefinitions="Auto,Auto,*">
-                <ImageButton Grid.Column="0"
-                             Source="icone_voltar.svg"
-                             Command="{Binding VoltarCommand}"
-                             BackgroundColor="Transparent"
-                             WidthRequest="36" HeightRequest="36"
-                             HorizontalOptions="Start" />
-
-                <Border Grid.Column="1"
-                        StrokeShape="RoundRectangle 13"
-                        BackgroundColor="#E53935"
-                        WidthRequest="26" HeightRequest="26" Padding="0"
-                        Margin="8,0,0,0"
-                        VerticalOptions="Center" HorizontalOptions="Start">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ExcluirQuestionarioCommand}" />
-                    </Border.GestureRecognizers>
-                    <Label Text="✕" TextColor="White" FontAttributes="Bold" FontSize="13"
-                           HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
-                </Border>
-            </Grid>
+            <ImageButton Source="icone_voltar.svg"
+                         Command="{Binding VoltarCommand}"
+                         BackgroundColor="Transparent"
+                         WidthRequest="36" HeightRequest="36"
+                         HorizontalOptions="Start" />
 
             <Label Text="Editar Questionário" FontAttributes="Bold" FontSize="20" TextColor="{StaticResource AzulPrimario}" HorizontalOptions="Center" />
 

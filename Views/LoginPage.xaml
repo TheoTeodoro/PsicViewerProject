@@ -7,15 +7,12 @@
              Title="Entrar"
              BackgroundColor="White"
              NavigationPage.HasNavigationBar="False">
-
     <ScrollView>
         <VerticalStackLayout Padding="28,20" Spacing="14">
-
             <Image Source="ilustracao_login.jpg"
                    HeightRequest="230"
                    Aspect="AspectFit"
                    HorizontalOptions="Center" />
-
             <Label Text="PsicViewer" Style="{StaticResource TituloTela}" HorizontalOptions="Center" />
             <Label Text="Monitoramento de humor e suporte psicológico"
                    TextColor="{StaticResource CinzaMedio}"
@@ -23,34 +20,34 @@
                    HorizontalOptions="Center"
                    HorizontalTextAlignment="Center"
                    Margin="0,0,0,10" />
-
             <Label Text="E-mail" Style="{StaticResource RotuloCampo}" />
             <Border Style="{StaticResource CampoTexto}">
                 <Entry Text="{Binding Email}" Placeholder="seu@email.com" Keyboard="Email" VerticalOptions="Center" />
             </Border>
-
             <Label Text="Senha" Style="{StaticResource RotuloCampo}" />
             <Border Style="{StaticResource CampoTexto}">
-                <Entry Text="{Binding Senha}" Placeholder="Sua senha" IsPassword="True" VerticalOptions="Center" />
+                <Grid ColumnDefinitions="*,Auto">
+                    <Entry Grid.Column="0" Text="{Binding Senha}" Placeholder="Sua senha" IsPassword="{Binding SenhaOculta}" VerticalOptions="Center" />
+                    <ImageButton Grid.Column="1" Source="{Binding IconeSenha}"
+                                 Command="{Binding AlternarMostrarSenhaCommand}"
+                                 BackgroundColor="Transparent"
+                                 WidthRequest="24" HeightRequest="24" Padding="0"
+                                 VerticalOptions="Center" />
+                </Grid>
             </Border>
-
             <Label Text="{Binding MensagemErro}" Style="{StaticResource TextoErro}" Margin="0,4,0,0" />
-
             <Button Text="Entrar"
                     Style="{StaticResource BotaoPrimario}"
                     Command="{Binding EntrarCommand}"
                     Margin="0,18,0,0" />
-
             <ActivityIndicator IsRunning="{Binding Carregando}"
                                 IsVisible="{Binding Carregando}"
                                 Color="{StaticResource AzulPrimario}" />
-
             <Button Text="Ainda não tenho conta — Cadastrar"
                     Style="{StaticResource BotaoSecundario}"
                     BorderWidth="0"
                     BackgroundColor="Transparent"
                     Command="{Binding IrParaCadastroCommand}" />
-
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

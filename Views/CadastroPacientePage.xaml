@@ -6,36 +6,29 @@
              x:DataType="vm:CadastroPacienteViewModel"
              Title="Cadastro de Paciente"
              BackgroundColor="White">
-
     <ScrollView>
         <VerticalStackLayout Padding="28,24" Spacing="14">
-
             <Label Text="Criar conta de Paciente" Style="{StaticResource TituloTela}" />
             <Label Text="Preencha seus dados para começar seu acompanhamento"
                    TextColor="{StaticResource CinzaMedio}"
                    FontSize="13"
                    Margin="0,0,0,10" />
-
             <Label Text="Nome completo" Style="{StaticResource RotuloCampo}" />
             <Border Style="{StaticResource CampoTexto}">
                 <Entry Text="{Binding Nome}" Placeholder="Seu nome" VerticalOptions="Center" />
             </Border>
-
             <Label Text="E-mail" Style="{StaticResource RotuloCampo}" />
             <Border Style="{StaticResource CampoTexto}">
                 <Entry Text="{Binding Email}" Placeholder="seu@email.com" Keyboard="Email" VerticalOptions="Center" />
             </Border>
-
             <Label Text="Telefone" Style="{StaticResource RotuloCampo}" />
             <Border Style="{StaticResource CampoTexto}">
                 <Entry Text="{Binding Telefone}" Placeholder="(00) 00000-0000" Keyboard="Telephone" VerticalOptions="Center" />
             </Border>
-
             <Label Text="Data de Nascimento" Style="{StaticResource RotuloCampo}" />
             <Border Style="{StaticResource CampoTexto}">
                 <DatePicker Date="{Binding DataNascimento}" Format="dd/MM/yyyy" VerticalOptions="Center" />
             </Border>
-
             <Label Text="Gênero" Style="{StaticResource RotuloCampo}" />
             <Border Style="{StaticResource CampoTexto}">
                 <Picker ItemsSource="{Binding OpcoesGenero}"
@@ -43,28 +36,36 @@
                         Title="Selecione"
                         VerticalOptions="Center" />
             </Border>
-
             <Label Text="Senha" Style="{StaticResource RotuloCampo}" />
             <Border Style="{StaticResource CampoTexto}">
-                <Entry Text="{Binding Senha}" Placeholder="Crie uma senha" IsPassword="True" VerticalOptions="Center" />
+                <Grid ColumnDefinitions="*,Auto">
+                    <Entry Grid.Column="0" Text="{Binding Senha}" Placeholder="Crie uma senha" IsPassword="{Binding SenhaOculta}" VerticalOptions="Center" />
+                    <ImageButton Grid.Column="1" Source="{Binding IconeSenha}"
+                                 Command="{Binding AlternarMostrarSenhaCommand}"
+                                 BackgroundColor="Transparent"
+                                 WidthRequest="24" HeightRequest="24" Padding="0"
+                                 VerticalOptions="Center" />
+                </Grid>
             </Border>
-
             <Label Text="Confirmar senha" Style="{StaticResource RotuloCampo}" />
             <Border Style="{StaticResource CampoTexto}">
-                <Entry Text="{Binding ConfirmarSenha}" Placeholder="Repita a senha" IsPassword="True" VerticalOptions="Center" />
+                <Grid ColumnDefinitions="*,Auto">
+                    <Entry Grid.Column="0" Text="{Binding ConfirmarSenha}" Placeholder="Repita a senha" IsPassword="{Binding ConfirmarSenhaOculta}" VerticalOptions="Center" />
+                    <ImageButton Grid.Column="1" Source="{Binding IconeConfirmarSenha}"
+                                 Command="{Binding AlternarMostrarConfirmarSenhaCommand}"
+                                 BackgroundColor="Transparent"
+                                 WidthRequest="24" HeightRequest="24" Padding="0"
+                                 VerticalOptions="Center" />
+                </Grid>
             </Border>
-
             <Label Text="{Binding MensagemErro}" Style="{StaticResource TextoErro}" Margin="0,4,0,0" />
-
             <Button Text="Criar Conta"
                     Style="{StaticResource BotaoPrimario}"
                     Command="{Binding CriarContaCommand}"
                     Margin="0,18,0,0" />
-
             <ActivityIndicator IsRunning="{Binding Carregando}"
                                 IsVisible="{Binding Carregando}"
                                 Color="{StaticResource AzulPrimario}" />
-
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

@@ -63,6 +63,23 @@ namespace MauiApp1.ViewModels
 		[ObservableProperty]
 		private string filtroSelecionado = "Todos";
 
+		// Cores dos 3 chips de filtro, calculadas aqui em vez de um
+		// converter — mais simples pra esse caso (só 3 opções fixas).
+		public Color CorFundoTodos => FiltroSelecionado == "Todos" ? Color.FromArgb("#004AAD") : Colors.White;
+		public Color CorFundoAtivos => FiltroSelecionado == "Ativos" ? Color.FromArgb("#004AAD") : Colors.White;
+		public Color CorFundoInativos => FiltroSelecionado == "Inativos" ? Color.FromArgb("#004AAD") : Colors.White;
+		public Color CorTextoTodos => FiltroSelecionado == "Todos"
+			? Colors.White
+			: (Application.Current?.Resources.TryGetValue("AzulEscuro", out var cor) == true ? (Color)cor : Colors.Black);
+
+		partial void OnFiltroSelecionadoChanged(string value)
+		{
+			OnPropertyChanged(nameof(CorFundoTodos));
+			OnPropertyChanged(nameof(CorFundoAtivos));
+			OnPropertyChanged(nameof(CorFundoInativos));
+			OnPropertyChanged(nameof(CorTextoTodos));
+		}
+
 		public string FotoExibida => string.IsNullOrEmpty(_sessao.FotoUrl)
 			? "avatar_placeholder.jpg"
 			: $"{ApiConfig.ServidorBaseUrl}{_sessao.FotoUrl}";

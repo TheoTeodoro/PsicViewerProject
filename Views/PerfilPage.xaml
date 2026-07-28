@@ -16,6 +16,15 @@
                 <Label Grid.Row="0" Text="Meu Perfil" TextColor="White" FontSize="20" FontAttributes="Bold"
                        HorizontalOptions="Center" VerticalOptions="Center" />
 
+                <ImageButton Grid.Row="0"
+                             Source="icone_voltar.svg"
+                             Clicked="OnVoltarClicked"
+                             BackgroundColor="Transparent"
+                             WidthRequest="36" HeightRequest="36"
+                             HorizontalOptions="Start" VerticalOptions="Start"
+                             Margin="16,16,0,0"
+                             Padding="4" />
+
                 <Border Grid.Row="1"
                         StrokeShape="RoundRectangle 24,24,0,0"
                         Stroke="Transparent"
@@ -81,25 +90,25 @@
                     <VerticalStackLayout.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding IrParaHomeCommand}" />
                     </VerticalStackLayout.GestureRecognizers>
-                    <Label Text="🏠" FontSize="18" HorizontalOptions="Center" />
+                    <Image Source="icone_atalho_home_cinza.svg" WidthRequest="22" HeightRequest="22" HorizontalOptions="Center" />
                     <Label Text="Home" FontSize="10" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
                 </VerticalStackLayout>
                 <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="Center">
                     <VerticalStackLayout.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding AbrirChatCommand}" />
                     </VerticalStackLayout.GestureRecognizers>
-                    <Label Text="💬" FontSize="18" HorizontalOptions="Center" />
+                    <Image Source="icone_atalho_chat_cinza.svg" WidthRequest="22" HeightRequest="22" HorizontalOptions="Center" />
                     <Label Text="Chat" FontSize="10" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
                 </VerticalStackLayout>
                 <VerticalStackLayout Grid.Column="2" Spacing="2" HorizontalOptions="Center">
                     <VerticalStackLayout.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding AbrirQuestionariosCommand}" />
                     </VerticalStackLayout.GestureRecognizers>
-                    <Label Text="📋" FontSize="18" HorizontalOptions="Center" />
+                    <Image Source="icone_atalho_questionarios_cinza.svg" WidthRequest="22" HeightRequest="22" HorizontalOptions="Center" />
                     <Label Text="Questionários" FontSize="9" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
                 </VerticalStackLayout>
                 <VerticalStackLayout Grid.Column="3" Spacing="2" HorizontalOptions="Center">
-                    <Label Text="👤" FontSize="18" HorizontalOptions="Center" />
+                    <Image Source="icone_atalho_perfil_azul.svg" WidthRequest="22" HeightRequest="22" HorizontalOptions="Center" />
                     <Label Text="Perfil" FontSize="10" TextColor="{StaticResource AzulPrimario}" FontAttributes="Bold" HorizontalOptions="Center" />
                 </VerticalStackLayout>
             </Grid>

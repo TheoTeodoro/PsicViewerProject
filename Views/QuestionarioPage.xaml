@@ -12,6 +12,13 @@
 
         <VerticalStackLayout Grid.Row="0" Padding="24,20,24,10" Spacing="10">
 
+            <ImageButton Source="icone_voltar.svg"
+                         Clicked="OnVoltarClicked"
+                         BackgroundColor="Transparent"
+                         WidthRequest="36" HeightRequest="36"
+                         HorizontalOptions="Start"
+                         Padding="4" />
+
             <Grid ColumnDefinitions="*,Auto">
                 <Label Grid.Column="0" Text="Questionários" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
                 <Border Grid.Column="1" StrokeShape="RoundRectangle 22" WidthRequest="44" HeightRequest="44" Padding="0">
@@ -20,7 +27,6 @@
             </Grid>
 
             <Grid ColumnDefinitions="*,Auto" Margin="0,6,0,0">
-                <Label Grid.Column="0" Text="Meus Questionários" FontAttributes="Bold" FontSize="17" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
                 <Button Grid.Column="1"
                         Text="Adicionar"
                         Command="{Binding AbrirCriarCommand}"
@@ -36,17 +42,18 @@
             <Grid ColumnDefinitions="*,*,*" ColumnSpacing="6">
                 <Border Grid.Column="0"
                         StrokeShape="RoundRectangle 18"
-                        BackgroundColor="{Binding FiltroSelecionado, Converter={StaticResource FiltroParaCorConverter}, ConverterParameter=Todos}"
+                        BackgroundColor="{Binding CorFundoTodos}"
                         Padding="0,10">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding FiltrarTodosCommand}" />
                     </Border.GestureRecognizers>
-                    <Label Text="Todos" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="12" TextColor="{StaticResource AzulEscuro}" />
+                    <Label Text="Todos" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="12"
+                           TextColor="{Binding CorTextoTodos}" />
                 </Border>
 
                 <Border Grid.Column="1"
                         StrokeShape="RoundRectangle 18"
-                        BackgroundColor="{Binding FiltroSelecionado, Converter={StaticResource FiltroParaCorConverter}, ConverterParameter=Ativos}"
+                        BackgroundColor="{Binding CorFundoAtivos}"
                         Padding="0,10">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding FiltrarAtivosCommand}" />
@@ -56,7 +63,7 @@
 
                 <Border Grid.Column="2"
                         StrokeShape="RoundRectangle 18"
-                        BackgroundColor="{Binding FiltroSelecionado, Converter={StaticResource FiltroParaCorConverter}, ConverterParameter=Inativos}"
+                        BackgroundColor="{Binding CorFundoInativos}"
                         Padding="0,10">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding FiltrarInativosCommand}" />
@@ -137,7 +144,7 @@
                     <VerticalStackLayout.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding IrParaHomeCommand}" />
                     </VerticalStackLayout.GestureRecognizers>
-                    <Label Text="🏠" FontSize="18" HorizontalOptions="Center" />
+                    <Image Source="icone_atalho_home_cinza.svg" WidthRequest="22" HeightRequest="22" HorizontalOptions="Center" />
                     <Label Text="Home" FontSize="10" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
                 </VerticalStackLayout>
 
@@ -145,12 +152,12 @@
                     <VerticalStackLayout.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding AbrirChatCommand}" />
                     </VerticalStackLayout.GestureRecognizers>
-                    <Label Text="💬" FontSize="18" HorizontalOptions="Center" />
+                    <Image Source="icone_atalho_chat_cinza.svg" WidthRequest="22" HeightRequest="22" HorizontalOptions="Center" />
                     <Label Text="Chat" FontSize="10" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Grid.Column="2" Spacing="2" HorizontalOptions="Center">
-                    <Label Text="📋" FontSize="18" HorizontalOptions="Center" />
+                    <Image Source="icone_atalho_questionarios_azul.svg" WidthRequest="22" HeightRequest="22" HorizontalOptions="Center" />
                     <Label Text="Questionários" FontSize="9" TextColor="{StaticResource AzulPrimario}" FontAttributes="Bold" HorizontalOptions="Center" />
                 </VerticalStackLayout>
 
@@ -158,7 +165,7 @@
                     <VerticalStackLayout.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding AbrirPerfilCommand}" />
                     </VerticalStackLayout.GestureRecognizers>
-                    <Label Text="👤" FontSize="18" HorizontalOptions="Center" />
+                    <Image Source="icone_atalho_perfil_cinza.svg" WidthRequest="22" HeightRequest="22" HorizontalOptions="Center" />
                     <Label Text="Perfil" FontSize="10" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
                 </VerticalStackLayout>
             </Grid>

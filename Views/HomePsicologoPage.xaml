@@ -14,7 +14,7 @@
             <VerticalStackLayout Padding="24,20,24,12" Spacing="18">
 
                 <!-- Sino de notificação -->
-                <Grid HorizontalOptions="Start" WidthRequest="30" HeightRequest="30" Margin="0,0,0,2">
+                <Grid HorizontalOptions="Start" WidthRequest="44" HeightRequest="30" Margin="0,0,0,2">
                     <Grid.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding AbrirNotificacaoCommand}" />
                     </Grid.GestureRecognizers>
@@ -23,10 +23,12 @@
                             StrokeShape="RoundRectangle 8"
                             Stroke="Transparent"
                             BackgroundColor="#E24B4A"
+                            MinimumWidthRequest="16"
                             Padding="4,1"
                             HorizontalOptions="Start" VerticalOptions="Start"
                             Margin="14,-4,0,0">
-                        <Label Text="{Binding NotificacoesNaoLidas}" TextColor="White" FontSize="9" FontAttributes="Bold" />
+                        <Label Text="{Binding NotificacoesNaoLidas}" TextColor="White" FontSize="9" FontAttributes="Bold"
+                               LineBreakMode="NoWrap" HorizontalTextAlignment="Center" />
                     </Border>
                 </Grid>
 
@@ -62,9 +64,16 @@
                         BackgroundColor="#F7F8FA"
                         Padding="16">
                     <VerticalStackLayout Spacing="12">
-                        <Label Text="Sumário Clínico" FontAttributes="Bold" FontSize="14" TextColor="{StaticResource AzulEscuro}" />
 
-                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding AlternarSumarioCommand}" />
+                            </Grid.GestureRecognizers>
+                            <Label Grid.Column="0" Text="Sumário Clínico" FontAttributes="Bold" FontSize="14" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="{Binding SetaSumario}" FontSize="12" TextColor="{StaticResource CinzaMedio}" VerticalOptions="Center" />
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10" IsVisible="{Binding SumarioExpandido}">
                             <Border Grid.Column="0" Style="{StaticResource CartaoEstatistica}">
                                 <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
                                     <Label Text="{Binding PacientesAtivos}" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}" HorizontalOptions="Center" />
@@ -96,47 +105,30 @@
                 <Label Text="Acesso Rápido" FontAttributes="Bold" FontSize="15" TextColor="{StaticResource AzulEscuro}" />
 
                 <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
-                    <Border Grid.Column="0" Grid.Row="0" Style="{StaticResource CartaoAcessoRapido}">
-                        <Border.GestureRecognizers>
+                    <Image Grid.Column="0" Grid.Row="0" Source="card_acesso_pacientes.svg" Aspect="AspectFit">
+                        <Image.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding AbrirPacientesCommand}" />
-                        </Border.GestureRecognizers>
-                        <Label Text="👥  Pacientes" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
-                    </Border>
+                        </Image.GestureRecognizers>
+                    </Image>
 
-                    <Border Grid.Column="1" Grid.Row="0" Style="{StaticResource CartaoAcessoRapido}">
-                        <Border.GestureRecognizers>
+                    <Image Grid.Column="1" Grid.Row="0" Source="card_acesso_questionarios.svg" Aspect="AspectFit">
+                        <Image.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding AbrirQuestionariosCommand}" />
-                        </Border.GestureRecognizers>
-                        <Label Text="📝  Questionários" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
-                    </Border>
+                        </Image.GestureRecognizers>
+                    </Image>
 
-                    <Border Grid.Column="0" Grid.Row="1" Style="{StaticResource CartaoAcessoRapido}">
-                        <Border.GestureRecognizers>
+                    <Image Grid.Column="0" Grid.Row="1" Source="card_acesso_relatorios.svg" Aspect="AspectFit">
+                        <Image.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding AbrirRelatoriosCommand}" />
-                        </Border.GestureRecognizers>
-                        <Label Text="📊  Relatórios" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
-                    </Border>
+                        </Image.GestureRecognizers>
+                    </Image>
 
-                    <Border Grid.Column="1" Grid.Row="1" Style="{StaticResource CartaoAcessoRapido}">
-                        <Border.GestureRecognizers>
+                    <Image Grid.Column="1" Grid.Row="1" Source="card_acesso_chat.svg" Aspect="AspectFit">
+                        <Image.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding AbrirChatCommand}" />
-                        </Border.GestureRecognizers>
-                        <Label Text="💬  Chat" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" />
-                    </Border>
+                        </Image.GestureRecognizers>
+                    </Image>
                 </Grid>
-
-                <!-- Recentes -->
-                <Label Text="Recentes" FontAttributes="Bold" FontSize="15" TextColor="{StaticResource AzulEscuro}" Margin="0,8,0,0" />
-
-                <Border StrokeShape="RoundRectangle 16"
-                        Stroke="{StaticResource CinzaClaro}"
-                        BackgroundColor="White"
-                        Padding="14">
-                    <VerticalStackLayout Spacing="6">
-                        <Label Text="Ana Souza — Paciente" FontAttributes="Bold" FontSize="13" TextColor="{StaticResource AzulEscuro}" />
-                        <Label Text="Entre no chat para visualizar a mensagem." FontSize="12" TextColor="{StaticResource CinzaMedio}" />
-                    </VerticalStackLayout>
-                </Border>
 
             </VerticalStackLayout>
         </ScrollView>
@@ -147,7 +139,7 @@
 
             <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*" Padding="0,10">
                 <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
-                    <Label Text="🏠" FontSize="18" HorizontalOptions="Center" />
+                    <Image Source="icone_atalho_home_azul.svg" WidthRequest="22" HeightRequest="22" HorizontalOptions="Center" />
                     <Label Text="Home" FontSize="10" TextColor="{StaticResource AzulPrimario}" FontAttributes="Bold" HorizontalOptions="Center" />
                 </VerticalStackLayout>
 
@@ -155,7 +147,7 @@
                     <VerticalStackLayout.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding AbrirChatCommand}" />
                     </VerticalStackLayout.GestureRecognizers>
-                    <Label Text="💬" FontSize="18" HorizontalOptions="Center" />
+                    <Image Source="icone_atalho_chat_cinza.svg" WidthRequest="22" HeightRequest="22" HorizontalOptions="Center" />
                     <Label Text="Chat" FontSize="10" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
                 </VerticalStackLayout>
 
@@ -163,7 +155,7 @@
                     <VerticalStackLayout.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding AbrirQuestionariosCommand}" />
                     </VerticalStackLayout.GestureRecognizers>
-                    <Label Text="📋" FontSize="18" HorizontalOptions="Center" />
+                    <Image Source="icone_atalho_questionarios_cinza.svg" WidthRequest="22" HeightRequest="22" HorizontalOptions="Center" />
                     <Label Text="Questionários" FontSize="9" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
                 </VerticalStackLayout>
 
@@ -171,7 +163,7 @@
                     <VerticalStackLayout.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding AbrirPerfilCommand}" />
                     </VerticalStackLayout.GestureRecognizers>
-                    <Label Text="👤" FontSize="18" HorizontalOptions="Center" />
+                    <Image Source="icone_atalho_perfil_cinza.svg" WidthRequest="22" HeightRequest="22" HorizontalOptions="Center" />
                     <Label Text="Perfil" FontSize="10" TextColor="{StaticResource CinzaMedio}" HorizontalOptions="Center" />
                 </VerticalStackLayout>
             </Grid>

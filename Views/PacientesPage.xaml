@@ -4,19 +4,32 @@
              xmlns:vm="clr-namespace:MauiApp1.ViewModels"
              x:Class="MauiApp1.Views.PacientesPage"
              x:DataType="vm:PacientesViewModel"
-             Title="Meus Pacientes"
-             BackgroundColor="White">
+             Title=""
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="False">
 
     <Grid>
         <RefreshView Command="{Binding CarregarCommand}" IsRefreshing="{Binding Carregando}">
             <ScrollView>
                 <VerticalStackLayout Padding="20,16,20,90" Spacing="10">
 
+                    <Grid ColumnDefinitions="Auto,*">
+                        <ImageButton Grid.Column="0"
+                                     Source="icone_voltar.svg"
+                                     Clicked="OnVoltarClicked"
+                                     BackgroundColor="Transparent"
+                                     WidthRequest="36" HeightRequest="36"
+                                     HorizontalOptions="Start"
+                                     Padding="4" />
+                        <Label Grid.Column="1" Text="Meus Pacientes" FontAttributes="Bold" FontSize="18" TextColor="{StaticResource AzulEscuro}"
+                               VerticalOptions="Center" Margin="10,0,0,0" />
+                    </Grid>
+
                     <Label Text="{Binding MensagemErro}"
                            Style="{StaticResource TextoErro}"
                            IsVisible="{Binding MensagemErro, Converter={StaticResource StringNaoVazioConverter}}" />
 
-                    <Label Text="Solicitações Recebidas" FontAttributes="Bold" FontSize="15" TextColor="{StaticResource AzulEscuro}" />
+                    <Label Text="Solicitações Recebidas" FontAttributes="Bold" FontSize="15" TextColor="{StaticResource AzulEscuro}" Margin="0,10,0,0" />
                     <CollectionView ItemsSource="{Binding SolicitacoesRecebidas}">
                         <CollectionView.EmptyView>
                             <Label Text="Nenhuma solicitação recebida." TextColor="{StaticResource CinzaMedio}" FontSize="13" Padding="0,8" />
@@ -72,12 +85,24 @@
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="vm:ItemVinculo">
                                 <Border Style="{StaticResource CampoTexto}" Margin="0,6" HeightRequest="64">
-                                    <Grid ColumnDefinitions="Auto,*">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AbrirPacienteCommand}"
+                                                               CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto">
                                         <Border Grid.Column="0" StrokeShape="RoundRectangle 20" WidthRequest="40" HeightRequest="40" Padding="0">
                                             <Image Source="{Binding FotoExibida}" Aspect="AspectFill" />
                                         </Border>
                                         <Label Grid.Column="1" Text="{Binding Nome}" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}"
                                                VerticalOptions="Center" Margin="10,0,0,0" />
+                                        <Image Grid.Column="2" Source="icone_botao_historico_paciente.svg"
+                                               WidthRequest="30" HeightRequest="30" VerticalOptions="Center" Margin="0,0,8,0">
+                                            <Image.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AbrirHistoricoCommand}"
+                                                                       CommandParameter="{Binding .}" />
+                                            </Image.GestureRecognizers>
+                                        </Image>
+                                        <Label Grid.Column="3" Text="›" FontSize="20" TextColor="{StaticResource CinzaMedio}" VerticalOptions="Center" />
                                     </Grid>
                                 </Border>
                             </DataTemplate>
