@@ -7,12 +7,7 @@ using System.Threading.Tasks;
 
 namespace MauiApp1.Services
 {
-	/// <summary>
-	/// Fala com a API pra tudo relacionado a conta (cadastro, login, perfil,
-	/// listagem de contatos). Substitui o acesso direto a
-	/// IPacienteRepository/IPsicologoRepository que o celular tinha antes —
-	/// agora quem toca no banco é só a API, o celular só faz requisição HTTP.
-	/// </summary>
+
 	public class ContaApiService
 	{
 		private readonly HttpClient _http = new();
@@ -100,7 +95,7 @@ namespace MauiApp1.Services
 				if (corpo.TryGetProperty("erro", out var erroProp))
 					return erroProp.GetString();
 			}
-			catch { /* corpo não era JSON com "erro" — ignora e cai no genérico */ }
+			catch { }
 
 			return $"Erro do servidor ({(int)resposta.StatusCode}).";
 		}

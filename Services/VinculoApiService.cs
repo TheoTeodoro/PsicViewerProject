@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace MauiApp1.Services
 {
-	/// <summary>Fala com os endpoints de vínculo Paciente-Psicólogo (RF03) —
-	/// solicitar, aceitar, recusar e listar.</summary>
+
 	public class VinculoApiService
 	{
 		private readonly HttpClient _http = new();
@@ -23,9 +22,7 @@ namespace MauiApp1.Services
 			return (false, await LerErroAsync(resposta));
 		}
 
-		/// <summary>Mesma solicitação, mas iniciada pelo Psicólogo (busca
-		/// paciente e convida) — quem precisa responder depois é o
-		/// Paciente, não o Psicólogo.</summary>
+		
 		public async Task<(bool Sucesso, string? Erro)> SolicitarComoPsicologoAsync(Guid psicologoId, Guid pacienteId)
 		{
 			var resposta = await _http.PostAsJsonAsync(
@@ -79,7 +76,7 @@ namespace MauiApp1.Services
 				if (corpo.TryGetProperty("erro", out var erroProp))
 					return erroProp.GetString();
 			}
-			catch { /* corpo não era JSON com "erro" */ }
+			catch { }
 
 			return $"Erro do servidor ({(int)resposta.StatusCode}).";
 		}

@@ -214,9 +214,6 @@ namespace MauiApp1.Services
 			return resultado ?? new List<ItemHistoricoDto>();
 		}
 
-		/// <summary>RF22 — pontos do gráfico de humor (média das respostas
-		/// de Escala por dia), só dos questionários desse psicólogo.
-		/// inicio/fim são opcionais (sem eles, vem tudo).</summary>
 		public async Task<List<PontoHumorDto>> ObterRelatorioHumorAsync(Guid psicologoId, Guid pacienteId, DateTime? inicio = null, DateTime? fim = null)
 		{
 			var url = $"{ApiConfig.ServidorBaseUrl}/api/questionario/psicologo/{psicologoId}/paciente/{pacienteId}/relatorio-humor";
@@ -235,9 +232,7 @@ namespace MauiApp1.Services
 			return resultado ?? new List<PontoHumorDto>();
 		}
 
-		/// <summary>Série de UMA pergunta específica — serve pra pergunta
-		/// de Escala escolhida como linha principal, e pra pergunta de
-		/// destaque (Múltipla Escolha) escolhida como marcadores.</summary>
+	
 		public async Task<List<PontoSerieDto>> ObterSeriePerguntaAsync(Guid psicologoId, Guid pacienteId, Guid perguntaId, DateTime? inicio = null, DateTime? fim = null)
 		{
 			var url = $"{ApiConfig.ServidorBaseUrl}/api/questionario/psicologo/{psicologoId}/paciente/{pacienteId}/pergunta/{perguntaId}/serie";
@@ -303,9 +298,6 @@ namespace MauiApp1.Services
 			}
 		}
 
-		/// <summary>Contexto completo de uma resposta (pergunta, o que o
-		/// paciente respondeu, etc) — usado pra montar a tela de "Dar
-		/// Feedback" antes do psicólogo escrever.</summary>
 		public async Task<RespostaDetalheDto?> ObterDetalheRespostaAsync(Guid respostaId)
 		{
 			try
