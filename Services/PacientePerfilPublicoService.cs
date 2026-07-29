@@ -5,9 +5,7 @@ using System.Threading.Tasks;
 
 namespace MauiApp1.Services
 {
-	/// <summary>Só os dados que o psicólogo pode ver de um paciente ao
-	/// tocar nele na lista — sem e-mail, telefone ou data de nascimento
-	/// exata (o servidor já filtra isso em /perfil-publico).</summary>
+	
 	public class PerfilPublicoPacienteDto
 	{
 		public Guid Id { get; set; }
@@ -15,6 +13,8 @@ namespace MauiApp1.Services
 		public string? FotoUrl { get; set; }
 		public int? Idade { get; set; }
 		public string? Genero { get; set; }
+		public string? Email { get; set; }
+		public string? Telefone { get; set; }
 	}
 
 	public class PacientePerfilPublicoService

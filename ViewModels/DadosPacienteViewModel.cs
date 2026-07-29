@@ -30,6 +30,11 @@ namespace MauiApp1.ViewModels
 			? "avatar_placeholder.jpg"
 			: $"{ApiConfig.ServidorBaseUrl}{FotoUrl}";
 
+		[ObservableProperty]
+		private string emailExibido = string.Empty;
+
+		[ObservableProperty]
+		private string telefoneExibido = string.Empty;
 		partial void OnFotoUrlChanged(string? value) => OnPropertyChanged(nameof(FotoExibida));
 
 		public DadosPacienteViewModel(PacientePerfilPublicoService perfilPublico)
@@ -54,6 +59,12 @@ namespace MauiApp1.ViewModels
 				FotoUrl = dados.FotoUrl;
 				IdadeExibida = dados.Idade is int idade ? $"{idade} anos" : "Idade não informada";
 				GeneroExibido = string.IsNullOrEmpty(dados.Genero) ? "Não informado" : dados.Genero;
+				EmailExibido = string.IsNullOrWhiteSpace(dados.Email)
+				? "Não informado"
+				: dados.Email;
+				TelefoneExibido = string.IsNullOrWhiteSpace(dados.Telefone)
+				? "Não informado"
+					: dados.Telefone;
 			}
 			catch (Exception ex)
 			{
