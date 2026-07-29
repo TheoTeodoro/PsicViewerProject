@@ -32,7 +32,7 @@
                     </Border>
                 </Grid>
 
-                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                     <Label Grid.Column="0"
                            Text="{Binding NomeUsuario, StringFormat='Olá, {0}'}"
                            FontSize="19"
@@ -46,38 +46,99 @@
                             Padding="0">
                         <Image Source="{Binding FotoExibida}" Aspect="AspectFill" />
                     </Border>
-                    <Label Grid.Column="2"
-                           Text="Sair"
-                           TextColor="{StaticResource AzulPrimario}"
-                           FontSize="13"
-                           VerticalOptions="Center">
-                        <Label.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding SairCommand}" />
-                        </Label.GestureRecognizers>
-                    </Label>
                 </Grid>
 
-                <!-- Card de registro de humor do dia -->
-                <Border StrokeShape="RoundRectangle 18"
-                        BackgroundColor="{StaticResource AzulPrimario}"
-                        Padding="18">
+                <!-- Card "Próxima pergunta" — a pergunta mais próxima do
+                     horário de resposta, do questionário ativo mais
+                     antigo em uso, ainda não respondida hoje. Mesmo
+                     visual (claro, cartão) usado nas telas de responder
+                     questionário, com os mesmos rostos de escala. -->
+                <Border StrokeShape="RoundRectangle 16"
+                        Stroke="{StaticResource CinzaClaro}"
+                        BackgroundColor="#FAFBFC"
+                        Padding="16"
+                        IsVisible="{Binding TemProximaPergunta}">
                     <VerticalStackLayout Spacing="10">
-                        <Label Text="Como você está se sentindo hoje?"
-                               TextColor="White"
-                               FontAttributes="Bold"
-                               FontSize="16" />
-                        <Label Text="Registre seu humor pra acompanhar sua evolução ao longo do tempo."
-                               TextColor="#DCE6FF"
-                               FontSize="12" />
-                        <Button Text="Registrar Humor"
-                                Command="{Binding RegistrarHumorCommand}"
-                                BackgroundColor="White"
-                                TextColor="{StaticResource AzulPrimario}"
-                                CornerRadius="20"
-                                HeightRequest="44"
-                                FontAttributes="Bold"
-                                Margin="0,6,0,0" />
+                        <Label Text="Próxima pergunta" TextColor="{StaticResource AzulPrimario}" FontAttributes="Bold" FontSize="15" />
+                        <Label Text="{Binding ProximoQuestionarioTitulo}" TextColor="{StaticResource CinzaMedio}" FontSize="12" />
+
+                        <BoxView HeightRequest="1" Color="{StaticResource CinzaClaro}" Margin="0,2" />
+
+                        <Label Text="{Binding ProximaPerguntaTexto}" TextColor="{StaticResource AzulEscuro}" FontSize="15" FontAttributes="Bold" />
+                        <Label Text="{Binding ProximoHorario, StringFormat='Deve ser respondida às {0}'}" TextColor="{StaticResource CinzaMedio}" FontSize="11" />
+
+                        <Label Text="{Binding ProximaMensagemErro}" Style="{StaticResource TextoErro}"
+                               IsVisible="{Binding ProximaMensagemErro, Converter={StaticResource StringNaoVazioConverter}}" />
+
+                        <!-- Escala: os mesmos rostos usados na tela de
+                             responder — dá um leve "pop" no selecionado -->
+                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center" Margin="0,8,0,0"
+                                                IsVisible="{Binding ProximaEhEscala}">
+                            <Image Source="escala_muito_mal.svg" WidthRequest="40" HeightRequest="40" Scale="{Binding Escala1Tamanho}">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SelecionarProximaEscalaCommand}" CommandParameter="1" />
+                                </Image.GestureRecognizers>
+                            </Image>
+                            <Image Source="escala_mal.svg" WidthRequest="40" HeightRequest="40" Scale="{Binding Escala2Tamanho}">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SelecionarProximaEscalaCommand}" CommandParameter="2" />
+                                </Image.GestureRecognizers>
+                            </Image>
+                            <Image Source="escala_regular.svg" WidthRequest="40" HeightRequest="40" Scale="{Binding Escala3Tamanho}">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SelecionarProximaEscalaCommand}" CommandParameter="3" />
+                                </Image.GestureRecognizers>
+                            </Image>
+                            <Image Source="escala_bem.svg" WidthRequest="40" HeightRequest="40" Scale="{Binding Escala4Tamanho}">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SelecionarProximaEscalaCommand}" CommandParameter="4" />
+                                </Image.GestureRecognizers>
+                            </Image>
+                            <Image Source="escala_muito_bem.svg" WidthRequest="40" HeightRequest="40" Scale="{Binding Escala5Tamanho}">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SelecionarProximaEscalaCommand}" CommandParameter="5" />
+                                </Image.GestureRecognizers>
+                            </Image>
+                        </HorizontalStackLayout>
+
+                        <!-- Texto -->
+                        <Border Style="{StaticResource CampoTexto}" Margin="0,6,0,0"
+                                IsVisible="{Binding ProximaEhTexto}">
+                            <Editor Text="{Binding ProximaRespostaTexto}" Placeholder="Escreva sua resposta..." AutoSize="TextChanges" HeightRequest="70" />
+                        </Border>
+
+                        <!-- Múltipla Escolha -->
+                        <CollectionView ItemsSource="{Binding ProximasOpcoes}" IsVisible="{Binding ProximaEhMultiplaEscolha}" Margin="0,6,0,0">
+                            <CollectionView.ItemsLayout>
+                                <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
+                            </CollectionView.ItemsLayout>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <Border Style="{StaticResource CampoTexto}" Padding="12,10">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelecionarProximaOpcaoCommand}"
+                                                                   CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+                                        <Label Text="{Binding .}" TextColor="{StaticResource AzulEscuro}" FontAttributes="Bold" />
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                        <Button Text="Enviar"
+                                Command="{Binding EnviarProximaPerguntaCommand}"
+                                Style="{StaticResource BotaoPrimario}"
+                                Margin="0,6,0,0"
+                                IsEnabled="{Binding EnviandoProximaPergunta, Converter={StaticResource InversoBoolConverter}}" />
                     </VerticalStackLayout>
+                </Border>
+
+                <Border StrokeShape="RoundRectangle 16"
+                        Stroke="{StaticResource CinzaClaro}"
+                        BackgroundColor="#FAFBFC"
+                        Padding="18"
+                        IsVisible="{Binding TemProximaPergunta, Converter={StaticResource InversoBoolConverter}}">
+                    <Label Text="Nenhuma pergunta pendente por agora. 🎉" TextColor="{StaticResource AzulEscuro}" FontAttributes="Bold" HorizontalTextAlignment="Center" />
                 </Border>
 
                 <!-- Acesso Rápido -->

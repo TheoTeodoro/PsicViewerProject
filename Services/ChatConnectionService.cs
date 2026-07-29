@@ -28,6 +28,7 @@ namespace MauiApp1.Services
 		public Guid? RespostaId { get; set; }
 		public string? CitacaoTextoPergunta { get; set; }
 		public string? CitacaoTextoResposta { get; set; }
+		public string? CitacaoQuestionarioTitulo { get; set; }
 	}
 
 	public class MensagemExcluidaEventArgs : EventArgs
@@ -165,7 +166,8 @@ namespace MauiApp1.Services
 				EnviadaEm = DateTime.Parse(item.GetProperty("enviadaEm").GetString()!).ToLocalTime(),
 				RespostaId = item.TryGetProperty("respostaId", out var ri) && ri.ValueKind == JsonValueKind.String ? Guid.Parse(ri.GetString()!) : null,
 				CitacaoTextoPergunta = item.TryGetProperty("citacaoTextoPergunta", out var ctp) && ctp.ValueKind == JsonValueKind.String ? ctp.GetString() : null,
-				CitacaoTextoResposta = item.TryGetProperty("citacaoTextoResposta", out var ctr) && ctr.ValueKind == JsonValueKind.String ? ctr.GetString() : null
+				CitacaoTextoResposta = item.TryGetProperty("citacaoTextoResposta", out var ctr) && ctr.ValueKind == JsonValueKind.String ? ctr.GetString() : null,
+				CitacaoQuestionarioTitulo = item.TryGetProperty("citacaoQuestionarioTitulo", out var cqt) && cqt.ValueKind == JsonValueKind.String ? cqt.GetString() : null
 			};
 		}
 	}

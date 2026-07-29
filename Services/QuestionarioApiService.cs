@@ -142,6 +142,22 @@ namespace MauiApp1.Services
 			return resultado ?? new List<QuestionarioParaPacienteDto>();
 		}
 
+		/// <summary>Card "Próxima pergunta" da Home — questionário ativo
+		/// mais antigo pendente hoje, e nele a pergunta ainda não
+		/// respondida cujo horário está mais perto de agora.</summary>
+		public async Task<ProximaPerguntaDto?> ObterProximaPerguntaAsync(Guid pacienteId)
+		{
+			try
+			{
+				return await _http.GetFromJsonAsync<ProximaPerguntaDto>(
+					$"{ApiConfig.ServidorBaseUrl}/api/questionario/paciente/{pacienteId}/proxima-pergunta", _opcoesJson);
+			}
+			catch
+			{
+				return null;
+			}
+		}
+
 		/// <summary>Respostas de dias anteriores a hoje — o "Histórico".</summary>
 		public async Task<List<ItemHistoricoDto>> ListarHistoricoAsync(Guid pacienteId)
 		{

@@ -113,4 +113,17 @@ namespace MauiApp1.Services
 		public string? Observacao { get; set; }
 		public string? AudioObservacao { get; set; }
 	}
+
+	/// <summary>Card "Próxima pergunta" da Home do paciente.</summary>
+	public class ProximaPerguntaDto
+	{
+		public bool TemPergunta { get; set; }
+		public Guid QuestionarioId { get; set; }
+		public string QuestionarioTitulo { get; set; } = string.Empty;
+		public Guid PerguntaId { get; set; }
+		public string PerguntaTexto { get; set; } = string.Empty;
+		public string Tipo { get; set; } = string.Empty;
+		public string? Opcoes { get; set; }
+		public string Horario { get; set; } = string.Empty;
+	}
 }

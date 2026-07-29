@@ -18,5 +18,6 @@ public partial class HomePacientePage : ContentPage
 		base.OnAppearing();
 		_viewModel.AtualizarFoto();
 		_ = _viewModel.VerificarNotificacoesAsync();
+		_ = _viewModel.CarregarProximaPerguntaAsync(); ;
 	}
 }

@@ -28,6 +28,7 @@ namespace MauiApp1.ViewModels
 		public Guid? RespostaId { get; set; }
 		public string? CitacaoTextoPergunta { get; set; }
 		public string? CitacaoTextoResposta { get; set; }
+		public string? CitacaoQuestionarioTitulo { get; set; }
 		public bool EhFeedback => RespostaId.HasValue;
 
 		[ObservableProperty]
@@ -170,7 +171,8 @@ namespace MauiApp1.ViewModels
 						EnviadaPorMim = m.RemetenteId == _sessao.UsuarioId,
 						RespostaId = m.RespostaId,
 						CitacaoTextoPergunta = m.CitacaoTextoPergunta,
-						CitacaoTextoResposta = m.CitacaoTextoResposta
+						CitacaoTextoResposta = m.CitacaoTextoResposta,
+						CitacaoQuestionarioTitulo = m.CitacaoQuestionarioTitulo
 					});
 				}
 
@@ -542,7 +544,8 @@ namespace MauiApp1.ViewModels
 					EnviadaPorMim = false,
 					RespostaId = e.RespostaId,
 					CitacaoTextoPergunta = e.CitacaoTextoPergunta,
-					CitacaoTextoResposta = e.CitacaoTextoResposta
+					CitacaoTextoResposta = e.CitacaoTextoResposta,
+					CitacaoQuestionarioTitulo = e.CitacaoQuestionarioTitulo
 				});
 			});
 		}

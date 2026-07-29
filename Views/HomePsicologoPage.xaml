@@ -33,7 +33,7 @@
                 </Grid>
 
                 <!-- Cabeçalho -->
-                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                     <Label Grid.Column="0"
                            Text="{Binding NomeUsuario, StringFormat='Olá, {0}'}"
                            FontSize="19"
@@ -47,15 +47,6 @@
                             Padding="0">
                         <Image Source="{Binding FotoExibida}" Aspect="AspectFill" />
                     </Border>
-                    <Label Grid.Column="2"
-                           Text="Sair"
-                           TextColor="{StaticResource AzulPrimario}"
-                           FontSize="13"
-                           VerticalOptions="Center">
-                        <Label.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding SairCommand}" />
-                        </Label.GestureRecognizers>
-                    </Label>
                 </Grid>
 
                 <!-- Sumário Clínico -->
