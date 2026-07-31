@@ -8,7 +8,7 @@ Aplicativo de monitoramento de humor e suporte psicológico, conectando **Pacien
 - **ASP.NET Core Web API** — backend
 - **MySQL** (via Entity Framework Core / Pomelo) — persistência de dados
 - **SignalR** — chat em tempo real
-- **Clean Architecture** — Core / Application / Infrastructure / Api + MauiApp1
+- **Clean Architecture** — Core / Application / Infrastructure / Api 
 
 A API está hospedada no **Azure** (App Service + MySQL Flexible Server), então não é necessário rodar nenhum servidor localmente para testar o app.
 
