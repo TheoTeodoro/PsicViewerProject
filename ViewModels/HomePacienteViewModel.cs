@@ -26,12 +26,13 @@ namespace MauiApp1.ViewModels
 		private bool temNotificacao;
 		[ObservableProperty]
 		private int notificacoesNaoLidas;
+		[ObservableProperty]
+		private bool temNotificacaoChat;
 
 		public string FotoExibida => string.IsNullOrEmpty(_sessao.FotoUrl)
 			? "avatar_placeholder.jpg"
 			: $"{ApiConfig.ServidorBaseUrl}{_sessao.FotoUrl}";
 
-		// ── Card "Próxima pergunta" ─────────────────────────────────
 
 		[ObservableProperty]
 		private bool temProximaPergunta;
@@ -77,9 +78,6 @@ namespace MauiApp1.ViewModels
 			OnPropertyChanged(nameof(ProximaEhMultiplaEscolha));
 		}
 
-		// Dá um leve "pop" (escala 1.15x) no rosto selecionado, igual um
-		// seletor de humor comum — cada Image de rosto liga direto numa
-		// dessas, sem precisar de converter.
 		public double Escala1Tamanho => ProximaEscalaSelecionada == 1 ? 1.15 : 1.0;
 		public double Escala2Tamanho => ProximaEscalaSelecionada == 2 ? 1.15 : 1.0;
 		public double Escala3Tamanho => ProximaEscalaSelecionada == 3 ? 1.15 : 1.0;
@@ -108,34 +106,22 @@ namespace MauiApp1.ViewModels
 				? "Paciente"
 				: _sessao.Nome.Split(' ')[0];
 
-			// Antes o sino só recontava ao abrir a Home (OnAppearing) —
-			// uma mensagem chegando com o chat já conectado não mexia
-			// nele até sair e entrar de novo na tela. Essa página vive
-			// pela sessão toda (reaproveitada via PopToRootAsync, nunca
-			// recriada), então essa inscrição não precisa de remoção.
 			_chat.MensagemRecebida += (s, e) => MainThread.BeginInvokeOnMainThread(() => _ = VerificarNotificacoesAsync());
 		}
 
 		public void AtualizarFoto() => OnPropertyChanged(nameof(FotoExibida));
 
-		/// <summary>Chamado no OnAppearing da Home. Liga o sino se tiver
-		/// convite de psicólogo esperando resposta, e mostra um aviso
-		/// rápido se algum pedido que o paciente mandou acabou de ser
-		/// aceito (só uma vez — controlado pela SessaoUsuario).</summary>
 		public async Task VerificarNotificacoesAsync()
 		{
 			try
 			{
-				// Antes o chat só conectava quando o Chat abria pela
-				// primeira vez na sessão — sem isso, o sino não recebia
-				// nada em tempo real. Conectar aqui garante isso desde
-				// a Home.
 				if (!_chat.Conectado)
 					await _chat.ConectarAsync(_sessao.UsuarioId);
 
 				var todas = await _notificacoes.ObterNotificacoesAsync();
 				NotificacoesNaoLidas = todas.Count(i => i.NaoLida);
 				TemNotificacao = todas.Any(i => i.Tipo == TipoNotificacao.SolicitacaoVinculo && i.NaoLida);
+				TemNotificacaoChat = todas.Any(i => i.NaoLida && i.EhMensagemChat);
 
 				var vinculos = await _vinculo.ListarPorPacienteAsync(_sessao.UsuarioId);
 				var aceitosNovos = vinculos.Where(v =>
@@ -149,12 +135,10 @@ namespace MauiApp1.ViewModels
 			}
 			catch
 			{
-				// Notificação não deve travar a Home se a API estiver fora.
+
 			}
 		}
 
-		/// <summary>Carrega o card "Próxima pergunta" — chamado junto do
-		/// OnAppearing.</summary>
 		public async Task CarregarProximaPerguntaAsync()
 		{
 			try
@@ -195,10 +179,6 @@ namespace MauiApp1.ViewModels
 		[RelayCommand]
 		private void SelecionarProximaOpcao(string opcao) => ProximaOpcaoSelecionada = opcao;
 
-		/// <summary>Envia a resposta dessa pergunta específica e leva o
-		/// paciente pra tela cheia daquele questionário — lá ela já
-		/// aparece travada/concluída (o servidor manda "respondidaHoje"),
-		/// só editável de novo pelo lápis.</summary>
 		[RelayCommand]
 		private async Task EnviarProximaPerguntaAsync()
 		{
@@ -244,7 +224,7 @@ namespace MauiApp1.ViewModels
 
 				await Application.Current!.MainPage!.Navigation.PushAsync(page);
 
-				TemProximaPergunta = false; // será recarregado no próximo OnAppearing
+				TemProximaPergunta = false;
 			}
 			catch (Exception ex)
 			{
@@ -271,10 +251,6 @@ namespace MauiApp1.ViewModels
 			Application.Current!.MainPage = new NavigationPage(loginPage);
 		}
 
-		/// <summary>Abre a tela de Questionários já na aba "Histórico" —
-		/// reaproveita o que já existe lá (respostas de dias anteriores,
-		/// agrupadas por dia, só leitura) em vez de duplicar em outro
-		/// lugar.</summary>
 		[RelayCommand]
 		private async Task AbrirHistoricoAsync()
 		{

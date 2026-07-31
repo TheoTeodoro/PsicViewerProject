@@ -11,9 +11,6 @@ using MauiApp1.Views;
 
 namespace MauiApp1.ViewModels
 {
-	/// <summary>Um questionário pronto pra exibir na lista — acrescenta
-	/// campos calculados (data formatada, cores do selo de status) em
-	/// cima do QuestionarioDto puro que vem da API.</summary>
 	public class ItemQuestionario
 	{
 		public Guid Id { get; set; }
@@ -32,8 +29,6 @@ namespace MauiApp1.ViewModels
 		public Color CorTextoStatus => Status == "Ativo" ? Color.FromArgb("#1F9D55") : Color.FromArgb("#D9534F");
 	}
 
-	/// <summary>Um grupo de questionários no mesmo mês — pro cabeçalho tipo
-	/// "Fevereiro, 2026" que aparece antes de cada bloco na lista.</summary>
 	public class GrupoQuestionarios : List<ItemQuestionario>
 	{
 		public string NomeGrupo { get; }
@@ -63,8 +58,7 @@ namespace MauiApp1.ViewModels
 		[ObservableProperty]
 		private string filtroSelecionado = "Todos";
 
-		// Cores dos 3 chips de filtro, calculadas aqui em vez de um
-		// converter — mais simples pra esse caso (só 3 opções fixas).
+
 		public Color CorFundoTodos => FiltroSelecionado == "Todos" ? Color.FromArgb("#004AAD") : Colors.White;
 		public Color CorFundoAtivos => FiltroSelecionado == "Ativos" ? Color.FromArgb("#004AAD") : Colors.White;
 		public Color CorFundoInativos => FiltroSelecionado == "Inativos" ? Color.FromArgb("#004AAD") : Colors.White;
@@ -114,9 +108,7 @@ namespace MauiApp1.ViewModels
 		[RelayCommand]
 		private void FiltrarAtivos() => DefinirFiltro("Ativos");
 
-		// "Inativo" = questionário sem NENHUM paciente vinculado no
-		// momento (o servidor já manda o Status calculado assim, em vez
-		// do status manual de arquivar que existia antes).
+		
 		[RelayCommand]
 		private void FiltrarInativos() => DefinirFiltro("Inativos");
 
@@ -179,9 +171,7 @@ namespace MauiApp1.ViewModels
 			await Application.Current!.MainPage!.Navigation.PushAsync(page);
 		}
 
-		/// <summary>Apaga o questionário de vez (com confirmação) —
-		/// perguntas, respostas e vínculos com pacientes vão junto, não
-		/// tem volta. Diferente de desativar/inativar, que é reversível.</summary>
+
 		[RelayCommand]
 		private async Task RemoverQuestionarioAsync(ItemQuestionario item)
 		{

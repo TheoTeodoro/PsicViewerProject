@@ -9,13 +9,7 @@ using MauiApp1.Views;
 
 namespace MauiApp1.ViewModels
 {
-	/// <summary>Histórico de respostas de UM paciente específico, visto
-	/// pelo psicólogo — só leitura, e só dos questionários que esse
-	/// psicólogo mesmo vinculou a ele (o servidor já garante isso).
-	/// Reaproveita ItemHistoricoQuestionario/GrupoHistoricoQuestionario
-	/// já definidos em QuestionariosPacienteViewModel.cs — mesmo
-	/// agrupamento por questionário+dia, mesmo comportamento clicável,
-	/// usado no histórico do próprio paciente.</summary>
+	
 	public partial class HistoricoPacienteViewModel : ObservableObject
 	{
 		private readonly QuestionarioApiService _questionarios;
@@ -52,9 +46,7 @@ namespace MauiApp1.ViewModels
 			{
 				var historico = await _questionarios.ListarHistoricoPacientePorPsicologoAsync(_sessao.UsuarioId, pacienteId);
 
-				// Agrupa por questionário+dia (uma "submissão"), igual ao
-				// histórico do próprio paciente — clicável, abre o
-				// detalhe (pergunta a pergunta) daquele dia específico.
+				
 				var submissoes = historico
 					.GroupBy(h => (h.QuestionarioId, h.Data))
 					.Select(g => new ItemHistoricoQuestionario
@@ -90,10 +82,7 @@ namespace MauiApp1.ViewModels
 		private static string CapitalizarPrimeiraLetra(string texto)
 			=> string.IsNullOrEmpty(texto) ? texto : char.ToUpper(texto[0], new CultureInfo("pt-BR")) + texto[1..];
 
-		/// <summary>Abre o detalhe (pergunta a pergunta) de um questionário
-		/// respondido naquele dia — mesma tela usada pelo paciente pra
-		/// rever as próprias respostas, só que aqui é o psicólogo vendo
-		/// as do paciente. Só leitura dos dois lados.</summary>
+		
 		[RelayCommand]
 		private async Task AbrirSubmissaoAsync(ItemHistoricoQuestionario item)
 		{

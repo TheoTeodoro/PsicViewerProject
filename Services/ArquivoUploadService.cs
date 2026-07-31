@@ -7,11 +7,7 @@ using System.Threading.Tasks;
 
 namespace MauiApp1.Services
 {
-	/// <summary>
-	/// Envia um arquivo local (foto, áudio, documento) pro endpoint
-	/// /api/upload da API, e recebe de volta o caminho onde ficou salvo
-	/// no servidor — esse caminho é o que vai dentro da Mensagem.
-	/// </summary>
+
 	public class ArquivoUploadService
 	{
 		private readonly HttpClient _http = new();
@@ -34,10 +30,7 @@ namespace MauiApp1.Services
 			return (caminho, nomeOriginal);
 		}
 
-		/// <summary>Baixa um arquivo do servidor pro celular (cache local),
-		/// usado pra tocar áudio — o player precisa de um arquivo local,
-		/// não toca direto de uma URL remota do jeito que configuramos.
-		/// Se já baixou antes, reaproveita (não baixa de novo).</summary>
+
 		public async Task<string> BaixarAsync(string urlCompleta)
 		{
 			var nomeArquivo = Path.GetFileName(new Uri(urlCompleta).LocalPath);

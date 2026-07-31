@@ -8,9 +8,7 @@ using MauiApp1.Services;
 
 namespace MauiApp1.ViewModels
 {
-	/// <summary>Uma pergunta já existente no questionário, editável: dá
-	/// pra mudar o horário e ativar/desativar, mas não o texto/tipo (pra
-	/// isso, desativa essa e cria uma nova).</summary>
+
 	public partial class ItemPerguntaExistente : ObservableObject
 	{
 		public Guid? Id { get; set; }
@@ -31,8 +29,7 @@ namespace MauiApp1.ViewModels
 			_ => "Texto"
 		};
 
-		/// <summary>Deixa o card visualmente "apagado" quando a pergunta
-		/// está desativada — deixa óbvio que ela não está sendo enviada.</summary>
+		
 		public double OpacidadeCard => Ativa ? 1.0 : 0.5;
 
 		partial void OnAtivaChanged(bool value) => OnPropertyChanged(nameof(OpacidadeCard));
@@ -77,14 +74,7 @@ namespace MauiApp1.ViewModels
 		[ObservableProperty]
 		private bool carregando;
 
-		// Trava contra duplo toque: os botões "Salvar Alterações" e
-		// "Criar Novo Questionário" ficam desabilitados enquanto uma
-		// chamada já está em andamento. Sem isso, dois toques rápidos
-		// disparavam duas requisições PUT concorrentes — a segunda
-		// carregava o Questionário um instante antes/depois da primeira
-		// terminar de salvar, e tentava dar UPDATE numa Pergunta cujo
-		// estado já tinha mudado por causa da primeira, gerando
-		// DbUpdateConcurrencyException (erro 500) no servidor.
+		
 		public bool PodeSalvar => !Carregando;
 
 		partial void OnCarregandoChanged(bool value) => OnPropertyChanged(nameof(PodeSalvar));
@@ -133,8 +123,6 @@ namespace MauiApp1.ViewModels
 					});
 				}
 
-				// Só pacientes com vínculo ACEITO com esse psicólogo podem
-				// continuar (ou passar a) ser associados a esse questionário.
 				var vinculos = await _vinculo.ListarPorPsicologoAsync(_sessao.UsuarioId);
 				var vinculados = detalhe.Pacientes.ToDictionary(x => x.PacienteId, x => x.DiasSemana);
 
@@ -238,10 +226,7 @@ namespace MauiApp1.ViewModels
 
 			Perguntas.Remove(pergunta);
 
-			// Se essa pergunta já tiver respostas registradas, o servidor
-			// recusa a remoção ao salvar (preferimos perder a tentativa de
-			// exclusão a perder histórico clínico por engano) — a mensagem
-			// de erro aparece normalmente em MensagemErro nesse caso.
+			
 		}
 
 		[RelayCommand]
@@ -252,13 +237,7 @@ namespace MauiApp1.ViewModels
 
 		private async Task SalvarInternoAsync(bool criarNovo)
 		{
-			// Guard contra duplo toque: se já tem uma chamada em
-			// andamento (Carregando == true), ignora este segundo
-			// disparo em vez de mandar outra requisição por cima.
-			// Funciona porque Carregando é setado como true de forma
-			// síncrona, antes do primeiro "await" — então mesmo que o
-			// segundo toque chegue enquanto a primeira chamada ainda
-			// está em voo, ele já encontra a trava ligada.
+		
 			if (Carregando) return;
 
 			MensagemErro = string.Empty;
@@ -289,8 +268,7 @@ namespace MauiApp1.ViewModels
 
 				if (criarNovo)
 				{
-					// Se o título não foi alterado, gera um nome automático
-					// pra diferenciar da cópia original.
+					
 					var tituloFinal = Titulo.Trim().Equals(_tituloOriginal.Trim(), StringComparison.OrdinalIgnoreCase)
 						? $"{Titulo.Trim()} (cópia)"
 						: Titulo.Trim();
@@ -312,9 +290,6 @@ namespace MauiApp1.ViewModels
 					}
 				}
 
-				// Sai da tela de Editar Questionário e volta pra página
-				// anterior — SEMPRE que Salvar Alterações ou Criar Novo
-				// tiverem sucesso. Não remover.
 				await Application.Current!.MainPage!.Navigation.PopAsync();
 			}
 			catch (Exception ex)

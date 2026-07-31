@@ -7,6 +7,11 @@ namespace MauiApp1.ViewModels
 	public partial class DadosPacienteViewModel : ObservableObject
 	{
 		private readonly PacientePerfilPublicoService _perfilPublico;
+		private readonly VinculoApiService _vinculo;
+
+		// Guardado aqui em CarregarAsync — é o que EncerrarAsync usa pra
+		// saber QUAL vínculo desfazer (o PacienteId sozinho não basta).
+		private Guid _vinculoId;
 
 		[ObservableProperty]
 		private string nome = string.Empty;
@@ -37,13 +42,15 @@ namespace MauiApp1.ViewModels
 		private string telefoneExibido = string.Empty;
 		partial void OnFotoUrlChanged(string? value) => OnPropertyChanged(nameof(FotoExibida));
 
-		public DadosPacienteViewModel(PacientePerfilPublicoService perfilPublico)
+		public DadosPacienteViewModel(PacientePerfilPublicoService perfilPublico, VinculoApiService vinculo)
 		{
 			_perfilPublico = perfilPublico;
+			_vinculo = vinculo;
 		}
 
-		public async Task CarregarAsync(Guid pacienteId)
+		public async Task CarregarAsync(Guid pacienteId, Guid vinculoId)
 		{
+			_vinculoId = vinculoId;
 			Carregando = true;
 			MensagemErro = string.Empty;
 			try
@@ -54,7 +61,6 @@ namespace MauiApp1.ViewModels
 					MensagemErro = "Não foi possível carregar os dados desse paciente.";
 					return;
 				}
-
 				Nome = dados.Nome;
 				FotoUrl = dados.FotoUrl;
 				IdadeExibida = dados.Idade is int idade ? $"{idade} anos" : "Idade não informada";
@@ -73,6 +79,25 @@ namespace MauiApp1.ViewModels
 			finally
 			{
 				Carregando = false;
+			}
+		}
+
+		/// <summary>Encerra o vínculo com este paciente. Retorna true se deu
+		/// certo — quem chama (a Page) decide se volta ou não com base nisso.</summary>
+		public async Task<bool> DesvincularPacienteAsync()
+		{
+			MensagemErro = string.Empty;
+			try
+			{
+				var ok = await _vinculo.EncerrarAsync(_vinculoId);
+				if (!ok)
+					MensagemErro = "Não foi possível desvincular o paciente.";
+				return ok;
+			}
+			catch (Exception ex)
+			{
+				MensagemErro = "Não foi possível conectar ao servidor: " + ex.Message;
+				return false;
 			}
 		}
 

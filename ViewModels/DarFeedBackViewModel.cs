@@ -10,11 +10,7 @@ using MauiApp1.Services;
 
 namespace MauiApp1.ViewModels
 {
-	/// <summary>Tela em que o psicólogo escreve (ou grava um áudio) um
-	/// feedback pra uma resposta específica de questionário — mostra o
-	/// contexto (pergunta + resposta do paciente, incluindo o áudio de
-	/// observação dele, se tiver) antes de escrever, e o feedback vai pro
-	/// chat normal com esse paciente, citando esse contexto.</summary>
+	
 	public partial class DarFeedbackViewModel : ObservableObject
 	{
 		private readonly QuestionarioApiService _questionarios;
@@ -237,9 +233,7 @@ namespace MauiApp1.ViewModels
 			}
 		}
 
-		/// <summary>SÓ para a gravação — não envia nada. O áudio fica
-		/// salvo localmente, disponível pra ouvir de novo ou descartar
-		/// antes de decidir enviar (mesmo padrão do chat normal).</summary>
+		
 		[RelayCommand]
 		private async Task PararGravacaoAsync()
 		{
@@ -277,12 +271,10 @@ namespace MauiApp1.ViewModels
 			if (_gravador is null) return;
 			GravandoAudio = false;
 			_timerGravacao?.Stop();
-			try { await _gravador.StopAsync(); } catch { /* ignora, só queremos parar */ }
+			try { await _gravador.StopAsync(); } catch {  }
 		}
 
-		/// <summary>Toca (ou pausa) a prévia do áudio já gravado, direto do
-		/// arquivo local — ainda não foi enviado, então não precisa
-		/// baixar nada, é só tocar o arquivo que já está no celular.</summary>
+	
 		[RelayCommand]
 		private void TocarPrevia()
 		{
@@ -356,10 +348,7 @@ namespace MauiApp1.ViewModels
 			SegundosRestantesPrevia = 0;
 		}
 
-		/// <summary>Envia de fato o áudio já gravado — se tiver texto
-		/// escrito também, ele vai junto como legenda do áudio (mesmo
-		/// padrão de anexo+legenda usado no chat normal), em vez de ser
-		/// descartado.</summary>
+		
 		[RelayCommand]
 		private async Task EnviarAudioAsync()
 		{
@@ -401,10 +390,7 @@ namespace MauiApp1.ViewModels
 			TocandoPrevia = false;
 		}
 
-		/// <summary>Toca (ou pausa) o áudio de observação que o PACIENTE
-		/// gravou junto com a resposta — baixa do servidor na primeira
-		/// vez, igual ao chat, já que aqui (diferente da prévia do
-		/// feedback) o arquivo não está no celular.</summary>
+		
 		[RelayCommand]
 		private async Task TocarAudioRespostaAsync()
 		{

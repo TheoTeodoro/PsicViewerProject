@@ -34,6 +34,12 @@ namespace MauiApp1.Services
 		public Guid ContatoId { get; set; }
 		public string ContatoNome { get; set; } = string.Empty;
 
+		public bool EhMensagemChat => Tipo is TipoNotificacao.Mensagem
+			or TipoNotificacao.Audio
+			or TipoNotificacao.Imagem
+			or TipoNotificacao.Documento
+			or TipoNotificacao.Feedback;
+
 		public string Icone => Tipo switch
 		{
 			TipoNotificacao.SolicitacaoVinculo => "🤝",
@@ -67,7 +73,6 @@ namespace MauiApp1.Services
 		private readonly SessaoUsuario _sessao;
 		private readonly HttpClient _http = new();
 
-		
 		private DateTime _ultimaVisualizacao = DateTime.MinValue;
 
 		public NotificacaoService(VinculoApiService vinculo, QuestionarioApiService questionarios, ChatConnectionService chat, SessaoUsuario sessao)
@@ -78,7 +83,6 @@ namespace MauiApp1.Services
 			_sessao = sessao;
 		}
 
-		
 		public void MarcarListaComoVisualizadaAgora() => _ultimaVisualizacao = DateTime.Now;
 
 		public async Task<List<ItemNotificacao>> ObterNotificacoesAsync()
@@ -100,7 +104,6 @@ namespace MauiApp1.Services
 
 			itens.AddRange(await ObterNotificacoesDeMensagensAsync());
 
-			
 			foreach (var item in itens)
 				item.NaoLida = item.Quando > _ultimaVisualizacao;
 
@@ -117,7 +120,7 @@ namespace MauiApp1.Services
 					await _vinculo.MarcarPedidoVisualizadoAsync(item.VinculoId);
 				else if (item.Tipo == TipoNotificacao.VinculoAceito)
 					await _vinculo.MarcarAceitoVisualizadoAsync(item.VinculoId);
-				else if (item.Tipo is TipoNotificacao.Mensagem or TipoNotificacao.Audio or TipoNotificacao.Imagem or TipoNotificacao.Documento or TipoNotificacao.Feedback)
+				else if (item.EhMensagemChat)
 					remetentesParaMarcar.Add(item.ContatoId);
 			}
 
@@ -127,7 +130,6 @@ namespace MauiApp1.Services
 			MarcarListaComoVisualizadaAgora();
 		}
 
-	
 		private async Task<List<ItemNotificacao>> ObterNotificacoesDeRespostasAsync()
 		{
 			var lista = new List<ItemNotificacao>();
@@ -154,7 +156,7 @@ namespace MauiApp1.Services
 							: $"Respondeu: \"{perguntaTexto}\"",
 						Quando = respondidoEm,
 						NaoLida = true,
-						VinculoId = respostaId, 
+						VinculoId = respostaId,
 						ContatoId = pacienteId,
 						ContatoNome = pacienteNome
 					});
@@ -219,7 +221,6 @@ namespace MauiApp1.Services
 
 			if (resultado is null) return lista;
 
-			
 			foreach (var item in resultado)
 			{
 				try
@@ -317,7 +318,6 @@ namespace MauiApp1.Services
 			return semExtensao.Substring(0, Math.Min(disponivel, semExtensao.Length)) + "..." + extensao;
 		}
 
-	
 		public async Task MarcarTodasComoVistasAsync(IEnumerable<ItemNotificacao> itens)
 		{
 			foreach (var item in itens)

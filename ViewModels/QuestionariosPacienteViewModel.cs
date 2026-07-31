@@ -210,8 +210,7 @@ namespace MauiApp1.ViewModels
 			await Application.Current!.MainPage!.Navigation.PushAsync(page);
 		}
 
-		/// <summary>Abre o detalhe de um questionário respondido naquele
-		/// dia — só leitura, não dá pra editar nem responder de novo.</summary>
+	
 		[RelayCommand]
 		private async Task AbrirSubmissaoHistoricoAsync(ItemHistoricoQuestionario item)
 		{

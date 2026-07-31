@@ -34,8 +34,9 @@ namespace MauiApp1.ViewModels
 		[ObservableProperty]
 		private int notificacoesNaoLidas;
 
-		// Começa recolhido — só o título "Sumário Clínico" aparece, os
-		// números ficam escondidos até o psicólogo tocar pra expandir.
+		[ObservableProperty]
+		private bool temNotificacaoChat;
+
 		[ObservableProperty]
 		private bool sumarioExpandido;
 
@@ -59,12 +60,6 @@ namespace MauiApp1.ViewModels
 				? "Psicólogo(a)"
 				: _sessao.Nome.Split(' ')[0];
 
-			// Antes o sino só recontava ao abrir a Home (OnAppearing) —
-			// uma mensagem chegando com o chat já conectado não mexia
-			// nele até sair e entrar de novo na tela. Essa página vive
-			// pela sessão toda (é reaproveitada via PopToRootAsync, nunca
-			// recriada), então essa inscrição não precisa de handler de
-			// remoção — só é desfeita mesmo quando o app fecha.
 			_chat.MensagemRecebida += (s, e) => MainThread.BeginInvokeOnMainThread(() => _ = VerificarNotificacoesAsync());
 		}
 
@@ -73,10 +68,6 @@ namespace MauiApp1.ViewModels
 		[RelayCommand]
 		private void AlternarSumario() => SumarioExpandido = !SumarioExpandido;
 
-		/// <summary>Chamado no OnAppearing — busca os números reais do
-		/// Sumário Clínico. RespostasPendentes conta quantas perguntas
-		/// ativas ainda não foram respondidas HOJE, somando todos os
-		/// pacientes vinculados.</summary>
 		public async Task CarregarSumarioAsync()
 		{
 			try
@@ -89,7 +80,6 @@ namespace MauiApp1.ViewModels
 			}
 			catch
 			{
-				// Sumário não deve travar a Home se a API estiver fora.
 			}
 		}
 
@@ -97,17 +87,13 @@ namespace MauiApp1.ViewModels
 		{
 			try
 			{
-				// Antes o chat só conectava quando o Chat ou o Dar Feedback
-				// abriam pela primeira vez na sessão — se isso nunca
-				// acontecia, o sino nunca recebia nada em tempo real (a
-				// inscrição no evento existia, mas sem conexão nenhuma
-				// escutando). Conectar aqui garante isso desde a Home.
 				if (!_chat.Conectado)
 					await _chat.ConectarAsync(_sessao.UsuarioId);
 
 				var todas = await _notificacoes.ObterNotificacoesAsync();
 				NotificacoesNaoLidas = todas.Count(i => i.NaoLida);
 				TemNotificacao = todas.Any(i => i.Tipo == TipoNotificacao.SolicitacaoVinculo && i.NaoLida);
+				TemNotificacaoChat = todas.Any(i => i.NaoLida && i.EhMensagemChat);
 
 				var vinculos = await _vinculo.ListarPorPsicologoAsync(_sessao.UsuarioId);
 				var aceitosNovos = vinculos.Where(v =>
@@ -121,7 +107,6 @@ namespace MauiApp1.ViewModels
 			}
 			catch
 			{
-				// Notificação não deve travar a Home se a API estiver fora.
 			}
 		}
 

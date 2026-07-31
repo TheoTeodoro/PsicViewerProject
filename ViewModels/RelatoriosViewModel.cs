@@ -9,7 +9,6 @@ using MauiApp1.Services;
 
 namespace MauiApp1.ViewModels
 {
-	/// <summary>Um paciente selecionável no Picker de Relatórios.</summary>
 	public class ItemPacienteRelatorio
 	{
 		public Guid Id { get; set; }
@@ -17,7 +16,6 @@ namespace MauiApp1.ViewModels
 		public override string ToString() => Nome;
 	}
 
-	/// <summary>Um questionário selecionável (desse psicólogo).</summary>
 	public class ItemQuestionarioRelatorio
 	{
 		public Guid Id { get; set; }
@@ -25,10 +23,7 @@ namespace MauiApp1.ViewModels
 		public override string ToString() => Titulo;
 	}
 
-	/// <summary>Uma pergunta na lista de checkboxes — de Escala (ganha
-	/// uma Cor fixa, usada na linha do gráfico) ou de Múltipla Escolha
-	/// (pra destacar, sem cor própria — usa o esquema fixo Sim/Não/
-	/// não respondeu).</summary>
+	
 	public partial class ItemPerguntaSelecionavel : ObservableObject
 	{
 		public Guid Id { get; set; }
@@ -39,15 +34,6 @@ namespace MauiApp1.ViewModels
 		private bool selecionada;
 	}
 
-	/// <summary>RF22 — Visualizar Relatórios de Humor. Fluxo: paciente →
-	/// questionário → marca uma ou mais perguntas de Escala (cada uma
-	/// vira uma linha colorida) → opcionalmente marca uma ou mais
-	/// perguntas de Múltipla Escolha pra destacar (fileiras de
-	/// marcadores Sim/Não/não respondeu abaixo do gráfico) → período.
-	/// Tocar num ponto da linha mostra um balão com a observação (e
-	/// áudio, se tiver) daquele dia. Só mostra dados dos questionários
-	/// que ESSE psicólogo mesmo criou/vinculou (RF22.4) — o servidor
-	/// garante isso.</summary>
 	public partial class RelatoriosViewModel : ObservableObject
 	{
 		private readonly QuestionarioApiService _questionarios;
@@ -105,7 +91,6 @@ namespace MauiApp1.ViewModels
 		[ObservableProperty]
 		private string mensagemErro = string.Empty;
 
-		// Balão de fala (mostrado ao tocar num ponto do gráfico)
 		[ObservableProperty]
 		private bool mostrarBalao;
 
@@ -241,7 +226,7 @@ namespace MauiApp1.ViewModels
 				if (TemPerguntaEscala)
 				{
 					PerguntasEscala[0].Selecionada = true;
-					await CarregarGraficoAsync(); // só o carregamento inicial é automático
+					await CarregarGraficoAsync();
 				}
 				else
 				{
@@ -332,10 +317,7 @@ namespace MauiApp1.ViewModels
 		[RelayCommand]
 		private void SetPeriodo(string periodo) => PeriodoSelecionado = periodo;
 
-		/// <summary>Chamado pelo code-behind quando o psicólogo toca no
-		/// GraphicsView (x,y já nas coordenadas do próprio gráfico). Um
-		/// segundo toque no MESMO ponto fecha o balão; tocar em outro
-		/// ponto troca pra ele; tocar fora de qualquer ponto fecha.</summary>
+		
 		public void AoTocarNoGrafico(float x, float y)
 		{
 			var achado = Grafico.Hit(new PointF(x, y));
@@ -363,8 +345,7 @@ namespace MauiApp1.ViewModels
 			AudioBalaoCaminho = ponto.AudioObservacao;
 			TemAudioBalao = !string.IsNullOrEmpty(ponto.AudioObservacao);
 
-			// Posição aproximada perto do ponto tocado, sem deixar vazar
-			// pra fora da área visível do cartão do gráfico.
+			
 			BalaoX = Math.Clamp(achado.Value.Centro.X - 90, 4, 300);
 			BalaoY = Math.Max(achado.Value.Centro.Y - 90, 4);
 

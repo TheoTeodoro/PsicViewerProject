@@ -10,16 +10,7 @@ using MauiApp1.Services;
 
 namespace MauiApp1.ViewModels
 {
-	/// <summary>Uma pergunta do questionário com o estado de resposta
-	/// embutido. Cada item se envia sozinho pro servidor assim que o
-	/// paciente confirma (não é mais um envio único no final) — depois
-	/// disso fica "trancado" (cinza), só reabrindo pra edição com o lápis.
-	///
-	/// Se a pergunta já tinha sido respondida HOJE (o servidor manda isso
-	/// junto ao carregar), o item já nasce travado e preenchido — antes,
-	/// toda vez que a tela recarregava, tudo voltava a ficar em branco,
-	/// mesmo já tendo sido respondido (essa era a causa real do "responder
-	/// uma pergunta faz todas sumirem").</summary>
+	
 	public partial class RespostaPerguntaItem : ObservableObject
 	{
 		private readonly IAudioManager _audioManager;
@@ -80,9 +71,7 @@ namespace MauiApp1.ViewModels
 		public bool TemAudio => !string.IsNullOrEmpty(CaminhoAudioObservacao);
 		public string TextoBotaoTocar => TocandoAudio ? "⏸ Pausar" : "▶ Tocar";
 
-		/// <summary>Trancada = já enviada e ainda não reaberta pra edição.
-		/// Enquanto trancada, os campos ficam desabilitados e cinza, e o
-		/// microfone ganha um traço (indicando que não dá mais pra gravar).</summary>
+		
 		public bool Trancada => Enviada && !Editando;
 		public bool PodeEditar => !Trancada;
 		public Color CorFundoCard => Trancada ? Color.FromArgb("#EDEDED") : Color.FromArgb("#FAFBFC");
@@ -353,9 +342,7 @@ namespace MauiApp1.ViewModels
 					if (p.Tipo == "MultiplaEscolha" && !string.IsNullOrEmpty(p.Opcoes))
 						item.Opcoes = p.Opcoes.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
 
-					// Já respondida hoje? Abre travada e preenchida com o
-					// que já foi mandado, em vez de em branco — o lápis
-					// (Editar) ainda permite mudar se quiser.
+					
 					if (p.RespondidaHoje)
 					{
 						item.EscalaSelecionada = p.ValorEscala;

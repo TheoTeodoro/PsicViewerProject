@@ -158,11 +158,24 @@
                         </Image.GestureRecognizers>
                     </Image>
 
-                    <Image Grid.Column="0" Grid.Row="1" Source="card_acesso_chat_paciente.svg" Aspect="AspectFit">
-                        <Image.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding AbrirChatCommand}" />
-                        </Image.GestureRecognizers>
-                    </Image>
+                    <!-- Card de Chat: mostra a versão com bolinha vermelha só
+                         quando existe mensagem/áudio/imagem/documento/feedback
+                         não visualizado — outros tipos de notificação (vínculo,
+                         resposta de questionário) não acendem esse card. -->
+                    <Grid Grid.Column="0" Grid.Row="1">
+                        <Image Source="card_acesso_chat_paciente.svg" Aspect="AspectFit"
+                               IsVisible="{Binding TemNotificacaoChat, Converter={StaticResource InversoBoolConverter}}">
+                            <Image.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding AbrirChatCommand}" />
+                            </Image.GestureRecognizers>
+                        </Image>
+                        <Image Source="icone_chat_com_notificao.svg" Aspect="AspectFit"
+                               IsVisible="{Binding TemNotificacaoChat}">
+                            <Image.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding AbrirChatCommand}" />
+                            </Image.GestureRecognizers>
+                        </Image>
+                    </Grid>
 
                     <Image Grid.Column="1" Grid.Row="1" Source="card_acesso_buscar_psicologo.svg" Aspect="AspectFit">
                         <Image.GestureRecognizers>
