@@ -72,6 +72,17 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Compile Remove="PsicViewer.Api\**\*.cs" />
+		<Compile Remove="PsicViewer.Application\**\*.cs" />
+		<Compile Remove="PsicViewer.Core\**\*.cs" />
+		<Compile Remove="PsicViewer.Infrastructure\**\*.cs" />
+		<None Remove="PsicViewer.Api\**" />
+		<None Remove="PsicViewer.Application\**" />
+		<None Remove="PsicViewer.Core\**" />
+		<None Remove="PsicViewer.Infrastructure\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 
 
 
@@ -96,13 +107,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="Resources\AppIcon\appiconfg.svg" />
-	  <None Remove="Resources\AppIcon\appicon_android_fg.svg" />
+		<None Remove="Resources\AppIcon\appiconfg.svg" />
+		<None Remove="Resources\AppIcon\appicon_android_fg.svg" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiImage Include="Resources\AppIcon\appiconfg.svg" />
-	  <MauiImage Include="Resources\AppIcon\appicon_android_fg.svg" />
+		<MauiImage Include="Resources\AppIcon\appiconfg.svg" />
+		<MauiImage Include="Resources\AppIcon\appicon_android_fg.svg" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -115,20 +126,20 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\PsicViewer.Application\PsicViewer.Application.csproj" />
-		<ProjectReference Include="..\PsicViewer.Core\PsicViewer.Core.csproj" />
-		  <ProjectReference Include="..\PsicViewer.Infrastructure\PsicViewer.Infrastructure.csproj" />
-				
+		<ProjectReference Include="PsicViewer.Core\PsicViewer.Core.csproj" />
+		<ProjectReference Include="PsicViewer.Infrastructure\PsicViewer.Infrastructure.csproj" />
+		<ProjectReference Include="PsicViewer.Application\PsicViewer.Application.csproj" />
+
 
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Views\NotificacoesPage.xaml.cs">
-	    <DependentUpon>NotificacoesPage.xaml</DependentUpon>
-	  </Compile>
-	  <Compile Update="Views\QuestionariosPacientePage.xaml.cs">
-	    <DependentUpon>QuestionariosPacientePage.xaml</DependentUpon>
-	  </Compile>
+		<Compile Update="Views\NotificacoesPage.xaml.cs">
+			<DependentUpon>NotificacoesPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\QuestionariosPacientePage.xaml.cs">
+			<DependentUpon>QuestionariosPacientePage.xaml</DependentUpon>
+		</Compile>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -139,86 +150,86 @@
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\CriarQuestionarioPage.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\DadosPacientePage.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\DarFeedBackPage.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\DetalheHistoricoQuestionarioPage.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\EditarQuestionarioPage.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\HistoricoPacientePage.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\NotificacoesPage.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\BuscarPacientePage.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\BuscarPsicologoPage.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
-	  <MauiXaml Update="Views\CadastroPacientePage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\CadastroPsicologoPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\ChatConversaPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\ChatListPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\ContaCriadaPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\EditarPerfilPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\HomePacientePage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\HomePsicologoPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\LoginPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\PacientesPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\PerfilPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\PreContaPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\QuestionarioPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\QuestionariosPacientePage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\RelatoriosPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\ResponderQuestionarioPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\SolicitacaoVinculoPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\VisualizarImagemPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
+		<MauiXaml Update="Views\CadastroPacientePage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\CadastroPsicologoPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\ChatConversaPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\ChatListPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\ContaCriadaPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\EditarPerfilPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\HomePacientePage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\HomePsicologoPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\LoginPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\PacientesPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\PerfilPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\PreContaPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\QuestionarioPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\QuestionariosPacientePage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\RelatoriosPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\ResponderQuestionarioPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SolicitacaoVinculoPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\VisualizarImagemPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
 	</ItemGroup>
 
 </Project>
