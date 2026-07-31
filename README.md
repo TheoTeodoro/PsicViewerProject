@@ -46,8 +46,7 @@ A API está hospedada no **Azure** (App Service + MySQL Flexible Server), então
 3. Clica em ▶️ — o emulador abre, e o Visual Studio instala e abre o app nele
 
 **Se aparecer o aviso "O Hyper-V não está configurado"** ao iniciar o emulador: isso acontece porque a aceleração de hardware do Windows ainda não está ativada na máquina.
-- **Solução rápida:** clica em **"Executar Mesmo Assim"** — o emulador abre e funciona, só que mais lento (sem aceleração).
-- **Solução definitiva:** aperta `Win + R` → digita `optionalfeatures` → Enter. No Windows **Pro/Enterprise/Education**, marca **Hyper-V**; no Windows **Home** (que não tem Hyper-V), marca **"Plataforma de Hipervisor do Windows"** no lugar. Reinicia o PC depois de marcar. Se o aviso continuar aparecendo mesmo depois de reiniciar, confere se a virtualização (Intel VT-x / AMD-V) está ativada na BIOS/UEFI da placa-mãe.
+- **Solução definitiva:** aperte `Win + R` → digita `optionalfeatures` → Enter. No Windows **Pro/Enterprise/Education**, marca **Hyper-V**; no Windows **Home** (que não tem Hyper-V), marca **"Plataforma de Hipervisor do Windows"** no lugar. Reinicia o PC depois de marcar. Se o aviso continuar aparecendo mesmo depois de reiniciar, confere se a virtualização (Intel VT-x / AMD-V) está ativada na BIOS/UEFI da placa-mãe.
 
 ## 👤 Contas de teste
 
