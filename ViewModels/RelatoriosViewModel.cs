@@ -23,7 +23,6 @@ namespace MauiApp1.ViewModels
 		public override string ToString() => Titulo;
 	}
 
-	
 	public partial class ItemPerguntaSelecionavel : ObservableObject
 	{
 		public Guid Id { get; set; }
@@ -32,6 +31,12 @@ namespace MauiApp1.ViewModels
 
 		[ObservableProperty]
 		private bool selecionada;
+	}
+
+	public class ItemLegenda
+	{
+		public string Texto { get; set; } = string.Empty;
+		public Color Cor { get; set; } = Colors.Gray;
 	}
 
 	public partial class RelatoriosViewModel : ObservableObject
@@ -56,6 +61,7 @@ namespace MauiApp1.ViewModels
 		public ObservableCollection<ItemQuestionarioRelatorio> Questionarios { get; } = new();
 		public ObservableCollection<ItemPerguntaSelecionavel> PerguntasEscala { get; } = new();
 		public ObservableCollection<ItemPerguntaSelecionavel> PerguntasDestaque { get; } = new();
+		public ObservableCollection<ItemLegenda> LegendaDestaques { get; } = new();
 
 		[ObservableProperty]
 		private ItemPacienteRelatorio? pacienteSelecionado;
@@ -293,6 +299,11 @@ namespace MauiApp1.ViewModels
 				Grafico.Destaques = novosDestaques;
 				TemDestaqueAtivo = novosDestaques.Count > 0;
 
+				var totalDiasNoPeriodo = CalcularTotalDiasNoPeriodo(inicio, fim);
+				LegendaDestaques.Clear();
+				foreach (var item in GraficoHumorDrawable.ObterLegenda(novosDestaques, totalDiasNoPeriodo))
+					LegendaDestaques.Add(new ItemLegenda { Texto = item.Texto, Cor = item.Cor });
+
 				OnPropertyChanged(nameof(Grafico));
 			}
 			catch (Exception ex)
@@ -314,10 +325,20 @@ namespace MauiApp1.ViewModels
 			return (null, null);
 		}
 
+		private int CalcularTotalDiasNoPeriodo(DateTime? inicio, DateTime? fim)
+		{
+			if (inicio.HasValue && fim.HasValue)
+				return (fim.Value.Date - inicio.Value.Date).Days + 1;
+
+			return Grafico.Series
+				.SelectMany(s => s.Pontos.Select(p => p.Data.Date))
+				.Distinct()
+				.Count();
+		}
+
 		[RelayCommand]
 		private void SetPeriodo(string periodo) => PeriodoSelecionado = periodo;
 
-		
 		public void AoTocarNoGrafico(float x, float y)
 		{
 			var achado = Grafico.Hit(new PointF(x, y));
@@ -345,7 +366,6 @@ namespace MauiApp1.ViewModels
 			AudioBalaoCaminho = ponto.AudioObservacao;
 			TemAudioBalao = !string.IsNullOrEmpty(ponto.AudioObservacao);
 
-			
 			BalaoX = Math.Clamp(achado.Value.Centro.X - 90, 4, 300);
 			BalaoY = Math.Max(achado.Value.Centro.Y - 90, 4);
 

@@ -22,7 +22,6 @@
             <Label Text="{Binding MensagemErro}" Style="{StaticResource TextoErro}" HorizontalTextAlignment="Center"
                    IsVisible="{Binding MensagemErro, Converter={StaticResource StringNaoVazioConverter}}" />
 
-            <!-- Paciente -->
             <Border Style="{StaticResource CampoTexto}">
                 <Picker Title="Selecione um paciente"
                         ItemsSource="{Binding Pacientes}"
@@ -30,7 +29,6 @@
                         VerticalOptions="Center" />
             </Border>
 
-            <!-- Questionário -->
             <Border Style="{StaticResource CampoTexto}">
                 <Picker Title="Selecione um questionário"
                         ItemsSource="{Binding Questionarios}"
@@ -42,7 +40,6 @@
                    FontSize="12" TextColor="{StaticResource CinzaMedio}" HorizontalTextAlignment="Center"
                    IsVisible="{Binding TemPerguntaEscala, Converter={StaticResource InversoBoolConverter}}" />
 
-            <!-- Perguntas de Escala — cada uma marcada vira uma linha colorida -->
             <VerticalStackLayout Spacing="4" IsVisible="{Binding TemPerguntaEscala}">
                 <Label Text="Perguntas a analisar (Escala)" FontSize="12" TextColor="{StaticResource CinzaMedio}" />
                 <CollectionView ItemsSource="{Binding PerguntasEscala}">
@@ -59,7 +56,6 @@
                 </CollectionView>
             </VerticalStackLayout>
 
-            <!-- Perguntas de destaque (Múltipla Escolha, opcional, várias) -->
             <VerticalStackLayout Spacing="4" IsVisible="{Binding TemPerguntaEscala}">
                 <Label Text="Destacar respostas de (opcional)" FontSize="12" TextColor="{StaticResource CinzaMedio}" />
                 <CollectionView ItemsSource="{Binding PerguntasDestaque}">
@@ -77,7 +73,6 @@
                 </CollectionView>
             </VerticalStackLayout>
 
-            <!-- Período -->
             <Grid ColumnDefinitions="*,*,*" ColumnSpacing="6">
                 <Border Grid.Column="0" StrokeShape="RoundRectangle 18" Padding="0,10"
                         BackgroundColor="{Binding PeriodoSelecionado, Converter={StaticResource StringIgualConverter}, ConverterParameter=Semanal}">
@@ -104,7 +99,6 @@
                 </Border>
             </Grid>
 
-            <!-- Datas personalizadas -->
             <Grid ColumnDefinitions="*,*" ColumnSpacing="10" IsVisible="{Binding MostrarDatasPersonalizadas}">
                 <VerticalStackLayout Grid.Column="0" Spacing="4">
                     <Label Text="De" FontSize="12" TextColor="{StaticResource CinzaMedio}" />
@@ -120,14 +114,10 @@
                 </VerticalStackLayout>
             </Grid>
 
-            <!-- Sempre visível, qualquer período — marca as perguntas que
-                 quiser e só recarrega quando apertar aqui (evita a corrida
-                 de recarregar sozinho a cada caixinha marcada). -->
             <Button Text="Gerar Gráfico"
                     Command="{Binding CarregarGraficoCommand}"
                     Style="{StaticResource BotaoPrimario}" />
 
-            <!-- Gráfico (tocável) + balão de fala -->
             <Grid>
                 <Border StrokeShape="RoundRectangle 16" Stroke="{StaticResource CinzaClaro}" BackgroundColor="#FAFBFC" Padding="10" HeightRequest="320">
                     <GraphicsView x:Name="GraphicsViewGrafico"
@@ -136,8 +126,6 @@
                                   EndInteraction="OnGraficoTocado" />
                 </Border>
 
-                <!-- Balão de fala — toca num ponto do gráfico pra ver a
-                     observação daquele dia (e ouvir o áudio, se tiver) -->
                 <Border IsVisible="{Binding MostrarBalao}"
                         TranslationX="{Binding BalaoX}"
                         TranslationY="{Binding BalaoY}"
@@ -185,21 +173,20 @@
                 </Border>
             </Grid>
 
-            <!-- Legenda dos marcadores de destaque -->
-            <HorizontalStackLayout Spacing="16" HorizontalOptions="Center" IsVisible="{Binding TemDestaqueAtivo}">
-                <HorizontalStackLayout Spacing="5">
-                    <Ellipse Fill="#1F9D55" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" />
-                    <Label Text="Sim" FontSize="11" TextColor="{StaticResource CinzaMedio}" VerticalOptions="Center" />
-                </HorizontalStackLayout>
-                <HorizontalStackLayout Spacing="5">
-                    <Ellipse Fill="#D9534F" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" />
-                    <Label Text="Não" FontSize="11" TextColor="{StaticResource CinzaMedio}" VerticalOptions="Center" />
-                </HorizontalStackLayout>
-                <HorizontalStackLayout Spacing="5">
-                    <Ellipse Fill="#B0B0B0" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" />
-                    <Label Text="Não respondeu" FontSize="11" TextColor="{StaticResource CinzaMedio}" VerticalOptions="Center" />
-                </HorizontalStackLayout>
-            </HorizontalStackLayout>
+            <FlexLayout Wrap="Wrap"
+                        JustifyContent="Center"
+                        AlignItems="Center"
+                        BindableLayout.ItemsSource="{Binding LegendaDestaques}"
+                        IsVisible="{Binding TemDestaqueAtivo}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ItemLegenda">
+                        <HorizontalStackLayout Spacing="5" Margin="0,0,16,4">
+                            <Ellipse Fill="{Binding Cor}" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" />
+                            <Label Text="{Binding Texto}" FontSize="11" TextColor="{StaticResource CinzaMedio}" VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </FlexLayout>
 
             <Label Text="Toque num ponto da linha pra ver a observação daquele dia."
                    FontSize="11" TextColor="{StaticResource CinzaMedio}" HorizontalTextAlignment="Center"

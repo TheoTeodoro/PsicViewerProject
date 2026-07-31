@@ -1,10 +1,8 @@
-﻿using Microsoft.Maui.Graphics;
+﻿using System.Globalization;
+using Microsoft.Maui.Graphics;
 
 namespace MauiApp1.Services
 {
-	/// <summary>Um ponto de uma série de Escala — um dia, um valor, e o
-	/// que o paciente escreveu/gravou de observação nesse dia (usado no
-	/// balãozinho ao tocar no ponto).</summary>
 	public class PontoGrafico
 	{
 		public DateTime Data { get; set; }
@@ -13,8 +11,6 @@ namespace MauiApp1.Services
 		public string? AudioObservacao { get; set; }
 	}
 
-	/// <summary>Uma linha do gráfico — uma pergunta de Escala escolhida,
-	/// com sua cor própria.</summary>
 	public class SerieEscala
 	{
 		public string Nome { get; set; } = string.Empty;
@@ -22,37 +18,88 @@ namespace MauiApp1.Services
 		public List<PontoGrafico> Pontos { get; set; } = new();
 	}
 
-	/// <summary>Uma faixa de destaque — uma pergunta de Múltipla Escolha
-	/// escolhida, com a resposta dada em cada dia (ou ausente = não
-	/// respondeu). Desenhada como uma fileira de bolinhas abaixo do
-	/// gráfico principal, uma fileira por pergunta destacada.</summary>
 	public class SerieDestaque
 	{
 		public string Nome { get; set; } = string.Empty;
 		public Dictionary<DateTime, string> RespostasPorDia { get; set; } = new();
 	}
 
-	/// <summary>Posição na tela de um ponto já desenhado — usado pra
-	/// descobrir em qual ponto o psicólogo tocou.</summary>
 	public readonly record struct PontoDesenhado(PointF Centro, SerieEscala Serie, PontoGrafico Ponto);
 
-	/// <summary>Desenha até várias linhas de Escala (uma cor cada) — RF22
-	/// — e, opcionalmente, faixas de marcadores por baixo com as
-	/// respostas de perguntas de Múltipla Escolha escolhidas pra
-	/// destacar. Usa só Microsoft.Maui.Graphics (já vem com o MAUI).</summary>
 	public class GraficoHumorDrawable : IDrawable
 	{
 		public List<SerieEscala> Series { get; set; } = new();
 		public List<SerieDestaque> Destaques { get; set; } = new();
 
-		/// <summary>Preenchido a cada Draw() — usado pelo hit-test do
-		/// toque (ver método Hit). Não precisa (nem deve) ser setado de
-		/// fora.</summary>
 		public List<PontoDesenhado> PontosDesenhados { get; } = new();
 
 		private static readonly Color CorGrade = Color.FromArgb("#E0E0E0");
 		private static readonly Color CorEixo = Color.FromArgb("#9B9C96");
 		private static readonly Color CorRotulo = Color.FromArgb("#1C3D5A");
+
+		public static readonly Color CorSim = Color.FromArgb("#1F9D55");
+		public static readonly Color CorNao = Color.FromArgb("#D9534F");
+		public static readonly Color CorMaisOuMenos = Color.FromArgb("#E8A33D");
+		public static readonly Color CorNaoRespondeu = Color.FromArgb("#B0B0B0");
+
+		private static readonly Color[] PaletaDestaque =
+		{
+			Color.FromArgb("#7B61FF"),
+			Color.FromArgb("#3D8BE8"),
+			Color.FromArgb("#E8D53D"),
+			Color.FromArgb("#E85DA0"),
+			Color.FromArgb("#3DE8C9"),
+			Color.FromArgb("#8D6E63"),
+		};
+
+		private static bool EhSim(string resposta) => resposta.Trim().Equals("sim", StringComparison.OrdinalIgnoreCase);
+		private static bool EhNao(string resposta) => resposta.Trim().Equals("não", StringComparison.OrdinalIgnoreCase)
+			|| resposta.Trim().Equals("nao", StringComparison.OrdinalIgnoreCase);
+		private static bool EhMaisOuMenos(string resposta) => resposta.Trim().Equals("mais ou menos", StringComparison.OrdinalIgnoreCase);
+
+		public static List<string> ObterOutrasOpcoes(IEnumerable<SerieDestaque> destaques)
+		{
+			return destaques
+				.SelectMany(d => d.RespostasPorDia.Values)
+				.Select(v => v.Trim())
+				.Where(v => !EhSim(v) && !EhNao(v) && !EhMaisOuMenos(v))
+				.Distinct(StringComparer.OrdinalIgnoreCase)
+				.OrderBy(v => v, StringComparer.Create(new CultureInfo("pt-BR"), ignoreCase: true))
+				.ToList();
+		}
+
+		public static Color CorParaResposta(string resposta, List<string> outrasOpcoes)
+		{
+			if (EhSim(resposta)) return CorSim;
+			if (EhNao(resposta)) return CorNao;
+			if (EhMaisOuMenos(resposta)) return CorMaisOuMenos;
+
+			var indice = outrasOpcoes.FindIndex(o => o.Equals(resposta.Trim(), StringComparison.OrdinalIgnoreCase));
+			if (indice < 0) return PaletaDestaque[0];
+
+			return PaletaDestaque[indice % PaletaDestaque.Length];
+		}
+
+		public static List<(string Texto, Color Cor)> ObterLegenda(List<SerieDestaque> destaques, int totalDiasNoPeriodo)
+		{
+			var itens = new List<(string Texto, Color Cor)>();
+			var todasRespostas = destaques.SelectMany(d => d.RespostasPorDia.Values).Select(v => v.Trim()).ToList();
+			var outrasOpcoes = ObterOutrasOpcoes(destaques);
+
+			if (todasRespostas.Any(EhSim))
+				itens.Add(("Sim", CorSim));
+			if (todasRespostas.Any(EhNao))
+				itens.Add(("Não", CorNao));
+			if (todasRespostas.Any(EhMaisOuMenos))
+				itens.Add(("Mais ou menos", CorMaisOuMenos));
+			foreach (var opcao in outrasOpcoes)
+				itens.Add((opcao, CorParaResposta(opcao, outrasOpcoes)));
+
+			if (destaques.Any(d => d.RespostasPorDia.Count < totalDiasNoPeriodo))
+				itens.Add(("Não respondeu", CorNaoRespondeu));
+
+			return itens;
+		}
 
 		public void Draw(ICanvas canvas, RectF dirtyRect)
 		{
@@ -137,6 +184,7 @@ namespace MauiApp1.Services
 			}
 
 			canvas.FontSize = 9;
+			var outrasOpcoesGlobais = ObterOutrasOpcoes(Destaques);
 			for (int f = 0; f < Destaques.Count; f++)
 			{
 				float yFaixa = padTopo + altura + 14 + (f * alturaPorFaixaDestaque);
@@ -150,14 +198,7 @@ namespace MauiApp1.Services
 					float x = IndiceParaX(i);
 					var temResposta = destaque.RespostasPorDia.TryGetValue(todasAsDatas[i], out var resposta);
 
-					Color cor = !temResposta
-						? Color.FromArgb("#B0B0B0")
-						: resposta!.Trim().ToLowerInvariant() switch
-						{
-							"sim" => Color.FromArgb("#1F9D55"),
-							"não" or "nao" => Color.FromArgb("#D9534F"),
-							_ => Color.FromArgb("#E8A33D")
-						};
+					Color cor = !temResposta ? CorNaoRespondeu : CorParaResposta(resposta!, outrasOpcoesGlobais);
 
 					canvas.FillColor = cor;
 					canvas.FillCircle(x, yFaixa + 8, temResposta ? 4 : 3);
@@ -187,8 +228,6 @@ namespace MauiApp1.Services
 				DesenharRotuloData(todasAsDatas.Count - 1);
 		}
 
-		/// <summary>Acha o ponto desenhado mais perto do toque, dentro de
-		/// um raio razoável — usado quando o psicólogo toca no gráfico.</summary>
 		public PontoDesenhado? Hit(PointF toque, float raio = 16)
 		{
 			PontoDesenhado? maisProximo = null;
