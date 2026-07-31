@@ -10,7 +10,6 @@ namespace MauiApp1.Services
 		public DateTime SolicitadoEm { get; set; }
 		public DateTime? RespondidoEm { get; set; }
 
-		// Persistido no servidor — não reseta ao trocar de conta/deslogar.
 		public bool PedidoVisualizado { get; set; }
 		public bool AceitoVisualizado { get; set; }
 
