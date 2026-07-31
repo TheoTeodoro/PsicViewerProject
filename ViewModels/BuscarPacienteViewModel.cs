@@ -25,7 +25,7 @@ namespace MauiApp1.ViewModels
 			_ => "Convidar"
 		};
 
-		public bool PodeConvidar => Status == "Nenhum" || Status == "Recusado";
+		public bool PodeConvidar => Status == "Nenhum" || Status == "Recusado" || Status == "Encerrado";
 
 		partial void OnStatusChanged(string value)
 		{
