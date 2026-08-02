@@ -25,15 +25,13 @@
             <conv:DiaAtivoFundoConverter x:Key="DiaAtivoFundoConverter" />
             <conv:DiaAtivoTextoConverter x:Key="DiaAtivoTextoConverter" />
             <conv:StringIgualConverter x:Key="StringIgualConverter" />
-        
-            <!-- Paleta extraída do Figma -->
+
             <Color x:Key="AzulPrimario">#004AAD</Color>
             <Color x:Key="AzulEscuro">#1C274C</Color>
             <Color x:Key="AzulNoite">#093164</Color>
             <Color x:Key="CinzaMedio">#9B9C96</Color>
             <Color x:Key="CinzaClaro">#E8E8E8</Color>
 
-            <!-- Botão principal em pílula, cor sólida azul -->
             <Style x:Key="BotaoPrimario" TargetType="Button">
                 <Setter Property="BackgroundColor" Value="{StaticResource AzulPrimario}" />
                 <Setter Property="TextColor" Value="White" />
@@ -43,7 +41,6 @@
                 <Setter Property="FontSize" Value="16" />
             </Style>
 
-            <!-- Botão secundário, contorno azul sem preenchimento -->
             <Style x:Key="BotaoSecundario" TargetType="Button">
                 <Setter Property="BackgroundColor" Value="White" />
                 <Setter Property="TextColor" Value="{StaticResource AzulPrimario}" />
@@ -55,7 +52,6 @@
                 <Setter Property="FontSize" Value="16" />
             </Style>
 
-            <!-- Moldura em pílula usada em volta de todo Entry, com sombra suave -->
             <Style x:Key="CampoTexto" TargetType="Border">
                 <Setter Property="StrokeShape" Value="RoundRectangle 26" />
                 <Setter Property="Stroke" Value="{StaticResource CinzaClaro}" />
@@ -67,6 +63,34 @@
                         <Shadow Brush="Black" Offset="0,2" Radius="10" Opacity="0.08" />
                     </Setter.Value>
                 </Setter>
+            </Style>
+
+            <Style TargetType="Entry">
+                <Setter Property="TextColor" Value="{StaticResource AzulEscuro}" />
+                <Setter Property="PlaceholderColor" Value="{StaticResource CinzaMedio}" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+            </Style>
+
+            <Style TargetType="Editor">
+                <Setter Property="TextColor" Value="{StaticResource AzulEscuro}" />
+                <Setter Property="PlaceholderColor" Value="{StaticResource CinzaMedio}" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+            </Style>
+
+            <Style TargetType="Picker">
+                <Setter Property="TextColor" Value="{StaticResource AzulEscuro}" />
+                <Setter Property="TitleColor" Value="{StaticResource CinzaMedio}" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+            </Style>
+
+            <Style TargetType="DatePicker">
+                <Setter Property="TextColor" Value="{StaticResource AzulEscuro}" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+            </Style>
+
+            <Style TargetType="TimePicker">
+                <Setter Property="TextColor" Value="{StaticResource AzulEscuro}" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
             </Style>
 
             <Style x:Key="TituloTela" TargetType="Label">
@@ -86,7 +110,6 @@
                 <Setter Property="FontSize" Value="13" />
             </Style>
 
-            <!-- Cartão pequeno usado nos números do Sumário Clínico (Home Psicólogo) -->
             <Style x:Key="CartaoEstatistica" TargetType="Border">
                 <Setter Property="StrokeShape" Value="RoundRectangle 14" />
                 <Setter Property="Stroke" Value="{StaticResource CinzaClaro}" />
@@ -94,7 +117,6 @@
                 <Setter Property="Padding" Value="8,12" />
             </Style>
 
-            <!-- Cartão dos botões de "Acesso Rápido" nas duas Homes -->
             <Style x:Key="CartaoAcessoRapido" TargetType="Border">
                 <Setter Property="StrokeShape" Value="RoundRectangle 16" />
                 <Setter Property="Stroke" Value="Transparent" />
