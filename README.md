@@ -14,8 +14,6 @@ A API está hospedada no **Azure** (App Service + MySQL Flexible Server).
 
 ## 📥 Baixe o APK pronto (mais rápido)
 
-Não precisa compilar nada pra testar — já tem um APK gerado e assinado disponível aqui:
-
 **[Baixar PsicViewer.apk](https://drive.google.com/file/d/1GrR5QIY___9R0Oeg4U1ae4bU3GASNsjU/view?usp=drive_link)**
 
 Baixa o arquivo no celular Android e abre ele pra instalar. Na primeira instalação fora da Play Store, o Android vai pedir permissão pra "instalar de fontes desconhecidas" (ou "apps desconhecidos") — é normal, só aceitar. O app já vem configurado pra falar com a API hospedada no Azure, sem nenhum passo extra.
