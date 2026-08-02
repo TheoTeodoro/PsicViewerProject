@@ -10,13 +10,22 @@ Aplicativo de monitoramento de humor e suporte psicológico, conectando **Pacien
 - **SignalR** — chat em tempo real
 - **Clean Architecture** — Core / Application / Infrastructure / Api
 
-A API está hospedada no **Azure** (App Service + MySQL Flexible Server), então não é necessário rodar nenhum servidor localmente para testar o app.
+A API está hospedada no **Azure** (App Service + MySQL Flexible Server).
 
-## ▶️ Como executar
+## 📥 Baixe o APK pronto (mais rápido)
+
+**[Baixar PsicViewer.apk](https://drive.google.com/file/d/1GrR5QIY___9R0Oeg4U1ae4bU3GASNsjU/view?usp=drive_link)**
+
+Baixa o arquivo no celular Android e abre ele pra instalar. Na primeira instalação fora da Play Store, o Android vai pedir permissão pra "instalar de fontes desconhecidas" (ou "apps desconhecidos") — é normal, só aceitar. O app já vem configurado pra falar com a API hospedada no Azure, sem nenhum passo extra.
+Se o link anterior não funcionar tente esse: 
+https://drive.google.com/file/d/1GrR5QIY___9R0Oeg4U1ae4bU3GASNsjU/view?usp=drive_link 
+
+## ▶️ Rodar a partir do código-fonte
+
 
 1. Clona o repositório
 2. Abre a solução **`MauiApp1.sln`** no Visual Studio 2022 (com a carga de trabalho **.NET Multi-platform App UI development** instalada)
-3. No **Solution Explorer** (painel lateral com a lista de projetos), clica com o **botão direito** em cima do projeto **`MauiApp1`** → **Set as Startup Project** (definir como projeto de inicialização). Ele deve ficar em **negrito** na lista — é assim que se confirma que está certo. A solução tem 5 projetos ao todo (`MauiApp1`, `PsicViewer.Api`, `PsicViewer.Core`, `PsicViewer.Infrastructure`, `PsicViewer.Application`), mas só o `MauiApp1` precisa rodar — os outros são bibliotecas que ele usa por baixo dos panos, não têm um "programa" próprio pra executar.
+3. No **Solution Explorer** (painel lateral com a lista de projetos), clica com o **botão direito** em cima do projeto **`MauiApp1`** → **Set as Startup Project** (definir como projeto de inicialização). Ele deve ficar em **negrito** na lista — é assim que se confirma que está certo. A solução tem 5 projetos ao todo (`MauiApp1`, `PsicViewer.Api`, `PsicViewer.Core`, `PsicViewer.Infrastructure`, `PsicViewer.Application`)
 4. Escolhe uma das duas opções abaixo pra rodar o app, e clica no botão verde ▶️ (ou aperta **F5**). O app já se conecta à API hospedada no Azure, sem nenhuma configuração adicional.
 
 ### Opção A — Celular Android físico
@@ -46,7 +55,18 @@ A API está hospedada no **Azure** (App Service + MySQL Flexible Server), então
 3. Clica em ▶️ — o emulador abre, e o Visual Studio instala e abre o app nele
 
 **Se aparecer o aviso "O Hyper-V não está configurado"** ao iniciar o emulador: isso acontece porque a aceleração de hardware do Windows ainda não está ativada na máquina.
-- **Solução definitiva:** aperte `Win + R` → digita `optionalfeatures` → Enter. No Windows **Pro/Enterprise/Education**, marca **Hyper-V**; no Windows **Home** (que não tem Hyper-V), marca **"Plataforma de Hipervisor do Windows"** no lugar. Reinicia o PC depois de marcar. Se o aviso continuar aparecendo mesmo depois de reiniciar, confere se a virtualização (Intel VT-x / AMD-V) está ativada na BIOS/UEFI da placa-mãe.
+- **Solução definitiva:** aperta `Win + R` → digita `optionalfeatures` → Enter. No Windows **Pro/Enterprise/Education**, marca **Hyper-V**; no Windows **Home** (que não tem Hyper-V), marca **"Plataforma de Hipervisor do Windows"** no lugar. Reinicia o PC depois de marcar. Se o aviso continuar aparecendo mesmo depois de reiniciar, confere se a virtualização (Intel VT-x / AMD-V) está ativada na BIOS/UEFI da placa-mãe.
+
+### Gerando seu próprio APK
+
+Se quiser gerar um APK novo depois de alterar o código, pelo terminal (mais confiável que o assistente gráfico de Publish do Visual Studio):
+
+```
+cd PsicViewerProject
+dotnet publish -c Release
+```
+
+O APK assinado sai em `bin\Release\net8.0-android\publish\com.companyname.mauiapp1-Signed.apk`.
 
 ## 👤 Contas de teste
 
@@ -73,10 +93,11 @@ Ana já está vinculada a Pedro e Julia, com um questionário de humor ativo —
 ### Como Psicólogo
 
 1. Faz login (ou cria uma conta em "Sou psicólogo")
-2. Em **Pacientes**, busca e convida pacientes, ou aceita solicitações recebidas
-3. Em **Questionários**, cria questionários personalizados (perguntas de escala, texto ou múltipla escolha, cada uma com seu horário de notificação) e vincula aos pacientes
+2. Em **Pacientes**, busca e convida pacientes, aceita solicitações recebidas, ou encerra um vínculo ativo (liberando o paciente pra se vincular a outro profissional depois)
+3. Em **Questionários**, cria questionários personalizados (perguntas de escala, texto ou múltipla escolha, cada uma com seu horário de notificação), vincula aos pacientes, e pode excluir questionários que não usa mais
 4. Acompanha o **Histórico** de respostas de cada paciente, e gera **Relatórios de Humor** com gráficos comparando diferentes perguntas ao longo do tempo
 5. Ao ver uma resposta nova (via notificação no sino), pode responder com um **Feedback** (texto ou áudio), que aparece pro paciente direto no chat, citando a pergunta e resposta original
+
 
 ## 🏗️ Estrutura do projeto
 
