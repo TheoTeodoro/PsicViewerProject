@@ -10,7 +10,6 @@ using MauiApp1.Services;
 
 namespace MauiApp1.ViewModels
 {
-	
 	public partial class RespostaPerguntaItem : ObservableObject
 	{
 		private readonly IAudioManager _audioManager;
@@ -71,7 +70,6 @@ namespace MauiApp1.ViewModels
 		public bool TemAudio => !string.IsNullOrEmpty(CaminhoAudioObservacao);
 		public string TextoBotaoTocar => TocandoAudio ? "⏸ Pausar" : "▶ Tocar";
 
-		
 		public bool Trancada => Enviada && !Editando;
 		public bool PodeEditar => !Trancada;
 		public Color CorFundoCard => Trancada ? Color.FromArgb("#EDEDED") : Color.FromArgb("#FAFBFC");
@@ -342,7 +340,6 @@ namespace MauiApp1.ViewModels
 					if (p.Tipo == "MultiplaEscolha" && !string.IsNullOrEmpty(p.Opcoes))
 						item.Opcoes = p.Opcoes.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
 
-					
 					if (p.RespondidaHoje)
 					{
 						item.EscalaSelecionada = p.ValorEscala;
@@ -372,6 +369,12 @@ namespace MauiApp1.ViewModels
 
 		[RelayCommand]
 		private async Task VoltarAsync()
+		{
+			await Application.Current!.MainPage!.Navigation.PopAsync();
+		}
+
+		[RelayCommand]
+		private async Task EnviarPerguntasRespondidasAsync()
 		{
 			await Application.Current!.MainPage!.Navigation.PopAsync();
 		}

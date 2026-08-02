@@ -7,6 +7,7 @@ using PsicViewer.Infrastructure.Repositories;
 using PsicViewer.Api.Hubs;
 using System.Reflection;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSignalR();
@@ -1235,3 +1236,5 @@ record CadastroPsicologoRequest(string Nome, string Email, string Senha, string 
 record LoginRequest(string Email, string Senha);
 record AtualizarPacienteRequest(string Nome, string Email, string? Telefone, DateTime? DataNascimento, string? Genero, string? FotoUrl);
 record AtualizarPsicologoRequest(string Nome, string Email, string? Telefone, DateTime? DataNascimento, string? Genero, string? FotoUrl, string Crp);
+
+//api

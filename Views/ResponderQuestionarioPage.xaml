@@ -8,7 +8,7 @@
              BackgroundColor="White"
              NavigationPage.HasNavigationBar="False">
 
-    <Grid RowDefinitions="Auto,*" Padding="20,16,20,20">
+    <Grid RowDefinitions="Auto,*,Auto" Padding="20,16,20,20">
 
         <Grid Grid.Row="0" ColumnDefinitions="Auto,*">
             <ImageButton Grid.Column="0"
@@ -21,15 +21,13 @@
                    TextColor="{StaticResource AzulEscuro}" VerticalOptions="Center" Margin="8,0,0,0" />
         </Grid>
 
-        <!-- Lista com TODAS as perguntas juntas — cada uma se envia sozinha. -->
         <CollectionView Grid.Row="1" ItemsSource="{Binding Perguntas}" Margin="0,16,0,0">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="vm:RespostaPerguntaItem">
                     <Border StrokeShape="RoundRectangle 18" Stroke="{StaticResource CinzaClaro}" BackgroundColor="{Binding CorFundoCard}" Padding="18" Margin="0,8">
                         <Grid>
 
-                            <!-- Lápis: só aparece quando a pergunta já foi
-                                 enviada — único jeito de voltar a editar. -->
+                            
                             <Border StrokeShape="RoundRectangle 15"
                                     BackgroundColor="{StaticResource AzulPrimario}"
                                     WidthRequest="30" HeightRequest="30"
@@ -47,13 +45,10 @@
 
                                 <Label Text="{Binding TextoPergunta}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource AzulEscuro}" />
 
-                                <!-- Área que trava quando a pergunta já foi
-                                     enviada: escala, texto, múltipla escolha
-                                     e o campo/gravador de observação. -->
+                               
                                 <VerticalStackLayout Spacing="14" IsEnabled="{Binding PodeEditar}">
 
-                                    <!-- Escala: 5 rostos; selecionado fica opaco
-                                         e ~40% maior (Scale 1.4) -->
+                                    
                                     <Grid ColumnDefinitions="*,*,*,*,*" IsVisible="{Binding EhEscala}" Margin="0,0,0,10">
                                         <VerticalStackLayout Grid.Column="0" Spacing="4" HorizontalOptions="Center"
                                                               Opacity="{Binding EscalaSelecionada, Converter={StaticResource ValorIgualParaOpacidadeConverter}, ConverterParameter=1}"
@@ -199,6 +194,15 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-
+       
+        <Button Grid.Row="2"
+                Text="Enviar perguntas respondidas"
+                Command="{Binding EnviarPerguntasRespondidasCommand}"
+                BackgroundColor="{StaticResource AzulPrimario}"
+                TextColor="White"
+                FontAttributes="Bold"
+                CornerRadius="12"
+                HeightRequest="48"
+                Margin="0,16,0,0" />
     </Grid>
 </ContentPage>

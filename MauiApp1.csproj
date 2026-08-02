@@ -2,8 +2,8 @@
 
 	<PropertyGroup>
 		<WindowsSdkPackageVersion>10.0.19041.56</WindowsSdkPackageVersion>
-		<TargetFrameworks>net8.0-android;net8.0-ios;net8.0-maccatalyst</TargetFrameworks>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>
+		<TargetFramework>net8.0-android</TargetFramework>
+		<EnableDynamicPlatformResolution>true</EnableDynamicPlatformResolution>
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
 		<!-- <TargetFrameworks>$(TargetFrameworks);net8.0-tizen</TargetFrameworks> -->
 
@@ -70,7 +70,12 @@
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-windows10.0.19041.0|AnyCPU'">
 		<ApplicationTitle>PsicViewer</ApplicationTitle>
 	</PropertyGroup>
-
+	
+<PropertyGroup Condition="'$(Configuration)' == 'Release' and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <PublishTrimmed>false</PublishTrimmed>
+    <PublishReadyToRun>false</PublishReadyToRun>
+    <RunAOTCompilation>false</RunAOTCompilation>
+</PropertyGroup>
 	<ItemGroup>
 		<Compile Remove="PsicViewer.Api\**\*.cs" />
 		<Compile Remove="PsicViewer.Application\**\*.cs" />
@@ -126,13 +131,20 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="PsicViewer.Core\PsicViewer.Core.csproj" />
-		<ProjectReference Include="PsicViewer.Infrastructure\PsicViewer.Infrastructure.csproj" />
-		<ProjectReference Include="PsicViewer.Application\PsicViewer.Application.csproj" />
-
-
-	</ItemGroup>
-
+    <ProjectReference Include="PsicViewer.Core\PsicViewer.Core.csproj">
+        <SetTargetFramework Condition="'$(Configuration)'=='Release'">TargetFramework=net8.0</SetTargetFramework>
+        <GlobalPropertiesToRemove>RuntimeIdentifier;RuntimeIdentifiers</GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="PsicViewer.Infrastructure\PsicViewer.Infrastructure.csproj">
+        <SetTargetFramework Condition="'$(Configuration)'=='Release'">TargetFramework=net8.0</SetTargetFramework>
+        <GlobalPropertiesToRemove>RuntimeIdentifier;RuntimeIdentifiers</GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="PsicViewer.Application\PsicViewer.Application.csproj">
+        <SetTargetFramework Condition="'$(Configuration)'=='Release'">TargetFramework=net8.0</SetTargetFramework>
+        <GlobalPropertiesToRemove>RuntimeIdentifier;RuntimeIdentifiers</GlobalPropertiesToRemove>
+    </ProjectReference>
+</ItemGroup>
+	
 	<ItemGroup>
 		<Compile Update="Views\NotificacoesPage.xaml.cs">
 			<DependentUpon>NotificacoesPage.xaml</DependentUpon>

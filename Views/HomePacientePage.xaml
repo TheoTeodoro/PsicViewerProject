@@ -169,7 +169,7 @@
                                 <TapGestureRecognizer Command="{Binding AbrirChatCommand}" />
                             </Image.GestureRecognizers>
                         </Image>
-                        <Image Source="icone_chat_com_notificao.svg" Aspect="AspectFit"
+                        <Image Source="card_acesso_chat_notificacao.svg" Aspect="AspectFit"
                                IsVisible="{Binding TemNotificacaoChat}">
                             <Image.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding AbrirChatCommand}" />
