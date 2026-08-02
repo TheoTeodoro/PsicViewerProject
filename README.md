@@ -100,12 +100,6 @@ Ana já está vinculada a Pedro e Julia, com um questionário de humor ativo —
 4. Acompanha o **Histórico** de respostas de cada paciente, e gera **Relatórios de Humor** com gráficos comparando diferentes perguntas ao longo do tempo
 5. Ao ver uma resposta nova (via notificação no sino), pode responder com um **Feedback** (texto ou áudio), que aparece pro paciente direto no chat, citando a pergunta e resposta original
 
-## 🚧 Limitações conhecidas / próximos passos
-
-- Ainda não é possível exportar os gráficos do Relatório de Humor (ex.: como imagem ou PDF)
-- Só um tipo de gráfico disponível hoje (linha) — mais formatos estão nos planos
-- Psicólogo ainda não pode desativar a própria conta pelo app (a funcionalidade de paciente encerrar/gerenciar vínculo já existe, mas a desativação de conta do psicólogo em si ainda não foi implementada)
-- Escalabilidade e refinamentos de design geral do app são pontos de melhoria contínua
 
 ## 🏗️ Estrutura do projeto
 
